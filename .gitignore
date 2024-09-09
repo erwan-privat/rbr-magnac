@@ -33,4 +33,4 @@
 
 # *.xcf
 WiFiCredentials.h
-build
+build/
