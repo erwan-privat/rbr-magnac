@@ -34,3 +34,4 @@
 # *.xcf
 WiFiCredentials.h
 build/
+*.vim
