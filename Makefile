@@ -95,7 +95,7 @@ SPEEDUP = 115200
 # SPEEDUP = 921600
 
 ifdef GIT_VERSION
-  CFLAGS = --build-property compiler.cpp.extra_flags=-DMYVERSION=\"$(GIT_VERSION)\"
+  # CFLAGS = --build-property compiler.cpp.extra_flags=-DMYVERSION=\"$(GIT_VERSION)\"
 else
   CFLAGS = --warnings all
 endif
@@ -139,7 +139,7 @@ BIN        := $(BUILD_DIR)/$(SRCINO).bin
 ELF        := $(BUILD_DIR)/$(SRCINO).elf
 
 $(info OSFAMILY    is [${OSFAMILY}])
-$(info GIT_VERSION is [${GIT_VERSION}])
+# $(info GIT_VERSION is [${GIT_VERSION}])
 $(info FQBN        is [${FQBN}])
 $(info IOT_NAME    is [${IOT_NAME}])
 $(info IOT_IP      is [${IOT_IP}])

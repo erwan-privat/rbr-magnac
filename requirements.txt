@@ -1,5 +1,5 @@
 ArduinoSTL
-dimmable-light
+Dimmable Light for Arduino
 NTPClient
 U8g2
 WiFiSerial
