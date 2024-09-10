@@ -40,6 +40,13 @@ comprend :
   mesuré au maximum une température de 28 °C sur le gros
   radiateur équippé lorsque le chauffe-eau tirait 2400 W).
 
+Licence
+-------
+
+Voir le fichier LICENSE. En gros, vous faites ce que vous
+voulez de ce logiciel tant que vous ne vous en servez-pas
+dans un cadre capitaliste.
+
 ENGLISH
 =======
 
@@ -81,3 +88,8 @@ Todo
   temperature I measured on the thyristor (equipped with a
   big radiator) is 28 °C (82 °F) while delivering 2400 W.
 
+License
+-------
+
+See LICENSE file. To recap, you do whatever you want if you
+are not using it as part of a capitalist organisation.
