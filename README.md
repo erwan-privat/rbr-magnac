@@ -19,7 +19,7 @@ comprend :
   ouvert à 10 % de 2400 W qui ne délivre que 30 W) ;
 * gestion des heures creuses sans nécessiter de relai de
   marche forcée ;
-* information sur écran avec écrande chargement (mon chat),
+* information sur écran avec écran de chargement (mon chat),
   l'heure, l'affichage de la consommation du foyer si le
   chauffe-eau n'est pas alimenté, ou, de la consommation
   réelle du chauffe-eau en cas de surplus, mesurée par une
