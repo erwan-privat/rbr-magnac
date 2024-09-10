@@ -5,10 +5,11 @@
 #define WIFISERIAL_H
 
 #include <WebSerialLite.h>
+#include "ServeurWeb.h"
 
 namespace WiFiSerial
 {
-  AsyncWebServer server(80);
+  // AsyncWebServer server(80);
   
   void receiveData(uint8_t *data, size_t length)
   {
@@ -22,9 +23,10 @@ namespace WiFiSerial
 
   void begin()
   {
-    WebSerial.begin(&server);
+    // WebSerial.begin(&server);
+    WebSerial.begin(&ServeurWeb::server);
     WebSerial.onMessage(receiveData);
-    server.begin();
+    // server.begin();
   }
 }
 

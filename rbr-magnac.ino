@@ -11,6 +11,7 @@
 #include "Heure.h"
 #include "Watts.h"
 #include "Dimmer.h"
+#include "ServeurWeb.h"
   
 void setup()
 {
@@ -30,6 +31,8 @@ void setup()
   // Accès au Serial sur http://192.168.x.x/webserial
   // x.x affiché sur l'écran
   WiFiSerial::begin();
+  ServeurWeb::begin();
+
   Heure::begin();
   Watts::begin();
   Dimmer::begin();
