@@ -1,4 +1,44 @@
-Français au-dessous.
+English below.
+
+FRANÇAIS
+=========
+
+Lisez-moi
+---------
+
+Programme de routeur solaire pour ESP32 pour rediriger un
+surplus de production vers par exemple un chauffe-eau. Cela
+comprend :
+
+* la mise à jour du programme par WiFi (over-the-air, OTA) ;
+* WebSerial, un port série par web pour accéder à la
+  journalisation sur http://x.x.x.x/webserial ;
+* une correction du transfert de puissance suivant un profil
+  arcsin pour compenser les thyristors mal calibrés ou un
+  évenuel décalage de phase (typiquement : un thyristor
+  ouvert à 10 % de 2400 W qui ne délivre que 30 W) ;
+* gestion des heures creuses sans nécessiter de relai de
+  marche forcée ;
+* information sur écran avec écrande chargement (mon chat),
+  l'heure, l'affichage de la consommation du foyer si le
+  chauffe-eau n'est pas alimenté, ou, de la consommation
+  réelle du chauffe-eau en cas de surplus, mesurée par une
+  sonde JSY-MK-194 ;
+* code découpé en tâches permettant une bonne séparation des
+  différents modules basé sur le principe de responsabilité
+  unique (*sole responsability principle*, même si j'avoue
+  que ça pourrait être plus poussé) ;
+* une convention de nommage étrange en franglais mais qui je
+  l'éspère permet d'être comprise par les néophytes de la
+  programmation.
+
+À faire
+-------
+
+* Serveur web pour tracer les graphes de consommation etc ;
+* gestion du ventilateur du thyristor (peut-être ; j'ai
+  mesuré au maximum une température de 28 °C sur le gros
+  radiateur équippé lorsque le chauffe-eau tirait 2400 W).
 
 ENGLISH
 =======
@@ -41,42 +81,3 @@ Todo
   temperature I measured on the thyristor (equipped with a
   big radiator) is 28 °C (82 °F) while delivering 2400 W.
 
-FRANÇAIS
-=========
-
-Lisez-moi
----------
-
-Programme de routeur solaire pour ESP32 pour rediriger un
-surplus de production vers par exemple un chauffe-eau. Cela
-comprend :
-
-* la mise à jour du programme par WiFi (over-the-air, OTA) ;
-* WebSerial, un port série par web pour accéder à la
-  journalisation sur http://x.x.x.x/webserial ;
-* une correction du transfert de puissance suivant un profil
-  arcsin pour compenser les thyristors mal calibrés ou un
-  évenuel décalage de phase (typiquement : un thyristor
-  ouvert à 10 % de 2400 W qui ne délivre que 30 W) ;
-* gestion des heures creuses sans nécessiter de relai de
-  marche forcée ;
-* information sur écran avec écrande chargement (mon chat),
-  l'heure, l'affichage de la consommation du foyer si le
-  chauffe-eau n'est pas alimenté, ou, de la consommation
-  réelle du chauffe-eau en cas de surplus, mesurée par une
-  sonde JSY-MK-194 ;
-* code découpé en tâches permettant une bonne séparation des
-  différents modules basé sur le principe de responsabilité
-  unique (*sole responsability principle*, même si j'avoue
-  que ça pourrait être plus poussé) ;
-* une convention de nommage étrange en franglais mais qui je
-  l'éspère permet d'être comprise par les néophytes de la
-  programmation.
-
-À faire
--------
-
-* Serveur web pour tracer les graphes de consommation etc ;
-* gestion du ventilateur du thyristor (peut-être ; j'ai
-  mesuré au maximum une température de 28 °C sur le gros
-  radiateur équippé lorsque le chauffe-eau tirait 2400 W).

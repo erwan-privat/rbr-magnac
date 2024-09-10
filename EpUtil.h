@@ -1,5 +1,4 @@
 // EpSerial.h — Raccourci des Serial.print*
-// CC BY-NC 4.0
 // eprivat 2024-07-29
 
 #ifndef EPUTIL_H

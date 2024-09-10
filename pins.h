@@ -7,10 +7,10 @@
 #include <Arduino.h>
 
 // LEDs output //
-constexpr auto led_inter  = LED_BUILTIN;
-constexpr auto led_orange = 0;
-constexpr auto led_rouge  = 2;
-// constexpr int btn_inter  = 21;
+// constexpr auto led_inter  = LED_BUILTIN;
+// constexpr auto led_orange = 0;
+// constexpr auto led_rouge  = 2;
+// constexpr auto btn_inter  = 21;
 
 // OLED SPI monochrome 128x64 //
 // Hardware SPI pins
@@ -21,14 +21,13 @@ constexpr auto oled_dc  =  15; // SW, au choix
 constexpr auto oled_cs  =   5; // SW, au choix
 
 // JSY-MK-194 //
-// capteur_rx doit être branché sur le TX du SJY.
-// (logique : réception de l'esp32 rx reçoit la transmission
-// tx du SJY.)
 constexpr auto capteur_rx = 16; // bleu
 constexpr auto capteur_tx = 17; // violet
 
+// Relai //
 constexpr auto relay_pin  = 32;
 
+// Thyristor //
 constexpr auto dimmer_com = 25;
 constexpr auto dimmer_zc  = 33;
 constexpr auto dimmer_ven =  0; // masse du ventilo
