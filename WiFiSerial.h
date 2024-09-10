@@ -5,7 +5,11 @@
 #define WIFISERIAL_H
 
 #include <WebSerialLite.h>
-#include "ServeurWeb.h"
+
+namespace ServeurWeb
+{
+  extern AsyncWebServer server;
+}
 
 namespace WiFiSerial
 {

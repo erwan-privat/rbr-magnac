@@ -32,7 +32,6 @@ void setup()
   // x.x affiché sur l'écran
   WiFiSerial::begin();
   ServeurWeb::begin();
-
   Heure::begin();
   Watts::begin();
   Dimmer::begin();
