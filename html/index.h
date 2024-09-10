@@ -45,9 +45,10 @@ namespace html
 
   constexpr char* index PROGMEM = R"%(
       <h1>Routeur solaire RBR Magnac</h1>
-      <div>
+      <div class="flex">
         <p>Conso : <b>$CONSO$ W</b></p>
         <canvas id="screen">Loading screen...</canvas>
+        <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fthewowstyle.com%2Fwp-content%2Fuploads%2F2015%2F01%2Fimages-of-nature-4.jpg&f=1&nofb=1&ipt=b048579f0bb282a78259d3e425ea1390481f1fbcc50c3889cb39ce33c9cc86e7&ipo=images" alt="" />
       </div>)%";
 }
 
