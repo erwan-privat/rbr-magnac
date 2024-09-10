@@ -42,7 +42,7 @@ namespace Watts
     eplog("----------------------------");
     eplogf("%f V, %f A, %f W\r\n", voltage1, current1, power1);
     eplogf("%f V, %f A, %f W\r\n", voltage2, current2, power2);
-    eplogf("%d Hz\r\n", frequency);
+    // eplogf("%d Hz\r\n", frequency);
 
     eplog("----------------------------");
     eplogf("task watts %u from 3000\r\n",
@@ -51,7 +51,7 @@ namespace Watts
     weblogf("%s\n", "----------------------------");
     weblogf("%f V, %f A, %f W\n", voltage1, current1, power1);
     weblogf("%f V, %f A, %f W\n", voltage2, current2, power2);
-    weblogf("%d Hz\n", frequency);
+    // weblogf("%d Hz\n", frequency);
 
     weblogf("%s\n", "----------------------------");
     weblogf("task watts %u from 3000\n",
@@ -132,7 +132,7 @@ namespace Watts
       printValues();
       #endif
       
-      delay(1000);
+      delay(2000);
     }
   }
 

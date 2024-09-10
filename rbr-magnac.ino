@@ -19,7 +19,7 @@ void setup()
     yield();
   eplog("Serial ok");
   
-  initPins();
+  // initPins();
   
   Ecran::begin();
   // WiFi doit être lancé avant tout ce qui en a besoin,

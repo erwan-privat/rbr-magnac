@@ -27,32 +27,32 @@ namespace Dimmer
   DimmableLight dimmer(dimmer_com);
   byte value = 0;
 
-  void taskDimmerSineTest(void*)
-  {
-    constexpr float freq = 1.0 / 15.0;
-    for (;;)
-    {
-      float t = esp_timer_get_time() * 1e-6f; // sec
-      float s = 0.5 + sin(2 * PI * freq * t) * 0.5;
-      value = static_cast<byte>(round(s * max_value));
-
-      if (force_off)
-         {
-        dimmer.setBrightness(0);
-      }
-      else
-      {
-        if (value != dimmer.getBrightness())
-          dimmer.setBrightness(value);
-          
-        ventil_on = value > 128;
-      }
-
-      // digitalWrite(dimmer_ven, ventil_on ? LOW : HIGH);
-      // analogWrite(dimmer_ven, value);
-      delay(1);
-    }
-  }
+//  void taskDimmerSineTest(void*)
+//  {
+//    constexpr float freq = 1.0 / 15.0;
+//    for (;;)
+//    {
+//      float t = esp_timer_get_time() * 1e-6f; // sec
+//      float s = 0.5 + sin(2 * PI * freq * t) * 0.5;
+//      value = static_cast<byte>(round(s * max_value));
+//
+//      if (force_off)
+//         {
+//        dimmer.setBrightness(0);
+//      }
+//      else
+//      {
+//        if (value != dimmer.getBrightness())
+//          dimmer.setBrightness(value);
+//          
+//        ventil_on = value > 128;
+//      }
+//
+//      // digitalWrite(dimmer_ven, ventil_on ? LOW : HIGH);
+//      // analogWrite(dimmer_ven, value);
+//      delay(1);
+//    }
+//  }
 
   void taskDimmer(void*)
   {
@@ -91,21 +91,18 @@ namespace Dimmer
       float pavailable = seuil_chofo - ptot;
 
       float amount = pavailable * max_value / max_chofo;
-      // value = constrain(round(amount), 0, max_value);
       value = redress(amount);
-      //FIXME debug
-      // value = 170;
-      // force_on = true;
 
       int h = Heure::time_client.getHours();
       h = h * 100 + Heure::time_client.getMinutes();
       
       force_on = h > start_hc || h < end_hc;
 
-      // weblogf("ptot = %f W, pav = %f W, am = %f, "
-              // "value = %d, sending = %f\n",
-          // ptot, pavailable, amount, value,
-          // max_chofo * (float)value / max_value);
+      weblogf("tot = %f W, dispo = %f W, value = %d, "
+              "sending_th = %f, sending = %f W\n",
+          ptot, pavailable, value,
+          max_chofo * (float)value / max_value,
+          -Watts::power1);
       // weblogf("> value = %d, redressed = %d\n",
           // value, redress(amount));
       // weblogf("H = %d, force_on = %d\n", h, force_on);

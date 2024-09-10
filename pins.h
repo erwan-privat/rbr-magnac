@@ -32,12 +32,12 @@ constexpr auto dimmer_com = 25;
 constexpr auto dimmer_zc  = 33;
 constexpr auto dimmer_ven =  0; // masse du ventilo
 
-void initPins()
-{
-  pinMode(led_inter,  OUTPUT);
-  pinMode(led_orange, OUTPUT);
-  pinMode(led_rouge,  OUTPUT);
-  // pinMode(btn_inter,  INPUT_PULLUP);
-}
+// void initPins()
+// {
+  // pinMode(led_inter,  OUTPUT);
+  // pinMode(led_orange, OUTPUT);
+  // pinMode(led_rouge,  OUTPUT);
+  // // pinMode(btn_inter,  INPUT_PULLUP);
+// }
 
 #endif
