@@ -18,19 +18,17 @@ namespace html
         body {
           width: 80%;
           margin: auto;
-          border: 4px solid grey;
         }
 
         #screen {
-          // display: inline-block;
           width: 128px;
           height: 64px;
-          background-color: black;
-          color: lightblue;
+          /* background-color: black; */
+          /* color: lightblue; */
         }
         .flex {
           display: flex;
-          flex-direction: row | column;
+          /* flex-direction: row | column; */
           flex-wrap: wrap;
         }
       </style>
