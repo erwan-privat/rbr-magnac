@@ -22,33 +22,50 @@ namespace html
         }
 
         #screen {
-          display: inline-block;
+          // display: inline-block;
           width: 128px;
           height: 64px;
           background-color: black;
           color: lightblue;
         }
+        .flex {
+          display: flex;
+          flex-direction: row | column;
+          flex-wrap: wrap;
+        }
       </style>
       <script>
         "use strict";
-        (function () {
-          // window.alert("Herbert !");
-        })();
+        document.addEventListener("DOMContentLoaded", () => {
+          console.log("Hello World!");
+          let canvas = document.getElementById("screen");
+          let ctx = canvas.getContext("2d");
+
+          window.canvas = canvas;
+          window.ctx = ctx;
+        });
       </script>
       <title>RBR Magnac</title>
     </head>
-    <body>)%";
+    <body>
+      <h1>Routeur solaire RBR Magnac</h1>
+      <menu>
+        <li><a href="/">Moniteur</a></li>
+        <li><a href="/webserial">Web serial</a></li>
+      </menu>)%";
 
   constexpr char* footer PROGMEM = R"%(
     </body>
   </html>)%";
 
   constexpr char* index PROGMEM = R"%(
-      <h1>Routeur solaire RBR Magnac</h1>
       <div class="flex">
         <p>Conso : <b>$CONSO$ W</b></p>
         <canvas id="screen">Loading screen...</canvas>
-        <img src="https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fthewowstyle.com%2Fwp-content%2Fuploads%2F2015%2F01%2Fimages-of-nature-4.jpg&f=1&nofb=1&ipt=b048579f0bb282a78259d3e425ea1390481f1fbcc50c3889cb39ce33c9cc86e7&ipo=images" alt="" />
+      </div>
+      <div>
+        <img src="http://vesperaimperialis.fr/data/map/map-web.jpg"
+          alt="a map of what is or what could havei been" />
       </div>)%";
 }
 

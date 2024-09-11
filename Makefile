@@ -133,8 +133,8 @@ endif
 BUILD_DIR  := $(subst :,.,build/$(FQBN))
 
 SRCINO     := $(wildcard *.ino)
-SRC        := $(wildcard *.ino *.c *.cpp mylib/*/*.ino) 
-HDRS       := $(wildcard *.h mylib/*/*.h)
+SRC        := $(wildcard *.ino *.cpp) 
+HDRS       := $(wildcard *.h html/*.h)
 BIN        := $(BUILD_DIR)/$(SRCINO).bin
 ELF        := $(BUILD_DIR)/$(SRCINO).elf
 
