@@ -3,6 +3,8 @@ English below.
 FRANÇAIS
 =========
 
+Vous voulez me filer un coup de pouce ? J'ai une page `Ko-Fi <https://ko-fi.com/eprivat/goal?g=0>`_. 
+
 Lisez-moi
 ---------
 
@@ -49,6 +51,8 @@ dans un cadre capitaliste.
 
 ENGLISH
 =======
+
+Want to help? Please check my `Ko-Fi page <https://ko-fi.com/eprivat/goal?g=0>`_. 
 
 Readme
 ------
