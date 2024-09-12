@@ -53,13 +53,14 @@ Aide
 ****
 
 Comme énoncé plus haut, si vous pouviez contribuer sur ma
-`page Ko-Fi <https://ko-fi.com/eprivat/goal?g=0>` ça
+`page Ko-Fi <https://ko-fi.com/eprivat/goal?g=0>`_ ça
 m'aiderait énormément, si vous en avez les moyens.
 
 ENGLISH
 =======
 
-Want to help? Please check my `Ko-Fi page <https://ko-fi.com/eprivat/goal?g=0>`_. 
+Want to help? Please check my `Ko-Fi page
+<https://ko-fi.com/eprivat/goal?g=0>`_.
 
 Readme
 ------
@@ -103,7 +104,7 @@ Can I help?
 ***********
 
 As I mentionned before, please take a loof at my
-`Ko-Fi page <https://ko-fi.com/eprivat/goal?g=0>`, and
+`Ko-Fi page <https://ko-fi.com/eprivat/goal?g=0>`_, and
 consider tipping if you can afford it, that would help
 enormously.
 
