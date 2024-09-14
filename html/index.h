@@ -23,22 +23,26 @@ namespace html
         }
       </style>
       <script>
+        // window.Magnac = {};
+        // window.Magnac.bitswap = function (b) {
+          // b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+          // b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+          // b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+          // return b;
+        // }
+
         (function () {
           "use strict";
           const scale = 2;
+          const byId = document.getElementById
+            .bind(document);
+
           document.addEventListener("DOMContentLoaded",
-          function () {
-            let canvas = document.getElementById("screen");
+          () => {
+            let canvas = byId("screen");
             canvas.width = 128 * scale;
             canvas.height = 64 * scale;
             let ctx = canvas.getContext("2d");
-
-            function bitswap(b) {
-              b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
-              b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
-              b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
-              return b;
-            }
 
             function drawByte(x, y, n) {
               for (var i = 0; i < 8; ++i) {
@@ -49,10 +53,7 @@ namespace html
               }
             }
 
-            // let screen = [];
-            let screen = atob("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAABwAAAAAgAAAAAAAAAAAAAA4AAAAADACAAAAAAAAAAAAuAAAAABAAgAAAAAAAAAAANgAAAAAzAAAAAAAAAAAAABYAQAACDIAAAAAAAAAAAAAcAEAAICAAQAAAAAAAAAAAPAFAACEDQAAAAAAAAAAAADYBgAAYXQCAAAAAAAAAAAA4AoAACCSAQAAAAAAAAAAALADAACSCgAAAAAAAAAAAADgFACACGsAAAAAAAAAAAAAYBEAMECCAQAAAAAAAAAAAGGjDAKEHgAAAAAAAAAAABBgvkuMEWAAAAAAAAAAAAAAJm0bEUSGBAAAAAAAAAAAAJDth0CQGAQAAAAAAAAAAACx/zYiIWAQAAAAAAAAAAAA5P+NBISEAgIAAAAAAAAAANj/x1CQgIgEAQAAAAAAAADY/46BAUIgBQAAAAAAAAAA9v8vJQQAQgAAAAAAAAAAAPb/Z0QAAAADAAAAAAAAAAD8v/8YAgAQAAAAAAAAAAAA+/+fixAAAAAAAAAAAAAAAPrffyMEAYAAAAAAAAAAAEDy/zsUIAAAAAAAAAAAAABAz+/iRwIIAAEAAAAAAAAACL2/fRCAAAACAAAAAAAAALL/3/2TJAQACgAAAAAAAADE/n1/iwQBAAgAAAAAAABAyf/n/2YIAAA0AAAAAAAAAJl/v/s2IwAApAAAAAAAABDy/v3+zYQAAEgAAAAAAADA5urzfyMZAABYAAAAAAAADJm7z/+7SUEAkgEAAAAAACD5dPy/TyYJACQBAAAAAABhZkWx+3SZDCBkAgAAAAAAlNxJ4N/XJZKEmAYAAAAAwJC9u0h22c2QELIEAQAAAABqdgqcdm1fJ0mmGRAAAAAgCd9dtrCxM2lmbEAAAAAAILV9G0vr7v7GNFkDAAAAAEhmdjsbTWrLls1TTAIAAADIyN5+93TTvTlbtgAAAAAANpv9cszWXLfrtiwCAAAAABBpt585mWTb5rZtCgAAAADKTP65ba+9bd3blgAAAAAAapNtY+Mzs217b5skAAAAAJwU/+4OzHb37m1rAAAAAACRXNrWtmTOnb+3TQIAAAAAZlv/1bubuf39vg0AAAAAAEy6bZdrsu927+szBAAAAACZ7P6a3iT7/7+/lgAAAAAAJjXbZhTB3L339pdIAAAAADL1fRdBiHb/398tEQIAAAAJTfdZCiL67317a6ZMAAAAJnnbZiJgyv//70+iEQAAAJK2fpvEhPT93v62PTcAAAAZtu2ZFCS1v//7n+1MAgAATcy9JxFB4f63323bkgAAAA==");
-
-            window.screen = screen;
+            let screen = [];
 
             function drawScreen() {
               for (let i = 0 ; i < screen.length; ++i) {
@@ -63,38 +64,19 @@ namespace html
               }
             }
 
-            // window.winie = winie;
-            window.drawScreen = drawScreen;
-            window.drawByte = drawByte;
-
-            drawScreen();
-
             function updateData() {
-              fetch("/data?name=power2").then(function (r) {
-                r.text().then(function (t) {
-                  document.getElementById("p2").innerHTML
-                    = Math.round(t) + " W";
-                });
+              fetch("/data").then(r => {
+                if (!r.ok)
+                  throw new Error("HTTP error " + r.status);
+                return r.json();
+              }).then(j => {
+                byId("p1").innerHTML = -Math.round(j.power1)
+                  + " W";
+                byId("p2").innerHTML = Math.round(j.power2)
+                  + " W";
+                byId("ptot").innerHTML = Math.round(j.power2
+                  - j.power1) + " W";
               });
-              fetch("/data?name=power1").then(function (r) {
-                r.text().then(function (t) {
-                  document.getElementById("p1").innerHTML =
-                    -Math.round(t) + " W";
-                });
-              });
-
-              window.loadBinaryResource = function (url) {
-                const req = new XMLHttpRequest();
-                req.open("GET", url, false);
-                req.overrideMimeType("text/plain; "
-                  + "charset=x-user-defined");
-                req.send(null);
-                return req.status === 200
-                  ? req.responseText : "";
-              }
-
-              screen = loadBinaryResource("/data?name=screen");
-              // drawScreen();    
             }
 
             setInterval(updateData, 1000);
@@ -106,7 +88,6 @@ namespace html
     <body>
       <h1>Routeur solaire RBR Magnac</h1>
       <menu>
-        <li><a href="/">Moniteur</a></li>
         <li><a href="/webserial">Web serial</a></li>
       </menu>)%";
 
@@ -116,7 +97,8 @@ namespace html
 
   constexpr char index[] PROGMEM = R"%(
       <ul class="data">
-        <li>Consommation totale : <b id="p2"></b></li>
+        <li>Consommation totale : <b id="ptot"></b></li>
+        <li>Consommation effective : <b id="p2"></b></li>
         <li>Consommation du chauffe-eau : <b id="p1"></b></li>
       </ul>
       <canvas id="screen">Loading screen...</canvas>

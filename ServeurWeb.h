@@ -4,8 +4,8 @@
 #define SERVEURWEB_H
 
 #include <ESPAsyncWebServer.h>
-// #include <ArduinoJson.h>
-// #include <Base64.h>
+#include <ArduinoJson.h>
+#include <Base64.h>
 #include "Ecran.h"
 #include "Watts.h"
 #include "html/index.h"
@@ -13,6 +13,7 @@
 
 namespace ServeurWeb
 {
+  using std::size_t;
   using Res = AsyncWebServerResponse;
   using Req = AsyncWebServerRequest;
   using Rst = AsyncResponseStream;
@@ -116,18 +117,32 @@ namespace ServeurWeb
       // }
     // });
     
-    // server.on("/data", HTTP_GET, [](Req* req)
-    // {
-      // Rst* res = req->beginResponseStream("application/json");
-      // DynamicJsonBuffer jsonBuffer;
-      // JsonObject& root = jsonBuffer.createObject();
-      // root["heap"] = ESP.getFreeHeap();
-      // root["ssid"] = WiFi.SSID();
-      // root["power1"] = Watts::power1;
-      // root["power2"] = Watts::power2;
-      // root.printTo(*res);
-      // req->send(res);
-    // });
+    server.on("/data", HTTP_GET, [](Req* req)
+    {
+      weblog("Requesting /data");
+
+      Rst* res = req->beginResponseStream("application/json");
+      // constexpr auto screen_len = Ecran::screen_w * Ecran::screen_h;
+      // constexpr auto screen_len64 = 1392;
+      // char screen_buf64[screen_len64];
+      // Base64.encode(screen_buf64,
+        // (char*)Ecran::screen.getBufferPtr(), screen_len);
+
+      DynamicJsonBuffer jsonBuffer;
+      JsonObject& root = jsonBuffer.createObject();
+      root["heap"]     = ESP.getFreeHeap();
+      root["ssid"]     = WiFi.SSID();
+      root["power1"]   = Watts::power1;
+      root["current1"] = Watts::current1;
+      root["voltage1"] = Watts::voltage1;
+      root["power2"]   = Watts::power2;
+      root["current2"] = Watts::current2;
+      root["voltage2"] = Watts::voltage2;
+      root["freq"]     = Watts::frequency;
+      // root["screen64"] = screen_buf64;
+      root.printTo(*res);
+      req->send(res);
+    });
 
     weblog("Server begin");
     server.begin();
