@@ -13,10 +13,16 @@ namespace Heure
   // NTPClient timeClient(WiFiUDP(), "time.google.com", 7200, update_interval);
   WiFiUDP udp;
   NTPClient time_client(udp,
-      "time.google.com",
-      time_offset, // décalage horaire UTC en secondes
-      static_cast<unsigned long>(-1)); // pas d'update auto
-      // update_interval); // pas d'update auto
+    "time.google.com",
+    time_offset, // décalage horaire UTC en secondes
+    static_cast<unsigned long>(-1)); // pas d'update auto
+    // update_interval); // pas d'update auto
+
+  int getTimeHM()
+  {
+    return 100 * time_client.getHours()
+      + time_client.getMinutes();
+  }
 
   void taskUpdate(void*)
   {

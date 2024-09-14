@@ -70,12 +70,13 @@ namespace html
                   throw new Error("HTTP error " + r.status);
                 return r.json();
               }).then(j => {
-                byId("p1").innerHTML = -Math.round(j.power1)
-                  + " W";
-                byId("p2").innerHTML = Math.round(j.power2)
-                  + " W";
-                byId("ptot").innerHTML = Math.round(j.power2
-                  - j.power1) + " W";
+                byId("p1").innerHTML =
+                  -Math.round(j.watts.power1) + " W";
+                byId("p2").innerHTML =
+                  Math.round(j.watts.power2) + " W";
+                byId("ptot").innerHTML =
+                  Math.round(j.watts.power2
+                    - j.watts.power1) + " W";
               });
             }
 

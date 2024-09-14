@@ -47,7 +47,7 @@ comprend :
 
 * |ss| Utiliser une seule requête JSON pour récupérer
   les données plutôt que plusieurs text/plain. |se|
-* [EN COURS]Serveur web pour tracer les graphes de consommation etc ;
+* [EN COURS] Serveur web pour tracer les graphes de consommation etc ;
   data.
 * Switch to cpp/h implementation.
 * gestion du ventilateur du thyristor (peut-être ; j'ai
@@ -118,7 +118,7 @@ Todo
 Can I help?
 ***********
 
-As I mentionned before, please take a loof at my
+As I mentionned before, please take a look at my
 `Ko-Fi page <https://ko-fi.com/eprivat/goal?g=0>`_, and
 consider tipping if you can afford it, that would help
 enormously.

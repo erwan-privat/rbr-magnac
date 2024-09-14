@@ -7,7 +7,9 @@
 #include <ArduinoJson.h>
 #include <Base64.h>
 #include "Ecran.h"
+#include "Heure.h"
 #include "Watts.h"
+#include "Data.h"
 #include "html/index.h"
 #include "html/favicon.h"
 
@@ -42,7 +44,7 @@ namespace ServeurWeb
   {
     server.on("/", HTTP_GET, [](Req* req)
     {
-      weblog("Requesting /");
+      // weblog("Requesting /");
       // String tpl(html::index);
       // process(tpl);
 
@@ -56,7 +58,7 @@ namespace ServeurWeb
 
     server.on("/favicon.ico", HTTP_GET, [](Req* req)
     {
-      weblog("Requesting /favicon.ico");
+      // weblog("Requesting /favicon.ico");
       Res* response = req->beginResponse_P(200,
         "image/x-icon",
         html::favicon_ico, html::favicon_ico_len);
@@ -119,7 +121,7 @@ namespace ServeurWeb
     
     server.on("/data", HTTP_GET, [](Req* req)
     {
-      weblog("Requesting /data");
+      // weblog("Requesting /data");
 
       Rst* res = req->beginResponseStream("application/json");
       // constexpr auto screen_len = Ecran::screen_w * Ecran::screen_h;
@@ -131,20 +133,39 @@ namespace ServeurWeb
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["heap"]     = ESP.getFreeHeap();
-      root["ssid"]     = WiFi.SSID();
-      root["power1"]   = Watts::power1;
-      root["current1"] = Watts::current1;
-      root["voltage1"] = Watts::voltage1;
-      root["power2"]   = Watts::power2;
-      root["current2"] = Watts::current2;
-      root["voltage2"] = Watts::voltage2;
-      root["freq"]     = Watts::frequency;
-      // root["screen64"] = screen_buf64;
+      // root["ssid"]     = WiFi.SSID();
+
+      auto& watts = root.createNestedObject("watts");
+      watts["power1"]   = Watts::power1;
+      watts["current1"] = Watts::current1;
+      watts["voltage1"] = Watts::voltage1;
+      watts["power2"]   = Watts::power2;
+      watts["current2"] = Watts::current2;
+      watts["voltage2"] = Watts::voltage2;
+      watts["freq"]     = Watts::frequency;
+
+      auto& dimmer = root.createNestedObject("dimmer");
+      dimmer["force_off"] = Dimmer::force_off;
+      dimmer["force_on"]  = Dimmer::force_on;
+      dimmer["time"]      = Heure::getTimeHM();
+      dimmer["start_hc"]  = Dimmer::start_hc;
+      dimmer["end_hc"]    = Dimmer::end_hc;
+
+      auto& data = root.createNestedObject("data");
+      data["p1"] = Data::p1_buf;
+      data["p2"] = Data::p2_buf;
+      data["i1"] = Data::p1_ix;
+      data["i2"] = Data::p2_ix;
+
+      auto& screen = root.createNestedObject("sreen");
+      // screen["raw"] = Ecran::screen.getBufferPtr();
+      screen["raw"] = "TODO";
+
       root.printTo(*res);
       req->send(res);
     });
 
-    weblog("Server begin");
+    // weblog("Server begin");
     server.begin();
   }
 }

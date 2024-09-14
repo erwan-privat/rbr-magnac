@@ -12,6 +12,7 @@
 #include "Watts.h"
 #include "Dimmer.h"
 #include "ServeurWeb.h"
+#include "Data.h"
   
 void setup()
 {
@@ -32,6 +33,7 @@ void setup()
   // x.x affiché sur l'écran
   WiFiSerial::begin();
   ServeurWeb::begin();
+  Data::begin();
   Heure::begin();
   Watts::begin();
   Dimmer::begin();

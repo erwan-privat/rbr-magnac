@@ -93,9 +93,11 @@ namespace Dimmer
       float amount = pavailable * max_value / max_chofo;
       value = redress(amount);
 
-      int h = Heure::time_client.getHours();
-      h = h * 100 + Heure::time_client.getMinutes();
+      // int h = Heure::time_client.getHours();
+      // h = h * 100 + Heure::time_client.getMinutes();
       
+      const auto h = Heure::getTimeHM();
+
       force_on = h >= start_hc || h < end_hc;
 
       // weblogf("tot = %f W, dispo = %f W, value = %d, "
