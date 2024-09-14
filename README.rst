@@ -3,6 +3,8 @@ English below.
 FRANÇAIS
 =========
 
+Vous voulez me filer un coup de pouce ? J'ai une `page Ko-Fi <https://ko-fi.com/eprivat/goal?g=0>`_. 
+
 Lisez-moi
 ---------
 
@@ -47,8 +49,18 @@ Voir le fichier LICENSE. En gros, vous faites ce que vous
 voulez de ce logiciel tant que vous ne vous en servez-pas
 dans un cadre capitaliste.
 
+Aide
+****
+
+Comme énoncé plus haut, si vous pouviez contribuer sur ma
+`page Ko-Fi <https://ko-fi.com/eprivat/goal?g=0>`_ ça
+m'aiderait énormément, si vous en avez les moyens.
+
 ENGLISH
 =======
+
+Want to help? Please check my `Ko-Fi page
+<https://ko-fi.com/eprivat/goal?g=0>`_.
 
 Readme
 ------
@@ -87,6 +99,14 @@ Todo
 * Maybe: fan control. Not needed right now, the maximum
   temperature I measured on the thyristor (equipped with a
   big radiator) is 28 °C (82 °F) while delivering 2400 W.
+
+Can I help?
+***********
+
+As I mentionned before, please take a loof at my
+`Ko-Fi page <https://ko-fi.com/eprivat/goal?g=0>`_, and
+consider tipping if you can afford it, that would help
+enormously.
 
 License
 -------
