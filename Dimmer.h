@@ -96,13 +96,14 @@ namespace Dimmer
       int h = Heure::time_client.getHours();
       h = h * 100 + Heure::time_client.getMinutes();
       
-      force_on = h > start_hc || h < end_hc;
+      force_on = h >= start_hc || h < end_hc;
 
-      weblogf("tot = %f W, dispo = %f W, value = %d, "
-              "sending_th = %f, sending = %f W\n",
-          ptot, pavailable, value,
-          max_chofo * (float)value / max_value,
-          -Watts::power1);
+      // weblogf("tot = %f W, dispo = %f W, value = %d, "
+              // "sending_th = %f, sending = %f W\n",
+          // ptot, pavailable, value,
+          // max_chofo * (float)value / max_value,
+          // -Watts::power1);
+
       // weblogf("> value = %d, redressed = %d\n",
           // value, redress(amount));
       // weblogf("H = %d, force_on = %d\n", h, force_on);

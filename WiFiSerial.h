@@ -34,6 +34,7 @@ namespace WiFiSerial
   }
 }
 
+#define weblog(f) WebSerial.print(F("[EP] " f "\n"))
 #define weblogf(f, ...) WebSerial.printf(F("[EP] " f), __VA_ARGS__)
 
 #endif

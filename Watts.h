@@ -48,14 +48,14 @@ namespace Watts
     eplogf("task watts %u from 3000\r\n",
       uxTaskGetStackHighWaterMark(nullptr));
 
-    weblogf("%s\n", "----------------------------");
-    weblogf("%f V, %f A, %f W\n", voltage1, current1, power1);
-    weblogf("%f V, %f A, %f W\n", voltage2, current2, power2);
-    // weblogf("%d Hz\n", frequency);
-
-    weblogf("%s\n", "----------------------------");
-    weblogf("task watts %u from 3000\n",
-      uxTaskGetStackHighWaterMark(nullptr));
+    // weblogf("%s\n", "----------------------------");
+    // weblogf("%f V, %f A, %f W\n", voltage1, current1, power1);
+    // weblogf("%f V, %f A, %f W\n", voltage2, current2, power2);
+    // // weblogf("%d Hz\n", frequency);
+// 
+    // weblogf("%s\n", "----------------------------");
+    // weblogf("task watts %u from 3000\n",
+      // uxTaskGetStackHighWaterMark(nullptr));
   }
 
   uint32_t readInt(int pos)

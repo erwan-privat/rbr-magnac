@@ -1,8 +1,9 @@
+ArduinoJson@5.13.5
 ArduinoSTL
 AsyncTCP
+Base64
 Dimmable Light for Arduino
 ESPAsyncWebServer
 NTPClient
-# Tuya_WiFi_MCU_SDK
 U8g2
-WiFiSerial
+WebSerialLite
