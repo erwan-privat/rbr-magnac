@@ -1,4 +1,5 @@
-#include <WebSerialLite.h>
+// #include <WebSerialLite.h>
+#include "WiFiSerial.h"
 
 #include "TestCpp.h"
 #include "TestCpp2.h"
