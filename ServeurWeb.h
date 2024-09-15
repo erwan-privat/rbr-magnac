@@ -152,10 +152,22 @@ namespace ServeurWeb
       dimmer["end_hc"]    = Dimmer::end_hc;
 
       auto& data = root.createNestedObject("data");
-      data["p1"] = Data::p1_buf;
-      data["p2"] = Data::p2_buf;
-      data["i1"] = Data::p1_ix;
-      data["i2"] = Data::p2_ix;
+      data["res2"]   = Data::res2;
+      data["res180"] = Data::res180;
+      auto& arr_p1_2 = data.createNestedArray("p1_2");
+      for (auto f : Data::buf_p1_2)
+        arr_p1_2.add(f);
+      auto& arr_p2_2 = data.createNestedArray("p2_2");
+      for (auto f : Data::buf_p2_2)
+        arr_p2_2.add(f);
+      data["ix2"] = Data::ix2;
+      auto& arr_p1_180 = data.createNestedArray("p1_180");
+      for (auto f : Data::buf_p1_180)
+        arr_p1_180.add(f);
+      auto& arr_p2_180 = data.createNestedArray("p2_180");
+      for (auto f : Data::buf_p2_180)
+        arr_p2_180.add(f);
+      data["ix180"] = Data::ix180;
 
       auto& screen = root.createNestedObject("sreen");
       // screen["raw"] = Ecran::screen.getBufferPtr();

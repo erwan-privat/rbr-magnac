@@ -93,12 +93,10 @@ namespace Dimmer
       float amount = pavailable * max_value / max_chofo;
       value = redress(amount);
 
-      // int h = Heure::time_client.getHours();
-      // h = h * 100 + Heure::time_client.getMinutes();
-      
       const auto h = Heure::getTimeHM();
-
       force_on = h >= start_hc || h < end_hc;
+
+      delay(2000);
 
       // weblogf("tot = %f W, dispo = %f W, value = %d, "
               // "sending_th = %f, sending = %f W\n",
@@ -111,8 +109,6 @@ namespace Dimmer
       // weblogf("H = %d, force_on = %d\n", h, force_on);
       // for (int i = 0 ; i < 256 ; i += 10)
         // weblogf("%d -> %d\n", i, redress(i));
-
-      delay(2000);
     }
   }
 
