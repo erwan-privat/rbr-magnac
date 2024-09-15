@@ -112,11 +112,13 @@ namespace html
                 {
                   label: "Consommation (W)",
                   data: rotateArray(j.data.p2_2, j.data.ix2),
+                  pointStyle: false,
                 },
                 {
                   label: "Chauffe-eau (W)",
                   data: rotateArray(j.data.p1_2,
                     j.data.ix2).map(x => -x),
+                  pointStyle: false,
                 }]
               };
               chtconso2.update("none");
