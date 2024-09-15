@@ -36,7 +36,7 @@ comprend :
   sonde JSY-MK-194 ;
 * graphe des dernières 15 minutes et 24 heures de la conso
   générale et de l'appareil avec `Chart.js
-  <https://charjs.org>`_;
+  <https://charjs.org>`_ ;
 * code découpé en tâches permettant une bonne séparation des
   différents modules basé sur le principe de responsabilité
   unique (*sole responsability principle*, même si j'avoue
