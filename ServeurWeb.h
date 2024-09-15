@@ -68,6 +68,7 @@ namespace ServeurWeb
       JsonObject& root = jsonBuffer.createObject();
       root["last_boot"] = Data::last_boot;
       root["heap"] = ESP.getFreeHeap();
+      root["server_heap"] = uxTaskGetStackHighWaterMark(nullptr);
 
       auto& watts = root.createNestedObject("watts");
       watts["power1"] = Watts::power1;

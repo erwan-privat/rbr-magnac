@@ -67,7 +67,6 @@ namespace Data
       3000, nullptr, 3, nullptr);
     xTaskCreate(taskData180, "task data180",
       3000, nullptr, 3, nullptr);
-
   }
 }
 
