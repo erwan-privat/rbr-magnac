@@ -49,7 +49,7 @@ comprend :
   les données plutôt que plusieurs text/plain. |se|
 * |ss| Serveur web pour tracer les graphes de consommation etc ;
   data. |se|
-* [EN COURS] implementation cpp/h.
+* [EN COURS] Implementation cpp/h.
 * Style de la page.
 * gestion du ventilateur du thyristor (peut-être ; j'ai
   mesuré au maximum une température de 28 °C sur le gros
