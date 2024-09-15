@@ -6,8 +6,6 @@
 #include <ESPAsyncWebServer.h>
 #include <ArduinoJson.h>
 #include <Base64.h>
-#include "Ecran.h"
-#include "Heure.h"
 #include "Watts.h"
 #include "Data.h"
 #include "html/index.h"
@@ -58,121 +56,55 @@ namespace ServeurWeb
 
     server.on("/favicon.ico", HTTP_GET, [](Req* req)
     {
-      // weblog("Requesting /favicon.ico");
       Res* response = req->beginResponse_P(200,
         "image/x-icon",
         html::favicon_ico, html::favicon_ico_len);
       req->send(response);
-      // req->send_P(200, "image/x-icon", html::favicon_ico,
-        // html::favicon_ico_len);
     });
 
-    // server.on("/data", HTTP_GET, [](Req* req)
-    // {
-      // constexpr auto paramName = "name";
-      // char buffer[32];
-// 
-      // if (req->hasParam(paramName))
-      // {
-        // Prm* parameter = req->getParam(paramName);
-        // const char* p = parameter->value().c_str();
-// 
-        // if (!strcmp(p, "power1"))
-        // {
-          // std::sprintf(buffer, "%f", Watts::power1);
-          // req->send(200, "text/plain", buffer);
-        // }
-        // else if (!strcmp(p, "power2"))
-        // {
-          // std::sprintf(buffer, "%f", Watts::power2);
-          // req->send(200, "text/plain", buffer);
-        // }
-        // else if (!strcmp(p, "screen"))
-        // {
-          // req->send("application/octet-stream",
-            // Ecran::screen_w * Ecran::screen_h / 8,
-            // [](uint8_t* buf, size_t maxlen, size_t index)
-              // -> size_t
-            // {
-              // memcpy(buf, Ecran::screen.getBufferPtr(),
-                // maxlen);
-              // return maxlen;
-            // });
-        // }
-        // else if (!strcmp(p, "winie"))
-        // {
-          // // const byte* screen_buf = Ecran::screen.getBufferPtr();
-          // // Res* response = req->beginResponse(200,
-            // // "application/octet-stream",
-            // // (byte*)screen_buf,
-            // // Ecran::screen_w * Ecran::screen_h / 8);
-          // // req->send(response);
-          // req->send("application/octet-stream",
-            // Ecran::screen_w * Ecran::screen_h / 8,
-            // [](uint8_t* buf, size_t maxlen, size_t index)
-              // -> size_t
-            // {
-              // memcpy(buf, bmp_winie, maxlen);
-              // return maxlen;
-            // });
-        // }
-      // }
-    // });
-    
     server.on("/data", HTTP_GET, [](Req* req)
     {
-      // weblog("Requesting /data");
-
-      Rst* res = req->beginResponseStream("application/json");
-      // constexpr auto screen_len = Ecran::screen_w * Ecran::screen_h;
-      // constexpr auto screen_len64 = 1392;
-      // char screen_buf64[screen_len64];
-      // Base64.encode(screen_buf64,
-        // (char*)Ecran::screen.getBufferPtr(), screen_len);
-
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
-      root["heap"]     = ESP.getFreeHeap();
-      // root["ssid"]     = WiFi.SSID();
+      root["last_boot"] = Data::last_boot;
+      root["heap"] = ESP.getFreeHeap();
 
       auto& watts = root.createNestedObject("watts");
-      watts["power1"]   = Watts::power1;
-      watts["current1"] = Watts::current1;
-      watts["voltage1"] = Watts::voltage1;
-      watts["power2"]   = Watts::power2;
-      watts["current2"] = Watts::current2;
-      watts["voltage2"] = Watts::voltage2;
-      watts["freq"]     = Watts::frequency;
+      watts["power1"] = Watts::power1;
+      watts["power2"] = Watts::power2;
+      // watts["current1"] = Watts::current1;
+      // watts["voltage1"] = Watts::voltage1;
+      // watts["current2"] = Watts::current2;
+      // watts["voltage2"] = Watts::voltage2;
+      // watts["freq"]     = Watts::frequency;
 
       auto& dimmer = root.createNestedObject("dimmer");
       dimmer["force_off"] = Dimmer::force_off;
       dimmer["force_on"]  = Dimmer::force_on;
-      dimmer["time"]      = Heure::getTimeHM();
       dimmer["start_hc"]  = Dimmer::start_hc;
       dimmer["end_hc"]    = Dimmer::end_hc;
+      dimmer["time"]      = Heure::getTimeHM();
 
       auto& data = root.createNestedObject("data");
       data["res2"]   = Data::res2;
-      data["res180"] = Data::res180;
+      data["ix2"] = Data::ix2;
       auto& arr_p1_2 = data.createNestedArray("p1_2");
       for (auto f : Data::buf_p1_2)
         arr_p1_2.add(f);
       auto& arr_p2_2 = data.createNestedArray("p2_2");
       for (auto f : Data::buf_p2_2)
         arr_p2_2.add(f);
-      data["ix2"] = Data::ix2;
+
+      data["res180"] = Data::res180;
+      data["ix180"] = Data::ix180;
       auto& arr_p1_180 = data.createNestedArray("p1_180");
       for (auto f : Data::buf_p1_180)
         arr_p1_180.add(f);
       auto& arr_p2_180 = data.createNestedArray("p2_180");
       for (auto f : Data::buf_p2_180)
         arr_p2_180.add(f);
-      data["ix180"] = Data::ix180;
 
-      auto& screen = root.createNestedObject("sreen");
-      // screen["raw"] = Ecran::screen.getBufferPtr();
-      screen["raw"] = "TODO";
-
+      Rst* res = req->beginResponseStream("application/json");
       root.printTo(*res);
       req->send(res);
     });

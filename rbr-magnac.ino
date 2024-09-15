@@ -29,12 +29,12 @@ void setup()
   // Sinon ça fout les miquettes et le Winie clignotte.
   WiFiMagnac::begin();
   Ota::begin();
+  Heure::begin();
   // Accès au Serial sur http://192.168.x.x/webserial
   // x.x affiché sur l'écran
   WiFiSerial::begin();
   ServeurWeb::begin();
   Data::begin();
-  Heure::begin();
   Watts::begin();
   Dimmer::begin();
 

@@ -39,14 +39,64 @@ namespace html
 
         document.addEventListener("DOMContentLoaded", () => {
           
-          const chtconso2 = new Chart(byId("pltconso2"), {
-            type: "line",
-            data: []
-          });
-          
           const chtconso180 = new Chart(byId("pltconso180"), {
             type: "line",
-            data: []
+            data: [],
+            options: {
+              respsonsive: true,
+              plugins: {
+                title: {
+                  text: "24 heures",
+                  display: true,
+                },
+                decimation: {
+                  enabled: false,
+                  algorithm: 'min-max',
+                },
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: "Heure",
+                  },
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Puissance (W)'
+                  }
+                },
+              },
+            },
+          });
+          
+          const chtconso2 = new Chart(byId("pltconso2"), {
+            type: "line",
+            data: [],
+            options: {
+              respsonsive: true,
+              plugins: {
+                title: {
+                  text: "15 minutes",
+                  display: true,
+                },
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: "Heure",
+                  }
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Puissance (W)'
+                  }
+                },
+              },
+            },
           });
 
           const canvas = byId("screen");
@@ -97,6 +147,11 @@ namespace html
               return r.json();
             }).then(j => {
               window.Magnac = j;
+              // let d = new Date(0);
+              // d.setSeconds(j.last_boot);
+              byId("last_boot").innerHTML =
+                new Date(j.last_boot * 1000)
+                  .toLocaleString("fr-FR");
               byId("p1").innerHTML =
                 -Math.round(j.watts.power1) + " W";
               byId("p2").innerHTML =
@@ -123,7 +178,7 @@ namespace html
 
               chtconso180.data = {
                 labels: hoursLabels(j.data.p1_180.length,
-                  j.data.res180),
+                  j.data.res180).map(t => t.slice(0, 5)),
                 datasets: [
                 {
                   label: "Consommation (W)",
@@ -158,6 +213,7 @@ namespace html
 
   constexpr char index[] PROGMEM = R"%(
       <ul class="data">
+        <li>Dernier reboot : <b id="last_boot"></b></li>
         <li>Consommation totale : <b id="ptot"></b></li>
         <li>Consommation effective : <b id="p2"></b></li>
         <li>Consommation du chauffe-eau : <b id="p1"></b></li>
@@ -165,7 +221,7 @@ namespace html
       <div><canvas id="screen">Loading screen...</canvas></div>
       <div><canvas id="pltconso180"></canvas></div>
       <div><canvas id="pltconso2"></canvas></div>
-      <div id="progress-ota"></div>
+      <div><progress id="progress-ota"></progress></div>
       )%";
 }
 

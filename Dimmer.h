@@ -20,7 +20,7 @@ namespace Dimmer
 
   constexpr byte  max_value = 255;
 
-  bool force_off = false;
+  bool force_off = true;
   bool force_on  = false;
   bool ventil_on = false;
 
@@ -123,6 +123,8 @@ namespace Dimmer
 
     xTaskCreate(taskChofo, "task chauffe-eau", 
       3000, nullptr, 7, nullptr);
+
+    force_off = false;
   }
 }
 
