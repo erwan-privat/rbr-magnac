@@ -13,6 +13,8 @@
 #include "Dimmer.h"
 #include "ServeurWeb.h"
 #include "Data.h"
+
+#include "TestCpp.h"
   
 void setup()
 {
@@ -40,6 +42,8 @@ void setup()
 
   eplog("Herbert !");
   weblogf("%s\n", "Herbert !");
+
+  TestCpp::begin();
 }
 
 void loop()

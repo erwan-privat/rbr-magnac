@@ -38,6 +38,7 @@ namespace Data
     }
   }
 
+  // FIXME moyenne des points par 15 min ?
   void taskData180(void*)
   {
     for (;;)
