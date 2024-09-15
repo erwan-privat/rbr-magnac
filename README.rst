@@ -34,6 +34,9 @@ comprend :
   chauffe-eau n'est pas alimenté, ou, de la consommation
   réelle du chauffe-eau en cas de surplus, mesurée par une
   sonde JSY-MK-194 ;
+* graphe des dernières 15 minutes et 24 heures de la conso
+  générale et de l'appareil avec `Chart.js
+  <https://charjs.org>`_;
 * code découpé en tâches permettant une bonne séparation des
   différents modules basé sur le principe de responsabilité
   unique (*sole responsability principle*, même si j'avoue
@@ -97,6 +100,8 @@ overproduction to say a water-heater, including:
   household if not powering the water-heater, or the actual
   (as in measured by a JSY-MK-194) power taken by the
   water-heater;
+* Plot of the last 15 minutes and 24 hours of the total and
+  device consumption using `Chart.js <https://charjs.org>`_;
 * task oriented code allowing good isolation of code modules
   (sole responsability principle, could be better I admit)
   and using all cores of any FreeRTOS based device;
