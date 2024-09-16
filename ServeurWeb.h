@@ -38,6 +38,8 @@ namespace ServeurWeb
       // (const char*)Ecran::screen.getBufferPtr());
     // tpl.replace("$CONSO$", String(Watts::power2));
   // }
+  
+  
 
   void begin()
   {
@@ -65,6 +67,10 @@ namespace ServeurWeb
 
     server.on("/data", HTTP_GET, [](Req* req)
     {
+      // TODO separate differents data calls to reduce req
+      // time and please the watchdog.
+      unsigned start_json = esp_timer_get_time();
+
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["last_boot"] = Data::last_boot;
@@ -112,9 +118,19 @@ namespace ServeurWeb
       for (auto f : Data::buf_p2_180)
         arr_p2_180.add(f);
 
+      unsigned end_json = esp_timer_get_time();
+      weblogf("JSON time %u\n", (end_json - start_json) / 1000);
+
+      yield();
+
+      unsigned start_req = esp_timer_get_time();
+
       Rst* res = req->beginResponseStream("application/json");
       root.printTo(*res);
       req->send(res);
+
+      unsigned end_req = esp_timer_get_time();
+      weblogf("Req time %u\n", (end_req - start_req) / 1000);
     });
 
     // weblog("Server begin");
