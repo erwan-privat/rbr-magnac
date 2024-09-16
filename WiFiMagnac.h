@@ -37,12 +37,12 @@ namespace WiFiMagnac
       case ARDUINO_EVENT_WIFI_STA_GOT_IP:
         eplogf("Connected: %s\r\n",
             WiFi.localIP().toString().c_str());
-        Ecran::wifi_connected = true;
+        // Ecran::wifi_connected = true;
         break;
 
       case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
         eplog("WiFi disconnected.");
-        Ecran::wifi_connected = false;
+        // Ecran::wifi_connected = false;
         WiFi.reconnect();
         break;
 
@@ -55,7 +55,7 @@ namespace WiFiMagnac
   {
     for (;;)
     {
-      Ecran::wifi_rssi = WiFi.RSSI();
+      // Ecran::wifi_rssi = WiFi.RSSI();
       delay(2000);
     }
   }
