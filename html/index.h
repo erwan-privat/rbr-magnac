@@ -26,6 +26,7 @@ namespace html
           display: none;
         }
         #ota.enabled {
+          backdrop-filter: blur(5px);
           color: white;
           display: block;
           position: fixed;
@@ -182,11 +183,18 @@ namespace html
                 {
                   label: "Consommation (W)",
                   data: rotateArray(j.data.p2_2, j.data.ix2),
+                  // borderColor: '#22aa22',
+                  fill: {
+                    target: 'origin',
+                    above: "#ff000044",
+                    below: "#00ff0044",
+                  },
                 },
                 {
                   label: "Chauffe-eau (W)",
                   data: rotateArray(j.data.p1_2,
                     j.data.ix2).map(x => -x),
+                  // borderColor: '#aa2222',
                 }]
               };
               chtconso2.update("none");
@@ -199,11 +207,18 @@ namespace html
                   label: "Consommation (W)",
                   data: rotateArray(j.data.p2_180,
                     j.data.ix180),
+                  // borderColor: '#22aa22',
+                  fill: {
+                    target: 'origin',
+                    above: "#ff000044",
+                    below: "#00ff0044",
+                  },
                 },
                 {
                   label: "Chauffe-eau (W)",
                   data: rotateArray(j.data.p1_180,
                     j.data.ix180).map(x => -x),
+                  // borderColor: '#aa2222',
                 }]
               };
               chtconso180.update("none");
