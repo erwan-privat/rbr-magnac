@@ -4,6 +4,9 @@
 
 namespace WiFiMagnac
 {
+  // Must delcare/define
+  // constexpr char ssid[] = "xxxxxx";
+  // constexpr char pass[] = "yyyyyy";
   #include "WiFiCredentials.h"
 
   void onEvent(WiFiEvent_t event)
