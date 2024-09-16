@@ -8,6 +8,7 @@
 #include <Base64.h>
 #include "Watts.h"
 #include "Data.h"
+#include "Ecran.h"
 #include "html/index.h"
 #include "html/favicon.h"
 
@@ -68,7 +69,13 @@ namespace ServeurWeb
       JsonObject& root = jsonBuffer.createObject();
       root["last_boot"] = Data::last_boot;
       root["heap"] = ESP.getFreeHeap();
-      root["server_heap"] = uxTaskGetStackHighWaterMark(nullptr);
+      root["server_heap"] =
+        uxTaskGetStackHighWaterMark(nullptr);
+
+      auto& ota = root.createNestedObject("ota");
+      // FIXME Do not use Ecran.h, does not make sense
+      ota["updating"] = Ecran::ota_updating;
+      ota["progress"] = Ecran::ota_progress;
 
       auto& watts = root.createNestedObject("watts");
       watts["power1"] = Watts::power1;

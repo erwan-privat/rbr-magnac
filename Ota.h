@@ -35,7 +35,7 @@ namespace Ota
       .onProgress([](unsigned progress,
             unsigned total)
       {
-        int percentage = progress / (total / 100);
+        byte percentage = progress / (total / 100);
         eplogf("OTA progress: %u %%\r", percentage);
 
         Ecran::ota_progress = percentage;

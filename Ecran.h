@@ -39,7 +39,7 @@ namespace Ecran
   int  wifi_rssi      = 1;
   char heure[]        = "hh:mm:ss";
   bool ota_updating   = false;
-  int  ota_progress   = 0;
+  byte ota_progress   = 0;
   int  ota_error      = 666;
 
   int switch_watts = 0;

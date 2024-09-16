@@ -13,6 +13,7 @@ namespace html
   constexpr char header[] PROGMEM = R"%(<!DOCTYPE html>
   <html>
     <head>
+      <meta charset="utf-8" />
       <style>
         body {
           width: 80%;
@@ -20,6 +21,28 @@ namespace html
         }
         #screen {
           border: 1px solid grey;
+        }
+        #ota.disabled {
+          display: none;
+        }
+        #ota.enabled {
+          display: block;
+          position: fixed;
+          top: 20px;
+          bottom: 20px;
+          left: 20px;
+          right: 20px;
+          z-index: 99999;
+          background: #000000dd;
+        }
+        #ota_text {
+          display: block;
+        }
+        #ota_progress {
+          width: calc(100% - 40px);
+          margin: 20px;
+          heigth: 20px;
+          border: 1px solid #ededf0;
         }
       </style>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -36,6 +59,8 @@ namespace html
         "use strict";
         const scale = 2;
         const byId = document.getElementById.bind(document);
+        
+        let ota_refresh = false;
 
         document.addEventListener("DOMContentLoaded", () => {
           
@@ -44,23 +69,7 @@ namespace html
             data: [],
             options: {
               respsonsive: true,
-              plugins: {
-                title: {
-                  text: "24 heures",
-                  display: true,
-                },
-                decimation: {
-                  enabled: false,
-                  algorithm: 'min-max',
-                },
-              },
               scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: "Heure",
-                  },
-                },
                 y: {
                   title: {
                     display: true,
@@ -75,20 +84,7 @@ namespace html
             type: "line",
             data: [],
             options: {
-              respsonsive: true,
-              plugins: {
-                title: {
-                  text: "15 minutes",
-                  display: true,
-                },
-              },
               scales: {
-                x: {
-                  title: {
-                    display: true,
-                    text: "Heure",
-                  }
-                },
                 y: {
                   title: {
                     display: true,
@@ -99,30 +95,29 @@ namespace html
             },
           });
 
-          const canvas = byId("screen");
-          const ctx = canvas.getContext("2d");
-          canvas.width = 128 * scale;
-          canvas.height = 64 * scale;
+          // const canvas = byId("screen");
+          // const ctx = canvas.getContext("2d");
+          // canvas.width = 128 * scale;
+          // canvas.height = 64 * scale;
+          // let screen = [];
 
-          let screen = [];
+          // function drawByte(x, y, n) {
+            // for (var i = 0; i < 8; ++i) {
+              // ctx.fillStyle = (n & (1 << i)) > 0
+                // ? "#00a5ff" : "black";
+              // ctx.fillRect((x + i) * scale, y * scale,
+                // scale, scale);
+            // }
+          // }
 
-          function drawByte(x, y, n) {
-            for (var i = 0; i < 8; ++i) {
-              ctx.fillStyle = (n & (1 << i)) > 0
-                ? "#00a5ff" : "black";
-              ctx.fillRect((x + i) * scale, y * scale,
-                scale, scale);
-            }
-          }
-
-          function drawScreen() {
-            for (let i = 0 ; i < screen.length; ++i) {
-              drawByte(
-                i * 8 % 128,
-                Math.floor(i * 8 / 128),
-                (screen[i]));
-            }
-          }
+          // function drawScreen() {
+            // for (let i = 0 ; i < screen.length; ++i) {
+              // drawByte(
+                // i * 8 % 128,
+                // Math.floor(i * 8 / 128),
+                // (screen[i]));
+            // }
+          // }
 
           function rotateArray(arr, ix) {
             const left = arr.slice(0, ix);
@@ -147,15 +142,28 @@ namespace html
               return r.json();
             }).then(j => {
               window.Magnac = j;
-              // let d = new Date(0);
-              // d.setSeconds(j.last_boot);
               byId("last_boot").innerHTML =
                 new Date(j.last_boot * 1000)
                   .toLocaleString("fr-FR");
+
+              byId("ota_progress").setAttribute("value",
+                j.ota.progress);
+              byId("ota_text").textContent =
+                j.ota.progress + " %";
+              if (j.ota.updating) {
+                ota_refresh = true;
+                byId("ota").toggleClass("disabled");
+                byId("ota").toggleClass("enabled");
+              }
+              else if (ota_refresh)
+                window.location.reload();
+
               byId("p1").innerHTML =
                 -Math.round(j.watts.power1) + " W";
+
               byId("p2").innerHTML =
                 Math.round(j.watts.power2) + " W";
+
               byId("ptot").innerHTML =
                 Math.round(j.watts.power2
                   - j.watts.power1) + " W";
@@ -173,6 +181,9 @@ namespace html
                   data: rotateArray(j.data.p1_2,
                     j.data.ix2).map(x => -x),
                 }]
+              };
+              chtconso2.scales.x = {
+                max: chtconso2.data.labels[-1];
               };
               chtconso2.update("none");
 
@@ -212,16 +223,30 @@ namespace html
   </html>)%";
 
   constexpr char index[] PROGMEM = R"%(
+      <h2>Menu</h2>
       <ul class="data">
         <li>Dernier reboot : <b id="last_boot"></b></li>
         <li>Consommation totale : <b id="ptot"></b></li>
         <li>Consommation effective : <b id="p2"></b></li>
-        <li>Consommation du chauffe-eau : <b id="p1"></b></li>
+        <li>Consommation du chauffe-eau :
+          <b id="p1"></b>
+        </li>
       </ul>
-      <div><canvas id="screen">Loading screen...</canvas></div>
+      <h2>Consommation</h2>
+      <!-- <div><canvas id="screen">Loading screen...
+      </canvas></div> -->
+      <h3>Conso sur 24 heures</h3>
       <div><canvas id="pltconso180"></canvas></div>
+      <h3>Conso sur 15 minutes</h3>
       <div><canvas id="pltconso2"></canvas></div>
-      <div><progress id="progress-ota"></progress></div>
+
+      <div id="ota" class="disabled">
+      <h2>Mise à jour OTA</h2>
+        <b id="ota_text">Pas de mise à jour en cours.</b>
+        <progress id="ota_progress" max="100">
+          Pas de mise à jour en cours.
+        </progress>
+      </div>
       )%";
 }
 
