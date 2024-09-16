@@ -4,12 +4,12 @@
 #define ECRAN_H
 
 #include <U8g2lib.h>
-#include <WiFi.h>
 #include "pins.h"
 #include "images.h"
-#include "Watts.h"
-#include "Heure.h"
 #include "Dimmer.h"
+#include "Heure.h"
+#include "Watts.h"
+#include "WiFiMagnac.h"
 
 namespace Ecran
 {

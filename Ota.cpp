@@ -1,15 +1,23 @@
-// eprivat 2024-08-14
-
-#ifndef OTA_H
-#define OTA_H
-
 #include <ArduinoOTA.h>
-#include "Ecran.h"
-#include "Dimmer.h"
+#include "Ota.h"
+#include "EpUtil.h"
 
 namespace Ota
 {
-  void taskUpdate(void* argv)
+  bool updating = false;
+  byte progress = 0;
+
+  bool isUpdating()
+  {
+    return updating;
+  }
+
+  byte getProgress()
+  {
+    return progress;
+  }
+
+  void taskUpdate(void*)
   {
     for (;;)
     {
@@ -28,23 +36,18 @@ namespace Ota
       .onStart([]()
       {
         eplog("Mise à jour en cours...");
-        Ecran::ota_progress = 0;
-        Ecran::ota_updating = true;
-        Dimmer::force_off = true;
+        progress = 0;
+        updating = true;
       })
-      .onProgress([](unsigned progress,
-            unsigned total)
+      .onProgress([](unsigned p,unsigned total)
       {
-        int percentage = progress / (total / 100);
-        eplogf("OTA progress: %u %%\r", percentage);
-
-        Ecran::ota_progress = percentage;
+        progress = p / (total / 100);
+        eplogf("OTA progress: %u %%\r", progress);
       })
       .onEnd([]()
       {
         eplog("Mise à jour terminée.");
-        // Ecran::ota_updating = false;
-        // Dimmer::force_off = false;
+        updating = false;
       })
       .onError([](ota_error_t error)
       {
@@ -69,9 +72,8 @@ namespace Ota
         {
           eplog("End Failed");
         }
-        Ecran::ota_error = error;
-        Ecran::ota_updating = false;
-        Dimmer::force_off = false;
+
+        updating = false;
       });
 
 
@@ -84,7 +86,4 @@ namespace Ota
     xTaskCreate(taskUpdate, "task OTA",
       3000, nullptr, 4, nullptr);
   }
-
 }
-
-#endif

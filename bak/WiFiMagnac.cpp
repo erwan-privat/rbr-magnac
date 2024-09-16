@@ -1,14 +1,10 @@
-// eprivat 2024-08-14
-
-#ifndef WIFIMAGNAC_H
-#define WIFIMAGNAC_H
-
 #include <WiFi.h>
+#include "WiFiMagnac.h"
 #include "EpUtil.h"
 
 namespace WiFiMagnac
 {
-#include "WiFiCredentials.h"
+  #include "WiFiCredentials.h"
 
   void onEvent(WiFiEvent_t event)
   {
@@ -71,7 +67,4 @@ namespace WiFiMagnac
     xTaskCreate(taskRssi, "task RSSI",
       3000, nullptr, 1, nullptr);
   }
-
 }
-
-#endif

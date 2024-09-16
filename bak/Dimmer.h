@@ -10,6 +10,7 @@
 #include "Watts.h"
 #include "Heure.h"
 #include "WiFiSerial.h"
+#include "Ota.h"
 
 namespace Dimmer
 {
@@ -58,6 +59,8 @@ namespace Dimmer
   {
     for (;;)
     {
+      force_off |= Ota::updating;
+
       if (force_off)
         dimmer.setBrightness(0);
       else if (force_on)
