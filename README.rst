@@ -66,7 +66,7 @@ voulez de ce logiciel tant que vous ne vous en servez-pas
 dans un cadre capitaliste.
 
 Aide
-****
+----
 
 Comme énoncé plus haut, si vous pouviez contribuer sur ma
 `page Ko-Fi <https://ko-fi.com/eprivat/goal?g=0>`_ ça
@@ -122,16 +122,16 @@ Todo
   temperature I measured on the thyristor (equipped with a
   big radiator) is 28 °C (82 °F) while delivering 2400 W.
 
-Can I help?
-***********
-
-As I mentionned before, please take a look at my
-`Ko-Fi page <https://ko-fi.com/eprivat/goal?g=0>`_, and
-consider tipping if you can afford it, that would help
-enormously.
-
 License
 -------
 
 See LICENSE file. To recap, you do whatever you want if you
 are not using it as part of a capitalist organisation.
+
+Can I help?
+-----------
+
+As I mentionned before, please take a look at my
+`Ko-Fi page <https://ko-fi.com/eprivat/goal?g=0>`_, and
+consider tipping if you can afford it, that would help
+enormously.
