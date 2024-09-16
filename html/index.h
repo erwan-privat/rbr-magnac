@@ -26,6 +26,7 @@ namespace html
           display: none;
         }
         #ota.enabled {
+          color: white;
           display: block;
           position: fixed;
           top: 20px;
@@ -35,8 +36,12 @@ namespace html
           z-index: 99999;
           background: #000000dd;
         }
+        #ota h2 {
+          padding: 20px;
+        }
         #ota_text {
           display: block;
+          text-align: center;
         }
         #ota_progress {
           width: calc(100% - 40px);
@@ -152,8 +157,10 @@ namespace html
                 j.ota.progress + " %";
               if (j.ota.updating) {
                 ota_refresh = true;
-                byId("ota").toggleClass("disabled");
-                byId("ota").toggleClass("enabled");
+                byId("ota").classList
+                  .toggle("disabled", false);
+                byId("ota").classList
+                  .toggle("enabled", true);
               }
               else if (ota_refresh)
                 window.location.reload();
@@ -181,9 +188,6 @@ namespace html
                   data: rotateArray(j.data.p1_2,
                     j.data.ix2).map(x => -x),
                 }]
-              };
-              chtconso2.scales.x = {
-                max: chtconso2.data.labels[-1];
               };
               chtconso2.update("none");
 
@@ -223,7 +227,7 @@ namespace html
   </html>)%";
 
   constexpr char index[] PROGMEM = R"%(
-      <h2>Menu</h2>
+      <h2>À l'instant</h2>
       <ul class="data">
         <li>Dernier reboot : <b id="last_boot"></b></li>
         <li>Consommation totale : <b id="ptot"></b></li>
