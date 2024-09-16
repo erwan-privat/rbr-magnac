@@ -8,7 +8,11 @@
 
 namespace WiFiMagnac
 {
-#include "WiFiCredentials.h"
+  #include "WiFiCredentials.h"
+
+  bool connected = false;
+  // char ip[]      = "xxx.xxx.xxx.xxx";
+  // int  rssi      = 1;
 
   void onEvent(WiFiEvent_t event)
   {
@@ -31,18 +35,18 @@ namespace WiFiMagnac
         WiFi.setHostname(host);
         break;
 
-      case ARDUINO_EVENT_WIFI_STA_CONNECTED:
-        break;
+      // case ARDUINO_EVENT_WIFI_STA_CONNECTED:
+        // break;
 
       case ARDUINO_EVENT_WIFI_STA_GOT_IP:
         eplogf("Connected: %s\r\n",
             WiFi.localIP().toString().c_str());
-        Ecran::wifi_connected = true;
+        connected = true;
         break;
 
       case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
         eplog("WiFi disconnected.");
-        Ecran::wifi_connected = false;
+        connected = false;
         WiFi.reconnect();
         break;
 
@@ -51,14 +55,14 @@ namespace WiFiMagnac
     }
   }
 
-  void taskRssi(void* argv)
-  {
-    for (;;)
-    {
-      Ecran::wifi_rssi = WiFi.RSSI();
-      delay(2000);
-    }
-  }
+  // void taskRssi(void* argv)
+  // {
+    // for (;;)
+    // {
+      // rssi = WiFi.RSSI();
+      // delay(2000);
+    // }
+  // }
 
   void begin()
   {
@@ -68,8 +72,8 @@ namespace WiFiMagnac
     WiFi.begin(ssid, pass);
     WiFi.onEvent(onEvent);
 
-    xTaskCreate(taskRssi, "task RSSI",
-      3000, nullptr, 1, nullptr);
+    // xTaskCreate(taskRssi, "task RSSI",
+      // 3000, nullptr, 1, nullptr);
   }
 
 }

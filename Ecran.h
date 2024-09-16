@@ -7,6 +7,7 @@
 #include <WiFi.h>
 #include "pins.h"
 #include "images.h"
+#include "WiFiMagnac.h"
 #include "Watts.h"
 #include "Heure.h"
 #include "Dimmer.h"
@@ -34,9 +35,6 @@ namespace Ecran
   // U8G2_R0 pour sans rotation (paysage)
   OledScreen screen(U8G2_R0, oled_cs, oled_dc, oled_res);
 
-  bool wifi_connected = false;
-  char wifi_ip[]      = "xxx.xxx.xxx.xxx";
-  int  wifi_rssi      = 1;
   char heure[]        = "hh:mm:ss";
   bool ota_updating   = false;
   byte ota_progress   = 0;
@@ -65,9 +63,9 @@ namespace Ecran
       screen.print(ota_progress);
       screen.print(F(" %"));
       progressbar(
-          margin, screen_h - margin - height,
-          screen_w - 2 * margin, height,
-          ota_progress / 100.0f);
+        margin, screen_h - margin - height,
+        screen_w - 2 * margin, height,
+        ota_progress / 100.0f);
     }
     else
     {
@@ -99,7 +97,7 @@ namespace Ecran
     if (warn_toggle)
       screen.drawGlyph(0, 12, ico_warn);
 
-    if (wifi_connected)
+    if (WiFiMagnac::connected)
     {
       screen.drawGlyph(0, screen_h, ico_wifi);
       screen.setFont(small_font);
