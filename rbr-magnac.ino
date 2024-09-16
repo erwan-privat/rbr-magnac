@@ -5,7 +5,7 @@
 #include "pins.h"
 #include "EpUtil.h"
 // #include "Ecran.h"
-#include "WiFiMagnac.h"
+// #include "WiFiMagnac.h"
 // #include "WiFiSerial.h"
 // #include "Ota.h"
 // #include "Heure.h"
@@ -27,7 +27,7 @@ void setup()
   // // WiFi doit être lancé avant tout ce qui en a besoin,
   // // à savoir Heure (NTP), mise à jour OTA, WiFiSerial.
   // // Sinon ça fout les miquettes et le Winie clignotte.
-  WiFiMagnac::begin();
+  // WiFiMagnac::begin();
   // Ota::begin();
   // // Accès au Serial sur http://192.168.x.x/webserial
   // // x.x affiché sur l'écran
