@@ -52,9 +52,9 @@ comprend :
   les données plutôt que plusieurs text/plain. |se|
 * |ss| Serveur web pour tracer les graphes de consommation etc ;
   data. |se|
-* [EN COURS] Implementation cpp/h.
+* |ss| Implementation cpp/h. |se|
 * Style de la page.
-* gestion du ventilateur du thyristor (peut-être ; j'ai
+* Gestion du ventilateur du thyristor (peut-être ; j'ai
   mesuré au maximum une température de 28 °C sur le gros
   radiateur équippé lorsque le chauffe-eau tirait 2400 W).
 
@@ -116,7 +116,7 @@ Todo
   text/plain. |se|
 * |ss| Web server for plotting power use and monitoring misc
   data. |se|
-* [WIP] Switch to cpp/h implementation.
+* |ss| Switch to cpp/h implementation. |se|
 * Style the web page.
 * [MAYBE] Fan control. Not needed right now, the maximum
   temperature I measured on the thyristor (equipped with a
