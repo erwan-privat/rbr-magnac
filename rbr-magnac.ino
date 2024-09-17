@@ -1,8 +1,6 @@
 // RBR — Routeur solaire pour Magnac.
 // eprivat 2024-08-12
 
-#include <Arduino.h>
-#include "pins.h"
 #include "EpUtil.h"
 #include "Ecran.h"
 #include "WiFiMagnac.h"
