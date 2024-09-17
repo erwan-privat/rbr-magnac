@@ -34,4 +34,5 @@
 # *.xcf
 WiFiCredentials.h
 build/
+bak/
 *.vim

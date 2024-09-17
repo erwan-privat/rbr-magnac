@@ -13,7 +13,11 @@ namespace html
   constexpr char header[] PROGMEM = R"%(<!DOCTYPE html>
   <html>
     <head>
+<<<<<<< HEAD
       <meta charset="utf-8" />
+=======
+    <meta charset="utf-8" />
+>>>>>>> withcpp
       <style>
         body {
           width: 80%;
@@ -101,6 +105,29 @@ namespace html
             },
           });
 
+          // const canvas = byId("screen");
+          // const ctx = canvas.getContext("2d");
+          // canvas.width = 128 * scale;
+          // canvas.height = 64 * scale;
+          // let screen = [];
+
+          // function drawByte(x, y, n) {
+            // for (var i = 0; i < 8; ++i) {
+              // ctx.fillStyle = (n & (1 << i)) > 0
+                // ? "#00a5ff" : "black";
+              // ctx.fillRect((x + i) * scale, y * scale,
+                // scale, scale);
+            // }
+          // }
+
+          // function drawScreen() {
+            // for (let i = 0 ; i < screen.length; ++i) {
+              // drawByte(
+                // i * 8 % 128,
+                // Math.floor(i * 8 / 128),
+                // (screen[i]));
+            // }
+          // }
 
           function rotateArray(arr, ix) {
             const left = arr.slice(0, ix);
@@ -160,18 +187,26 @@ namespace html
                 {
                   label: "Consommation (W)",
                   data: rotateArray(j.data.p2_2, j.data.ix2),
-                  pointStyle: false,
+<<<<<<< HEAD
+                  // borderColor: '#22aa22',
                   fill: {
                     target: 'origin',
                     above: "#ff000044",
                     below: "#00ff0044",
                   },
+=======
+                  pointStyle: false,
+>>>>>>> withcpp
                 },
                 {
-                  pointStyle: false,
                   label: "Chauffe-eau (W)",
                   data: rotateArray(j.data.p1_2,
                     j.data.ix2).map(x => -x),
+<<<<<<< HEAD
+                  // borderColor: '#aa2222',
+=======
+                  pointStyle: false,
+>>>>>>> withcpp
                 }]
               };
               chtconso2.update("none");
@@ -184,6 +219,7 @@ namespace html
                   label: "Consommation (W)",
                   data: rotateArray(j.data.p2_180,
                     j.data.ix180),
+                  // borderColor: '#22aa22',
                   fill: {
                     target: 'origin',
                     above: "#ff000044",
@@ -194,6 +230,7 @@ namespace html
                   label: "Chauffe-eau (W)",
                   data: rotateArray(j.data.p1_180,
                     j.data.ix180).map(x => -x),
+                  // borderColor: '#aa2222',
                 }]
               };
               chtconso180.update("none");
