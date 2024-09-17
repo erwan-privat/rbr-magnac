@@ -48,7 +48,7 @@ namespace ServeurWeb
     
     server.on("/data", HTTP_GET, [](Req* req)
     {
-      // TODO separate differents data calls to reduce req
+      // FIXME separate differents data calls to reduce req
       // time and please the watchdog.
       unsigned start_json = esp_timer_get_time();
 

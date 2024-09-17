@@ -1,5 +1,5 @@
 // RBR — Routeur solaire pour Magnac.
-// eprivat 2024-08-12
+// https://github.com/Archaoss/rbr-magnac/
 
 #include "EpUtil.h"
 #include "Ecran.h"
@@ -22,7 +22,7 @@ void setup()
   Ecran::begin();
   // WiFi doit être lancé avant tout ce qui en a besoin,
   // à savoir Heure (NTP), mise à jour OTA, WiFiSerial.
-  // Sinon ça fout les miquettes et le Winie clignotte.
+  // Sinon le Winie clignotte et ça fout les miquettes.
   WiFiMagnac::begin();
   Ota::begin();
   Heure::begin();
