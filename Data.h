@@ -5,23 +5,28 @@
 
 namespace Data
 {
-  inline constexpr auto ekWK_hc  = 0.2088; // €/kWH
-  inline constexpr auto ekWK_hp  = 0.2874; // €/kWH
+  inline constexpr auto ekWK_hc = 0.2088; // €/kWH
+  inline constexpr auto ekWK_hp = 0.2874; // €/kWH
 
-  inline constexpr auto res2    = 2; // sec
-  inline constexpr auto res180  = 180; // sec
-  inline constexpr auto size2   = 512;
-  inline constexpr auto size180 = 512;
+  inline constexpr auto res_15min  =   2; // sec
+  inline constexpr auto size_15min = 450;
+  inline constexpr auto res_1h     =   8; // sec
+  inline constexpr auto size_1h    = 450;
+  inline constexpr auto res_24h    = 180; // sec
+  inline constexpr auto size_24h   = 480;
 
   extern unsigned long last_boot;
 
-  extern float buf_p1_2[size2];
-  extern float buf_p2_2[size2];
-  extern float buf_p1_180[size180];
-  extern float buf_p2_180[size180];
+  extern float buf_p1_15min[size_15min];
+  extern float buf_p2_15min[size_15min];
+  extern float buf_p1_1h[size_1h];
+  extern float buf_p2_1h[size_1h];
+  extern float buf_p1_24h[size_24h];
+  extern float buf_p2_24h[size_24h];
 
-  extern unsigned ix2;
-  extern unsigned ix180;
+  extern unsigned ix_15min;
+  extern unsigned ix_1h;
+  extern unsigned ix_24h;
 
   void begin();
 }

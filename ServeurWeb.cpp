@@ -97,17 +97,20 @@ namespace ServeurWeb
       req->send(res);
     });
 
-    server.on("/data2", HTTP_GET, [](Req* req)
+    server.on("/data_15min", HTTP_GET, [](Req* req)
     {
+      if (Ota::updating)
+        return;
+
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
-      root["res"] = Data::res2;
-      root["ix"] = Data::ix2;
+      root["res"] = Data::res_15min;
+      root["ix"] = Data::ix_15min;
       auto& arr_p1 = root.createNestedArray("p1");
-      for (auto f : Data::buf_p1_2)
+      for (auto f : Data::buf_p1_15min)
         arr_p1.add(f);
       auto& arr_p2 = root.createNestedArray("p2");
-      for (auto f : Data::buf_p2_2)
+      for (auto f : Data::buf_p2_15min)
         arr_p2.add(f);
 
       Rst* res = req->beginResponseStream(
@@ -116,17 +119,39 @@ namespace ServeurWeb
       req->send(res);
     });
 
-    server.on("/data180", HTTP_GET, [](Req* req)
+    server.on("/data_1h", HTTP_GET, [](Req* req)
+    {
+      if (Ota::updating)
+        return;
+
+      DynamicJsonBuffer jsonBuffer;
+      JsonObject& root = jsonBuffer.createObject();
+      root["res"] = Data::res_1h;
+      root["ix"] = Data::ix_1h;
+      auto& arr_p1 = root.createNestedArray("p1");
+      for (auto f : Data::buf_p1_1h)
+        arr_p1.add(f);
+      auto& arr_p2 = root.createNestedArray("p2");
+      for (auto f : Data::buf_p2_1h)
+        arr_p2.add(f);
+
+      Rst* res = req->beginResponseStream(
+        "application/json");
+      root.printTo(*res);
+      req->send(res);
+    });
+
+    server.on("/data_24h", HTTP_GET, [](Req* req)
     {
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
-      root["res"] = Data::res180;
-      root["ix"] = Data::ix180;
+      root["res"] = Data::res_24h;
+      root["ix"] = Data::ix_24h;
       auto& arr_p1 = root.createNestedArray("p1");
-      for (auto f : Data::buf_p1_180)
+      for (auto f : Data::buf_p1_24h)
         arr_p1.add(f);
       auto& arr_p2 = root.createNestedArray("p2");
-      for (auto f : Data::buf_p2_180)
+      for (auto f : Data::buf_p2_24h)
         arr_p2.add(f);
 
       Rst* res = req->beginResponseStream(

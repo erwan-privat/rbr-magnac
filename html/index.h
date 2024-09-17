@@ -71,8 +71,40 @@ namespace html
 
         document.addEventListener("DOMContentLoaded",
           function() {
-            const chtconso180 = new Chart(
-              byId("pltconso180"), {
+            const chtconso_15min = new Chart(
+              byId("pltconso_15min"), {
+                type: "line",
+                data: [],
+                options: {
+                  scales: {
+                    y: {
+                      title: {
+                        display: true,
+                        text: 'Puissance (W)'
+                      }
+                    },
+                  },
+                },
+            });
+
+            const chtconso_1h = new Chart(
+              byId("pltconso_1h"), {
+                type: "line",
+                data: [],
+                options: {
+                  scales: {
+                    y: {
+                      title: {
+                        display: true,
+                        text: 'Puissance (W)'
+                      }
+                    },
+                  },
+                },
+            });
+
+            const chtconso_24h = new Chart(
+              byId("pltconso_24h"), {
                 type: "line",
                 data: [],
                 options: {
@@ -88,22 +120,6 @@ namespace html
                 },
               });
           
-          const chtconso2 = new Chart(
-            byId("pltconso2"), {
-              type: "line",
-              data: [],
-              options: {
-                scales: {
-                  y: {
-                    title: {
-                      display: true,
-                      text: 'Puissance (W)'
-                    }
-                  },
-                },
-              },
-          });
-
           function rotateArray(arr, ix) {
             const left = arr.slice(0, ix);
             const right = arr.slice(ix, arr.length);
@@ -175,18 +191,18 @@ namespace html
             });
           }
 
-          function updateData2() {
-            fetch("/data2").then(r => {
+          function updateData_15min() {
+            fetch("/data_15min").then(r => {
               if (!r.ok)
-                throw new Error("data2 HTTP " + r.status);
+                throw new Error("data_15min HTTP " + r.status);
               return r.json();
             }).then(function (j) {
-              window.Magnac.data2 = j;
-              chtconso2.data = {
+              window.Magnac.data_15min = j;
+              chtconso_15min.data = {
                 labels: hoursLabels(j.p2.length, j.res),
                 datasets: [
                 {
-                  label: "Consommation (W)",
+                  label: "Consommation/surplus (W)",
                   data: rotateArray(j.p2, j.ix),
                   pointStyle: false,
                   fill: {
@@ -202,22 +218,22 @@ namespace html
                     j.ix).map(x => -x),
                 }]
               };
-              chtconso2.update("none");
+              chtconso_15min.update("none");
             });
           }
 
-          function updateData180() {
-            fetch("/data180").then(r => {
+          function updateData_1h() {
+            fetch("/data_1h").then(r => {
               if (!r.ok)
-                throw new Error("data180 HTTP " + r.status);
+                throw new Error("data_1h HTTP " + r.status);
               return r.json();
             }).then(function (j) {
-              window.Magnac.data2 = j;
-              chtconso180.data = {
+              window.Magnac.data_1h = j;
+              chtconso_1h.data = {
                 labels: hoursLabels(j.p2.length, j.res),
                 datasets: [
                 {
-                  label: "Consommation (W)",
+                  label: "Consommation/surplus (W)",
                   data: rotateArray(j.p2, j.ix),
                   pointStyle: false,
                   fill: {
@@ -233,21 +249,54 @@ namespace html
                     j.ix).map(x => -x),
                 }]
               };
-              chtconso180.update("none");
+              chtconso_1h.update("none");
+            });
+          }
+
+          function updateData_24h() {
+            fetch("/data_24h").then(r => {
+              if (!r.ok)
+                throw new Error("data_24h HTTP " + r.status);
+              return r.json();
+            }).then(function (j) {
+              window.Magnac.data_24h = j;
+              chtconso_24h.data = {
+                labels: hoursLabels(j.p2.length, j.res),
+                datasets: [
+                {
+                  label: "Consommation/surplus (W)",
+                  data: rotateArray(j.p2, j.ix),
+                  pointStyle: false,
+                  fill: {
+                    target: 'origin',
+                    above: "#ff000044",
+                    below: "#00ff0044",
+                  },
+                },
+                {
+                  pointStyle: false,
+                  label: "Chauffe-eau (W)",
+                  data: rotateArray(j.p1,
+                    j.ix).map(x => -x),
+                }]
+              };
+              chtconso_24h.update("none");
             });
           }
 
           updateOta();
           updateWatts();
           updateDimmer();
-          updateData2();
-          updateData180();
+          updateData_24h();
+          updateData_1h();
+          updateData_15min();
 
-          setInterval(updateOta,    1000);
-          setInterval(updateWatts,  2000);
-          setInterval(updateDimmer, 2000);
-          setInterval(updateData2,  2000);
-          setInterval(updateData180, 180 * 1000);
+          setInterval(updateOta,        1000);
+          setInterval(updateWatts,      2000);
+          setInterval(updateDimmer,     2000);
+          setInterval(updateData_24h, 180000);
+          setInterval(updateData_1h,    8000);
+          setInterval(updateData_15min, 2000);
         });
       })();
       </script>
@@ -267,13 +316,15 @@ namespace html
           <b id="p1"></b>
         </li>
       </ul>
-      <h2>Consommation</h2>
+      <h2>Consommation/surplus</h2>
       <!-- <div><canvas id="screen">Loading screen...
       </canvas></div> -->
       <h3>Consommation sur 24 heures</h3>
-      <div><canvas id="pltconso180"></canvas></div>
+      <div><canvas id="pltconso_24h"></canvas></div>
+      <h3>Consommation sur une heure</h3>
+      <div><canvas id="pltconso_1h"></canvas></div>
       <h3>Consommation sur 15 minutes</h3>
-      <div><canvas id="pltconso2"></canvas></div>
+      <div><canvas id="pltconso_15min"></canvas></div>
 
       <div id="ota" class="disabled">
       <h2>Mise à jour OTA</h2>

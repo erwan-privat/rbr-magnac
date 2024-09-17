@@ -32,7 +32,7 @@ namespace Ota
       })
       .onProgress([](unsigned p, unsigned total)
       {
-        progress = p / total * 100;
+        progress = (byte)round(p * 100.0f / total);
         eplogf("OTA progress: %u %%\r", progress);
       })
       .onEnd([]()
