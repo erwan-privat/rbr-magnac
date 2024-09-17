@@ -9,8 +9,6 @@ namespace Ota
   extern byte progress;
   extern int  error;
 
-  void begin();
-
   void taskUpdate(void*);
   void begin();
 }

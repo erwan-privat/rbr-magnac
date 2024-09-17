@@ -3,14 +3,14 @@
 
 #include <Arduino.h>
 
-#ifdef  TEMPLATE_PLACEHOLDER
-   #undef  TEMPLATE_PLACEHOLDER
-#endif
-#define TEMPLATE_PLACEHOLDER '$'
+// #ifdef  TEMPLATE_PLACEHOLDER
+   // #undef  TEMPLATE_PLACEHOLDER
+// #endif
+// #define TEMPLATE_PLACEHOLDER '$'
 
 namespace html
 {
-  constexpr char header[] PROGMEM = R"%(<!DOCTYPE html>
+  constexpr char content[] PROGMEM = R"%(<!DOCTYPE html>
   <html>
     <head>
       <meta charset="utf-8" />
@@ -35,7 +35,7 @@ namespace html
           left: 20px;
           right: 20px;
           z-index: 99999;
-          background: #000000dd;
+          background: #000000aa;
         }
         #ota h2 {
           padding: 20px;
@@ -51,7 +51,8 @@ namespace html
           border: 1px solid #ededf0;
         }
       </style>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js">
+      </script>
       <script>
       // window.Magnac = {};
       // window.Magnac.bitswap = function (b) {
@@ -63,44 +64,45 @@ namespace html
 
       (function () {
         "use strict";
-        const scale = 2;
+        window.Magnac = {};
         const byId = document.getElementById.bind(document);
         
         let ota_refresh = false;
 
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded",
+          function() {
+            const chtconso180 = new Chart(
+              byId("pltconso180"), {
+                type: "line",
+                data: [],
+                options: {
+                  respsonsive: true,
+                  scales: {
+                    y: {
+                      title: {
+                        display: true,
+                        text: 'Puissance (W)'
+                      }
+                    },
+                  },
+                },
+              });
           
-          const chtconso180 = new Chart(byId("pltconso180"), {
-            type: "line",
-            data: [],
-            options: {
-              respsonsive: true,
-              scales: {
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Puissance (W)'
-                  }
+          const chtconso2 = new Chart(
+            byId("pltconso2"), {
+              type: "line",
+              data: [],
+              options: {
+                scales: {
+                  y: {
+                    title: {
+                      display: true,
+                      text: 'Puissance (W)'
+                    }
+                  },
                 },
               },
-            },
           });
-          
-          const chtconso2 = new Chart(byId("pltconso2"), {
-            type: "line",
-            data: [],
-            options: {
-              scales: {
-                y: {
-                  title: {
-                    display: true,
-                    text: 'Puissance (W)'
-                  }
-                },
-              },
-            },
-          });
-
 
           function rotateArray(arr, ix) {
             const left = arr.slice(0, ix);
@@ -114,26 +116,26 @@ namespace html
             return [...Array(size).keys()].map(function(i) {
               const d = new Date;
               d.setTime(now.getTime() + (i - size) * res);
-              return d.toLocaleString("fr-FR").split(" ")[1];
+              return d.toLocaleString("fr-FR")
+                .split(" ")[1];
             });
           }
 
-          function updateData() {
-            fetch("/data").then(r => {
+          function updateOta() {
+            fetch("/ota").then(function (r) {
               if (!r.ok)
-                throw new Error("HTTP error " + r.status);
+                throw new Error("ota HTTP " + r.status);
               return r.json();
-            }).then(j => {
-              window.Magnac = j;
+            }).then(function (j) {
+              window.Magnac.ota = j;
               byId("last_boot").innerHTML =
                 new Date(j.last_boot * 1000)
                   .toLocaleString("fr-FR");
-
-              byId("ota_progress").setAttribute("value",
-                j.ota.progress);
+              byId("ota_progress").setAttribute(
+                "value", j.progress);
               byId("ota_text").textContent =
-                j.ota.progress + " %";
-              if (j.ota.updating) {
+                j.progress + " %";
+              if (j.updating) {
                 ota_refresh = true;
                 byId("ota").classList
                   .toggle("disabled", false);
@@ -142,24 +144,50 @@ namespace html
               }
               else if (ota_refresh)
                 window.location.reload();
+            });
+          }
 
-              byId("p1").innerHTML =
-                -Math.round(j.watts.power1) + " W";
+          function updateWatts() {
+            fetch("/watts").then(function (r) {
+              if (!r.ok)
+                throw new Error("watts HTTP " + r.status);
+              return r.json();
+              }).then(function (j) {
+                window.Magnac.watts = j;
+                byId("p1").innerHTML =
+                  -Math.round(j.power1) + " W";
 
-              byId("p2").innerHTML =
-                Math.round(j.watts.power2) + " W";
+                byId("p2").innerHTML =
+                  Math.round(j.power2) + " W";
 
-              byId("ptot").innerHTML =
-                Math.round(j.watts.power2
-                  - j.watts.power1) + " W";
+                byId("ptot").innerHTML =
+                  Math.round(j.power2 - j.power1) + " W";
+              });
+          }
 
+          function updateDimmer() {
+            fetch("/dimmer").then(r => {
+              if (!r.ok)
+                throw new Error("dimmer HTTP " + r.status);
+              return r.json();
+            }).then(function (j) {
+              window.Magnac.dimmer = j;
+            });
+          }
+
+          function updateData2() {
+            fetch("/data2").then(r => {
+              if (!r.ok)
+                throw new Error("data2 HTTP " + r.status);
+              return r.json();
+            }).then(function (j) {
+              window.Magnac.data2 = j;
               chtconso2.data = {
-                labels: hoursLabels(j.data.p1_2.length,
-                  j.data.res2),
+                labels: hoursLabels(j.p2.length, j.res),
                 datasets: [
                 {
                   label: "Consommation (W)",
-                  data: rotateArray(j.data.p2_2, j.data.ix2),
+                  data: rotateArray(j.p2, j.ix),
                   pointStyle: false,
                   fill: {
                     target: 'origin',
@@ -170,20 +198,28 @@ namespace html
                 {
                   pointStyle: false,
                   label: "Chauffe-eau (W)",
-                  data: rotateArray(j.data.p1_2,
-                    j.data.ix2).map(x => -x),
+                  data: rotateArray(j.p1,
+                    j.ix).map(x => -x),
                 }]
               };
               chtconso2.update("none");
+            });
+          }
 
+          function updateData180() {
+            fetch("/data180").then(r => {
+              if (!r.ok)
+                throw new Error("data180 HTTP " + r.status);
+              return r.json();
+            }).then(function (j) {
+              window.Magnac.data2 = j;
               chtconso180.data = {
-                labels: hoursLabels(j.data.p1_180.length,
-                  j.data.res180).map(t => t.slice(0, 5)),
+                labels: hoursLabels(j.p2.length, j.res),
                 datasets: [
                 {
                   label: "Consommation (W)",
-                  data: rotateArray(j.data.p2_180,
-                    j.data.ix180),
+                  data: rotateArray(j.p2, j.ix),
+                  pointStyle: false,
                   fill: {
                     target: 'origin',
                     above: "#ff000044",
@@ -191,16 +227,27 @@ namespace html
                   },
                 },
                 {
+                  pointStyle: false,
                   label: "Chauffe-eau (W)",
-                  data: rotateArray(j.data.p1_180,
-                    j.data.ix180).map(x => -x),
+                  data: rotateArray(j.p1,
+                    j.ix).map(x => -x),
                 }]
               };
               chtconso180.update("none");
             });
           }
 
-          setInterval(updateData, 2000);
+          updateOta();
+          updateWatts();
+          updateDimmer();
+          updateData2();
+          updateData180();
+
+          setInterval(updateOta,    1000);
+          setInterval(updateWatts,  2000);
+          setInterval(updateDimmer, 2000);
+          setInterval(updateData2,  2000);
+          setInterval(updateData180, 180 * 1000);
         });
       })();
       </script>
@@ -210,13 +257,7 @@ namespace html
       <h1>Routeur solaire RBR Magnac</h1>
       <menu>
         <li><a href="/webserial">Web serial</a></li>
-      </menu>)%";
-
-  constexpr char footer[] PROGMEM = R"%(
-    </body>
-  </html>)%";
-
-  constexpr char index[] PROGMEM = R"%(
+      </menu>
       <h2>À l'instant</h2>
       <ul class="data">
         <li>Dernier reboot : <b id="last_boot"></b></li>
@@ -229,9 +270,9 @@ namespace html
       <h2>Consommation</h2>
       <!-- <div><canvas id="screen">Loading screen...
       </canvas></div> -->
-      <h3>Conso sur 24 heures</h3>
+      <h3>Consommation sur 24 heures</h3>
       <div><canvas id="pltconso180"></canvas></div>
-      <h3>Conso sur 15 minutes</h3>
+      <h3>Consommation sur 15 minutes</h3>
       <div><canvas id="pltconso2"></canvas></div>
 
       <div id="ota" class="disabled">
@@ -241,7 +282,8 @@ namespace html
           Pas de mise à jour en cours.
         </progress>
       </div>
-      )%";
+    </body>
+  </html>)%";
 }
 
 #endif /* INDEX_H */

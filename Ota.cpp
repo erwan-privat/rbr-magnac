@@ -30,9 +30,9 @@ namespace Ota
         progress = 0;
         updating = true;
       })
-      .onProgress([](unsigned p,unsigned total)
+      .onProgress([](unsigned p, unsigned total)
       {
-        progress = p / (total / 100);
+        progress = p / total * 100;
         eplogf("OTA progress: %u %%\r", progress);
       })
       .onEnd([]()
@@ -40,8 +40,9 @@ namespace Ota
         eplog("Mise à jour terminée.");
         updating = false;
       })
-      .onError([](ota_error_t error)
+      .onError([](ota_error_t e)
       {
+        error = e;
         eplogf("OTA error[%u]: \r\n", error);
         if (error == OTA_AUTH_ERROR)
         {
@@ -68,9 +69,6 @@ namespace Ota
       });
 
 
-    // FIXME
-    // On attend une seconde au cas où il y ait une update
-    // avant un éventuel bug.
     delay(1000);
     ArduinoOTA.handle();
 

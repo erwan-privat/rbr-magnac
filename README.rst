@@ -58,6 +58,20 @@ comprend :
   mesuré au maximum une température de 28 °C sur le gros
   radiateur équippé lorsque le chauffe-eau tirait 2400 W).
 
+Notes
+-----
+
+Il est important d'augmenter la taille de la queue
+asynchrone dans dans la bibliothèque `AsyncTCP`, sinon le
+chien de garde risque d'attendre trop longtemps la tâche et
+va rebooter la machine.
+
+Pour ce faire j'ai modifié le fichier dans la bibliothèque
+le fichier `AsyncTCP.cpp:98` en remplaçant par::
+
+  _async_queue = xQueueCreate(256, sizeof(lwip_event_packet_t *));
+
+
 Licence
 -------
 
@@ -121,6 +135,19 @@ Todo
 * [MAYBE] Fan control. Not needed right now, the maximum
   temperature I measured on the thyristor (equipped with a
   big radiator) is 28 °C (82 °F) while delivering 2400 W.
+
+Notes
+-----
+
+Depending on your setup it might be important to increase
+the async tcp queue. I had problems with the esp32 rebooting
+because of the watchdog being impatient on `AsyncTCP`.
+
+In the library file `AsyncTCP.cpp:98` I modified the
+initialization of the queue as such::
+
+  _async_queue = xQueueCreate(256, sizeof(lwip_event_packet_t *));
+
 
 License
 -------

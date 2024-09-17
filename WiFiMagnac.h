@@ -3,6 +3,7 @@
 
 namespace WiFiMagnac
 {
+  bool isConnected();
   void begin();
 }
 

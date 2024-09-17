@@ -5,6 +5,9 @@
 
 namespace Data
 {
+  inline constexpr auto ekWK_hc  = 0.2088; // €/kWH
+  inline constexpr auto ekWK_hp  = 0.2874; // €/kWH
+
   inline constexpr auto res2    = 2; // sec
   inline constexpr auto res180  = 180; // sec
   inline constexpr auto size2   = 512;
@@ -20,8 +23,6 @@ namespace Data
   extern unsigned ix2;
   extern unsigned ix180;
 
-  void taskData2(void*);
-  void taskData180(void*);
   void begin();
 }
 

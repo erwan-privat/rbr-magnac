@@ -9,6 +9,13 @@ namespace WiFiMagnac
   // constexpr char pass[] = "yyyyyy";
   #include "WiFiCredentials.h"
 
+  bool connected = false;
+
+  bool isConnected()
+  {
+    return connected;
+  }
+
   void onEvent(WiFiEvent_t event)
   {
     switch (event)
@@ -31,6 +38,7 @@ namespace WiFiMagnac
         break;
 
       case ARDUINO_EVENT_WIFI_STA_CONNECTED:
+        connected = true;
         break;
 
       case ARDUINO_EVENT_WIFI_STA_GOT_IP:
@@ -50,15 +58,6 @@ namespace WiFiMagnac
     }
   }
 
-  void taskRssi(void* argv)
-  {
-    for (;;)
-    {
-      // Ecran::wifi_rssi = WiFi.RSSI();
-      delay(2000);
-    }
-  }
-
   void begin()
   {
     eplog("Connecting to WiFi...");
@@ -66,8 +65,5 @@ namespace WiFiMagnac
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, pass);
     WiFi.onEvent(onEvent);
-
-    xTaskCreate(taskRssi, "task RSSI",
-      3000, nullptr, 1, nullptr);
   }
 }

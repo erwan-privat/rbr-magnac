@@ -1,4 +1,5 @@
 #include "ServeurWeb.h"
+
 #include "html/index.h"
 #include "html/favicon.h"
 #include "Data.h"
@@ -7,10 +8,12 @@
 #include "Ota.h"
 #include "Watts.h"
 #include "WiFiSerial.h"
-#include <ArduinoJson.h>
-// #include <Base64.h>
 
-#include "ServeurWeb.h"
+#include <ArduinoJson.h>
+
+#define CONFIG_ASYNC_TCP_USE_WDT 1
+#include <ESPAsyncWebServer.h>
+// #include <Base64.h>
 
 namespace ServeurWeb
 {
@@ -18,7 +21,9 @@ namespace ServeurWeb
   using Res = AsyncWebServerResponse;
   using Req = AsyncWebServerRequest;
   using Rst = AsyncResponseStream;
-  using Prm = AsyncWebParameter;
+  // using Prm = AsyncWebParameter;
+
+  // FIXME use const for eg "/watts"
 
   AsyncWebServer server(80);
 
@@ -32,9 +37,7 @@ namespace ServeurWeb
     server.on("/", HTTP_GET, [](Req* req)
     {
       Rst* res = req->beginResponseStream("text/html");
-      res->print(html::header);
-      res->print(html::index);
-      res->print(html::footer);
+      res->print(html::content);
       req->send(res);
     });
 
@@ -46,72 +49,90 @@ namespace ServeurWeb
       req->send(response);
     });
     
-    server.on("/data", HTTP_GET, [](Req* req)
+    server.on("/ota", HTTP_GET, [](Req* req)
     {
-      // FIXME separate differents data calls to reduce req
-      // time and please the watchdog.
-      unsigned start_json = esp_timer_get_time();
-
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["last_boot"] = Data::last_boot;
-      root["heap"] = ESP.getFreeHeap();
-      root["server_heap"] =
-        uxTaskGetStackHighWaterMark(nullptr);
+      root["updating"]  = Ota::updating;
+      root["progress"]  = Ota::progress;
 
-      auto& ota = root.createNestedObject("ota");
-      // FIXME Do not use Ecran.h, does not make sense
-      ota["updating"] = Ota::updating;
-      ota["progress"] = Ota::progress;
-
-      auto& watts = root.createNestedObject("watts");
-      watts["power1"] = Watts::power1;
-      watts["power2"] = Watts::power2;
-      // watts["current1"] = Watts::current1;
-      // watts["voltage1"] = Watts::voltage1;
-      // watts["current2"] = Watts::current2;
-      // watts["voltage2"] = Watts::voltage2;
-      // watts["freq"]     = Watts::frequency;
-
-      auto& dimmer = root.createNestedObject("dimmer");
-      dimmer["force_off"] = Dimmer::force_off;
-      dimmer["force_on"]  = Dimmer::force_on;
-      dimmer["start_hc"]  = Dimmer::start_hc;
-      dimmer["end_hc"]    = Dimmer::end_hc;
-      dimmer["time"]      = Heure::getTimeHM();
-
-      auto& data = root.createNestedObject("data");
-      data["res2"] = Data::res2;
-      data["ix2"] = Data::ix2;
-      auto& arr_p1_2 = data.createNestedArray("p1_2");
-      for (auto f : Data::buf_p1_2)
-        arr_p1_2.add(f);
-      auto& arr_p2_2 = data.createNestedArray("p2_2");
-      for (auto f : Data::buf_p2_2)
-        arr_p2_2.add(f);
-
-      data["res180"] = Data::res180;
-      data["ix180"] = Data::ix180;
-      auto& arr_p1_180 = data.createNestedArray("p1_180");
-      for (auto f : Data::buf_p1_180)
-        arr_p1_180.add(f);
-      auto& arr_p2_180 = data.createNestedArray("p2_180");
-      for (auto f : Data::buf_p2_180)
-        arr_p2_180.add(f);
-
-      unsigned end_json = esp_timer_get_time();
-      weblogf("JSON time %u\n", (end_json - start_json) / 1000);
-
-      yield();
-
-      unsigned start_req = esp_timer_get_time();
-
-      Rst* res = req->beginResponseStream("application/json");
+      Rst* res = req->beginResponseStream(
+        "application/json");
       root.printTo(*res);
       req->send(res);
+    });
+    
+    server.on("/watts", HTTP_GET, [](Req* req)
+    {
+      DynamicJsonBuffer jsonBuffer;
+      JsonObject& root = jsonBuffer.createObject();
+      root["power1"] = Watts::power1;
+      root["power2"] = Watts::power2;
+      // root["current1"] = Watts::current1;
+      // root["voltage1"] = Watts::voltage1;
+      // root["current2"] = Watts::current2;
+      // root["voltage2"] = Watts::voltage2;
+      // root["freq"]     = Watts::frequency;
 
-      unsigned end_req = esp_timer_get_time();
-      weblogf("Req time %u\n", (end_req - start_req) / 1000);
+      Rst* res = req->beginResponseStream(
+        "application/json");
+      root.printTo(*res);
+      req->send(res);
+    });
+
+    server.on("/dimmer", HTTP_GET, [](Req* req)
+    {
+      DynamicJsonBuffer jsonBuffer;
+      JsonObject& root = jsonBuffer.createObject();
+      root["force_off"] = Dimmer::force_off;
+      root["force_on"]  = Dimmer::force_on;
+      root["start_hc"]  = Dimmer::start_hc;
+      root["end_hc"]    = Dimmer::end_hc;
+      root["time"]      = Heure::getTimeHM();
+
+      Rst* res = req->beginResponseStream(
+        "application/json");
+      root.printTo(*res);
+      req->send(res);
+    });
+
+    server.on("/data2", HTTP_GET, [](Req* req)
+    {
+      DynamicJsonBuffer jsonBuffer;
+      JsonObject& root = jsonBuffer.createObject();
+      root["res"] = Data::res2;
+      root["ix"] = Data::ix2;
+      auto& arr_p1 = root.createNestedArray("p1");
+      for (auto f : Data::buf_p1_2)
+        arr_p1.add(f);
+      auto& arr_p2 = root.createNestedArray("p2");
+      for (auto f : Data::buf_p2_2)
+        arr_p2.add(f);
+
+      Rst* res = req->beginResponseStream(
+        "application/json");
+      root.printTo(*res);
+      req->send(res);
+    });
+
+    server.on("/data180", HTTP_GET, [](Req* req)
+    {
+      DynamicJsonBuffer jsonBuffer;
+      JsonObject& root = jsonBuffer.createObject();
+      root["res"] = Data::res180;
+      root["ix"] = Data::ix180;
+      auto& arr_p1 = root.createNestedArray("p1");
+      for (auto f : Data::buf_p1_180)
+        arr_p1.add(f);
+      auto& arr_p2 = root.createNestedArray("p2");
+      for (auto f : Data::buf_p2_180)
+        arr_p2.add(f);
+
+      Rst* res = req->beginResponseStream(
+        "application/json");
+      root.printTo(*res);
+      req->send(res);
     });
 
     server.begin();

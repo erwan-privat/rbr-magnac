@@ -21,6 +21,7 @@ namespace Ecran
   constexpr auto ico_wifi    = 0x00f7;
   constexpr auto ico_nope    = 0x0057;
   constexpr auto ico_warn    = 0x0118;
+  constexpr auto max_switch  = 7;
 
   // U8G2    // nom de la bibliothèque
   // SH1106  // contrôleur
@@ -34,13 +35,12 @@ namespace Ecran
   // U8G2_R0 pour sans rotation (paysage)
   OledScreen screen(U8G2_R0, oled_cs, oled_dc, oled_res);
 
-  bool wifi_connected = false;
-  char wifi_ip[]      = "xxx.xxx.xxx.xxx";
-  int  wifi_rssi      = 1;
-  char heure[]        = "hh:mm:ss";
-
+  char heure[] = "hh:mm:ss";
   int switch_watts = 0;
-  constexpr auto max_switch = 7;
+  unsigned last_bang_micros = esp_timer_get_time();
+  bool warn_toggle = false;
+  
+  constexpr auto ota_warn_delay = 500'000u; // µs
 
   void progressbar(int x, int y, int w, int h, float value)
   {
@@ -75,10 +75,6 @@ namespace Ecran
     screen.setDrawColor(1);
   }
 
-  unsigned last_bang_micros = esp_timer_get_time();
-  bool warn_toggle = false;
-  
-  constexpr auto ota_warn_delay = 500'000u; // µs
   void drawWiFiStatus()
   {
     screen.setFont(icon_font);
@@ -94,9 +90,9 @@ namespace Ecran
 
     // eplogf("%c\r", warn_toggle ? '!' : '-');
     if (warn_toggle)
-      screen.drawGlyph(0, 12, ico_warn);
+      screen.drawGlyph(58, 12, ico_warn);
 
-    if (wifi_connected)
+    if (WiFiMagnac::isConnected())
     {
       screen.drawGlyph(0, screen_h, ico_wifi);
       screen.setFont(small_font);
@@ -119,11 +115,6 @@ namespace Ecran
 
   void drawTime()
   {
-    // screen.setFont(normal_font);
-    // u8g2_uint_t w = screen.getUTF8Width(heure);
-    // screen.setCursor((screen_w - w) / 2, 32);
-    // screen.print(heure);
-
     strcpy(heure, Heure::time_client.getFormattedTime()
       .c_str());
     screen.setFont(small_font);
@@ -134,9 +125,7 @@ namespace Ecran
 
   void drawWatts()
   {
-    // constexpr int pos_x = 12;
-    constexpr int pos_y = 34;
-    // int watts = round(Watts::current2 * 233);
+    constexpr int pos_y = 36;
     int p1 = round(-Watts::power1);
     int p2 = round(Watts::power2);
 
@@ -147,44 +136,19 @@ namespace Ecran
 
     switch (switch_watts)
     {
-      // case 1:
-        // screen.printf(F("%3.1f V"), Watts::voltage2);
-        // break;
-      // case 2:
-        // screen.printf(F("%4.2f A"), Watts::current2);
-        // break;
-      // case 3:
-        // screen.printf(F("%4d W*"), round(Watts::power1));
-        // break;
-      // case 4:
-        // screen.printf(F("%3.1f V*"), Watts::voltage1);
-        // break;
-      // case 5:
-        // screen.printf(F("%4.2f A*"), Watts::current1);
-        // break;
-      // case 6:
-        // screen.printf(F("%3d Hz"), Watts::frequency);
-        // break;
       default:
       case 0:
         screen.printf(F("%4d W"), p1 > 0 ? p1 : p2);
         break;
     }
 
-    auto img = bmp_chauffe_eau;    
-
-    if (p1 <= 0)
-    {
-      // sprintf(watts_buf, "%5d W", watts);
-      // screen.setCursor((screen_w - w) / 2, pos_y);
-      // screen.print(watts_buf);
-      img = bmp_chauffe_eau_nope;
-    }
+    auto img = p1 > 0 ? bmp_chauffe_eau
+      : bmp_chauffe_eau_nope;
 
     screen.drawXBMP((screen_w + w) / 2 - 40, 8, 44, 40, img);
   }
  
-  void drawDebug()
+  void drawDimmer()
   {
     screen.setFont(small_font);
     screen.setCursor(0, 12);
@@ -228,7 +192,7 @@ namespace Ecran
         drawWiFiStatus();
         drawTime();
         drawWatts();
-        drawDebug();
+        drawDimmer();
       }
       
       screen.sendBuffer();
