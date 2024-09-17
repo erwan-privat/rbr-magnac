@@ -1,21 +1,12 @@
-#include <ArduinoOTA.h>
 #include "Ota.h"
 #include "EpUtil.h"
+#include <ArduinoOTA.h>
 
 namespace Ota
 {
-  bool updating = false;
-  byte progress = 0;
-
-  bool isUpdating()
-  {
-    return updating;
-  }
-
-  byte getProgress()
-  {
-    return progress;
-  }
+  extern bool updating = false;
+  extern byte progress = 0;
+  extern int  error    = 666;
 
   void taskUpdate(void*)
   {

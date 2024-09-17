@@ -1,16 +1,8 @@
-// Configuration de la sonde JSY-MK-194T utilisant
-// Modbus RTU.
-// Based on git clankgeek/JSY-MK-194
-// https://github.com/clankgeek/JSY-MK-194
-// eprivat 2024-08-15
-
-#ifndef WATTS_H
-#define WATTS_H
-
-#include <Arduino.h>
+#include "Watts.h"
 #include "pins.h"
 #include "EpUtil.h"
-#include "WiFiSerial.h"
+// #include "WiFiSerial.h"
+#include <Arduino.h>
 
 #define SONDE_SERIAL Serial2
 #define WATTS_DEBUG
@@ -18,22 +10,22 @@
 namespace Watts
 {
   // tore or first clamp
-  float current1 = 0; // A
-  float energy1 = 0; // kWh
-  float energyReturned1 = 0; // kWh
-  float power1 = 0; // W
-  float powerFactor1 = 0;
-  float voltage1 = 0; // V
+  extern float current1        = 0; // A
+  extern float energy1         = 0; // kWh
+  extern float energyReturned1 = 0; // kWh
+  extern float power1          = 0; // W
+  extern float powerFactor1    = 0;
+  extern float voltage1        = 0; // V
 
   // clamp (or second clamp)
-  float current2 = 0; // A
-  float energy2 = 0; // kWh
-  float energyReturned2 = 0; // kWh
-  float power2 = 0; // W
-  float powerFactor2 = 0;
-  float voltage2 = 0; // V
+  extern float current2        = 0; // A
+  extern float energy2         = 0; // kWh
+  extern float energyReturned2 = 0; // kWh
+  extern float power2          = 0; // W
+  extern float powerFactor2    = 0;
+  extern float voltage2        = 0; // V
 
-  uint32_t frequency = 0; // Hz
+  extern uint32_t frequency    = 0; // Hz
 
   uint8_t buffer[61];
 
@@ -147,5 +139,3 @@ namespace Watts
         3000, nullptr, 7, nullptr);
   }
 }
-
-#endif

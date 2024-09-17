@@ -7,8 +7,10 @@ class NTPClient;
 
 namespace Heure
 {
-  constexpr long getTimeOffset();
-  NTPClient& getTimeClient();
+  inline constexpr long time_offset = 7200;
+  inline constexpr unsigned long update_interval = 3600'000l;
+  extern NTPClient time_client;
+  
   int getTimeHM();
   void taskUpdate(void*);
   void taskForceUpdate(void*);

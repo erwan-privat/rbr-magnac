@@ -1,25 +1,15 @@
+#include "Heure.h"
 #include <NTPClient.h>
 #include <WiFiUdp.h>
 
 namespace Heure
 {
-  constexpr long time_offset = 7200l;
-  constexpr unsigned long update_interval = 3600'000ul;
   WiFiUDP udp;
-  NTPClient time_client(udp,
+
+  extern NTPClient time_client(udp,
     "time.google.com",
     time_offset, // décalage horaire UTC en secondes
     static_cast<unsigned long>(-1)); // pas d'update auto
-
-  constexpr long getTimeOffset()
-  {
-    return time_offset;
-  }
-  
-  NTPClient& getTimeClient()
-  {
-    return time_client;
-  }
 
   int getTimeHM()
   {

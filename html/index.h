@@ -1,7 +1,7 @@
-// eprivat 2024-09-10
-
 #ifndef INDEX_H
 #define INDEX_H
+
+#include <Arduino.h>
 
 #ifdef  TEMPLATE_PLACEHOLDER
    #undef  TEMPLATE_PLACEHOLDER
@@ -13,6 +13,7 @@ namespace html
   constexpr char header[] PROGMEM = R"%(<!DOCTYPE html>
   <html>
     <head>
+    <meta charset="utf-8" />
       <style>
         body {
           width: 80%;

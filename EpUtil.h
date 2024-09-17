@@ -1,8 +1,9 @@
 // EpSerial.h — Raccourci des Serial.print*
-// eprivat 2024-07-29
 
 #ifndef EPUTIL_H
 #define EPUTIL_H
+
+#include <Arduino.h>
 
 #ifndef EP_SERIAL
 #define EP_SERIAL Serial

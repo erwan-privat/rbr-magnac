@@ -1,59 +1,19 @@
-// eprivat 2024-08-20
-
-#ifndef DIMMER_H
-#define DIMMER_H
-
-#include <numbers>
-#include <cmath>
-#include <dimmable_light.h>
+#include "Dimmer.h"
 #include "pins.h"
 #include "Watts.h"
 #include "Heure.h"
-#include "WiFiSerial.h"
+// #include "WiFiSerial.h"
 #include "Ota.h"
+#include <numbers>
+#include <cmath>
 
 namespace Dimmer
 {
-  constexpr float seuil_chofo = 0; // W
-  constexpr float max_chofo   = 2300; // W
-  constexpr int   start_hc    = 20'56; // 20 h 56
-  constexpr int   end_hc      =  4'56; // 04 h 56
+  extern bool force_off = true;
+  extern bool force_on  = false;
 
-  constexpr byte  max_value = 255;
-
-  bool force_off = false;
-  bool force_on  = false;
-  bool ventil_on = false;
-
-  DimmableLight dimmer(dimmer_com);
+  extern DimmableLight dimmer(dimmer_com);
   byte value = 0;
-
-//  void taskDimmerSineTest(void*)
-//  {
-//    constexpr float freq = 1.0 / 15.0;
-//    for (;;)
-//    {
-//      float t = esp_timer_get_time() * 1e-6f; // sec
-//      float s = 0.5 + sin(2 * PI * freq * t) * 0.5;
-//      value = static_cast<byte>(round(s * max_value));
-//
-//      if (force_off)
-//         {
-//        dimmer.setBrightness(0);
-//      }
-//      else
-//      {
-//        if (value != dimmer.getBrightness())
-//          dimmer.setBrightness(value);
-//          
-//        ventil_on = value > 128;
-//      }
-//
-//      // digitalWrite(dimmer_ven, ventil_on ? LOW : HIGH);
-//      // analogWrite(dimmer_ven, value);
-//      delay(1);
-//    }
-//  }
 
   void taskDimmer(void*)
   {
@@ -126,7 +86,7 @@ namespace Dimmer
 
     xTaskCreate(taskChofo, "task chauffe-eau", 
       3000, nullptr, 7, nullptr);
+
+    force_off = false;
   }
 }
-
-#endif
