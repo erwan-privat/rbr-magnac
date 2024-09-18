@@ -11,7 +11,8 @@ English below.
 FRANÇAIS
 =========
 
-Vous voulez me filer un coup de pouce ? J'ai une `page Ko-Fi <https://ko-fi.com/eprivat/goal?g=0>`_. 
+Vous voulez me filer un coup de pouce ? J'ai une
+`page Ko-Fi <https://ko-fi.com/eprivat/goal?g=0>`_. 
 
 Lisez-moi
 ---------
@@ -41,6 +42,9 @@ comprend :
   différents modules basé sur le principe de responsabilité
   unique (*sole responsability principle*, même si j'avoue
   que ça pourrait être plus poussé) ;
+* également découpé en .h et .cpp, ce qui a l'air d'être
+  assez rare dans la communauté Arduino, ça divise
+  quand-même quasiment les temps de compilation par trois ;
 * une convention de nommage étrange en franglais mais qui je
   l'éspère permet d'être comprise par les néophytes de la
   programmation.
@@ -50,13 +54,21 @@ comprend :
 
 * |ss| Utiliser une seule requête JSON pour récupérer
   les données plutôt que plusieurs text/plain. |se|
-* |ss| Serveur web pour tracer les graphes de consommation etc ;
-  data. |se|
+* |ss| Serveur web pour tracer les graphes de consommation
+  etc. |se|
 * |ss| Implementation cpp/h. |se|
+* Bug d'affichage pour la production en heures creuses.
 * Style de la page.
-* Gestion du ventilateur du thyristor (peut-être ; j'ai
-  mesuré au maximum une température de 28 °C sur le gros
-  radiateur équippé lorsque le chauffe-eau tirait 2400 W).
+* Calculer les économies réelles journalières.
+* [PEUT-ÊTRE] Utiliser l'API REST pour modifier les
+  paramètres.
+* [PEUT-ÊTRE] Fusioner les fonctions pour 15 min, 1 h et 24
+  h.
+* [PEUT-ÊTRE] Reproduction de l'écran.
+* [PEUT-ÊTRE] Gestion du ventilateur du thyristor (peut-être
+  ; j'ai mesuré au maximum une température de 28 °C sur le
+  gros radiateur équippé lorsque le chauffe-eau tirait 2400
+  W).
 
 Notes
 -----
@@ -67,7 +79,7 @@ chien de garde risque d'attendre trop longtemps la tâche et
 va rebooter la machine.
 
 Pour ce faire j'ai modifié le fichier dans la bibliothèque
-le fichier `AsyncTCP.cpp:98` en remplaçant par::
+le fichier `AsyncTCP.cpp:98`, remplaçant par::
 
   _async_queue = xQueueCreate(256, sizeof(lwip_event_packet_t *));
 
@@ -115,13 +127,17 @@ overproduction to say a water-heater, including:
   (as in measured by a JSY-MK-194) power taken by the
   water-heater;
 * Plot of the last 15 minutes and 24 hours of the total and
-  device consumption using `Chart.js <https://chartjs.org>`_;
+  device consumption using `Chart.js
+  <https://chartjs.org>`_;
 * task oriented code allowing good isolation of code modules
   (sole responsability principle, could be better I admit)
   and using all cores of any FreeRTOS based device;
-* weird names from trying to have good coding convention
-  while having understandable file and function names for
-  non programmers.
+* and separated in cpp and header files, it seems rare in
+  the Arduino community but it divides the compilation time
+  almost by three;
+* weird frenglish names convention from trying to have good
+  code while having understandable file and function names
+  for non programmers.
 
 Todo
 ----
@@ -131,7 +147,12 @@ Todo
 * |ss| Web server for plotting power use and monitoring misc
   data. |se|
 * |ss| Switch to cpp/h implementation. |se|
+* Display bug in off-peak hours for consumption.
+* Compute actual savings per the day;
 * Style the web page.
+* [MAYBE] Use REST API to update some settings.
+* [MAYBE] Merge functions for 15 min, 1 h and 24 h.
+* [MAYBE] Screen reproduction.
 * [MAYBE] Fan control. Not needed right now, the maximum
   temperature I measured on the thyristor (equipped with a
   big radiator) is 28 °C (82 °F) while delivering 2400 W.

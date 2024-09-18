@@ -11,7 +11,7 @@
 namespace html
 {
   constexpr char content[] PROGMEM = R"%(<!DOCTYPE html>
-  <html>
+  <html lang="fr">
     <head>
       <meta charset="utf-8" />
       <style>
@@ -54,71 +54,43 @@ namespace html
       <script src="https://cdn.jsdelivr.net/npm/chart.js">
       </script>
       <script>
-      // window.Magnac = {};
-      // window.Magnac.bitswap = function (b) {
-        // b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
-        // b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
-        // b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
-        // return b;
-      // }
 
       (function () {
         "use strict";
         window.Magnac = {};
         const byId = document.getElementById.bind(document);
+        function bitswap (b) {
+          b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+          b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+          b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+          return b;
+        }
         
         let ota_refresh = false;
 
-        document.addEventListener("DOMContentLoaded",
-          function() {
-            const chtconso_15min = new Chart(
-              byId("pltconso_15min"), {
-                type: "line",
-                data: [],
-                options: {
-                  scales: {
-                    y: {
-                      title: {
-                        display: true,
-                        text: 'Puissance (W)'
-                      }
-                    },
-                  },
-                },
-            });
+        document.addEventListener("DOMContentLoaded", () =>{ 
+          const labels = ["24h", "1h", "15min"];
+          Magnac.prix = 2874;
+          Magnac.chtconso = {};
 
-            const chtconso_1h = new Chart(
-              byId("pltconso_1h"), {
+          labels.forEach(function (label) {
+            Magnac.chtconso[label] = new Chart(
+              byId("pltconso_" + label), {
                 type: "line",
                 data: [],
                 options: {
                   scales: {
                     y: {
+                      suggestedMin: 0,
                       title: {
                         display: true,
-                        text: 'Puissance (W)'
-                      }
-                    },
-                  },
-                },
-            });
-
-            const chtconso_24h = new Chart(
-              byId("pltconso_24h"), {
-                type: "line",
-                data: [],
-                options: {
-                  respsonsive: true,
-                  scales: {
-                    y: {
-                      title: {
-                        display: true,
-                        text: 'Puissance (W)'
+                        text: "Puissance (W)"
                       }
                     },
                   },
                 },
               });
+          });
           
           function rotateArray(arr, ix) {
             const left = arr.slice(0, ix);
@@ -143,7 +115,7 @@ namespace html
                 throw new Error("ota HTTP " + r.status);
               return r.json();
             }).then(function (j) {
-              window.Magnac.ota = j;
+              Magnac.ota = j;
               byId("last_boot").innerHTML =
                 new Date(j.last_boot * 1000)
                   .toLocaleString("fr-FR");
@@ -159,7 +131,7 @@ namespace html
                   .toggle("enabled", true);
               }
               else if (ota_refresh)
-                window.location.reload();
+                location.reload();
             });
           }
 
@@ -169,7 +141,7 @@ namespace html
                 throw new Error("watts HTTP " + r.status);
               return r.json();
               }).then(function (j) {
-                window.Magnac.watts = j;
+                Magnac.watts = j;
                 byId("p1").innerHTML =
                   -Math.round(j.power1) + " W";
 
@@ -187,18 +159,68 @@ namespace html
                 throw new Error("dimmer HTTP " + r.status);
               return r.json();
             }).then(function (j) {
-              window.Magnac.dimmer = j;
+              Magnac.dimmer = j;
             });
           }
 
-          function updateData_15min() {
-            fetch("/data_15min").then(r => {
+          function drawScreen(bin) {
+            // console.log(bin);
+          }
+
+          const ctx = byId("screen").getContext("2d");
+          ctx.font = "28px sans-serif";
+          ctx.fillText("RBR Magnac", 24, 36);
+          function updateScreen() {
+            fetch("/screen").then(r => {
               if (!r.ok)
-                throw new Error("data_15min HTTP " + r.status);
+                throw new Error("screen HTTP " + r.status);
               return r.json();
             }).then(function (j) {
-              window.Magnac.data_15min = j;
-              chtconso_15min.data = {
+              Magnac.screen = j;
+              // TODO decode 64
+              console.log(j.xbmp64)
+              drawScreen(atob(j.xbmp64));
+            });
+          }
+
+          function integrate(yy, dx) {
+            return yy.reduce((a, y) => a + y * dx);
+          }
+
+          const onlyPos = arr =>
+            arr.map(x => Math.max(x, 0));
+
+          byId("ekWh").addEventListener("change", () => {
+            Magnac.prix = parseInt(this.value);
+            labels.forEach(updateData);
+          });
+
+          function updateData(label) {
+            fetch("/data_" + label).then(r => {
+              if (!r.ok)
+                throw new Error(`${label} HTTP${r.status}`);
+              return r.json();
+            }).then(function (j) {
+              Magnac.data = { label: j };
+              const p1 = j.p1.map(x => -x);
+
+              const conso = onlyPos(j.p2);
+              const cumul = integrate(conso, j.res) /3600e3;
+              const euro  = cumul * Magnac.prix / 1e4;
+              byId("cumul_" + label).innerHTML = 
+                `${cumul.toFixed(3)} kWh
+                &times 0.${Magnac.prix} € / kWh =
+                ${euro.toFixed(2)} €`;
+
+              const eco = onlyPos(p1);
+              const total = integrate(eco, j.res) / 3600e3;
+              const eur_eco = total * Magnac.prix / 1e4;
+              byId("eco_" + label).innerHTML =
+                `${total.toFixed(3)} kWh
+                &times 0.${Magnac.prix} € / kWh =
+                ${eur_eco.toFixed(2)} €`;
+
+              Magnac.chtconso[label].data = {
                 labels: hoursLabels(j.p2.length, j.res),
                 datasets: [
                 {
@@ -214,89 +236,23 @@ namespace html
                 {
                   pointStyle: false,
                   label: "Chauffe-eau (W)",
-                  data: rotateArray(j.p1,
-                    j.ix).map(x => -x),
+                  data: rotateArray(p1, j.ix),
                 }]
               };
-              chtconso_15min.update("none");
+              Magnac.chtconso[label].update("none");
             });
           }
 
-          function updateData_1h() {
-            fetch("/data_1h").then(r => {
-              if (!r.ok)
-                throw new Error("data_1h HTTP " + r.status);
-              return r.json();
-            }).then(function (j) {
-              window.Magnac.data_1h = j;
-              chtconso_1h.data = {
-                labels: hoursLabels(j.p2.length, j.res),
-                datasets: [
-                {
-                  label: "Consommation/surplus (W)",
-                  data: rotateArray(j.p2, j.ix),
-                  pointStyle: false,
-                  fill: {
-                    target: 'origin',
-                    above: "#ff000044",
-                    below: "#00ff0044",
-                  },
-                },
-                {
-                  pointStyle: false,
-                  label: "Chauffe-eau (W)",
-                  data: rotateArray(j.p1,
-                    j.ix).map(x => -x),
-                }]
-              };
-              chtconso_1h.update("none");
-            });
-          }
-
-          function updateData_24h() {
-            fetch("/data_24h").then(r => {
-              if (!r.ok)
-                throw new Error("data_24h HTTP " + r.status);
-              return r.json();
-            }).then(function (j) {
-              window.Magnac.data_24h = j;
-              chtconso_24h.data = {
-                labels: hoursLabels(j.p2.length, j.res),
-                datasets: [
-                {
-                  label: "Consommation/surplus (W)",
-                  data: rotateArray(j.p2, j.ix),
-                  pointStyle: false,
-                  fill: {
-                    target: 'origin',
-                    above: "#ff000044",
-                    below: "#00ff0044",
-                  },
-                },
-                {
-                  pointStyle: false,
-                  label: "Chauffe-eau (W)",
-                  data: rotateArray(j.p1,
-                    j.ix).map(x => -x),
-                }]
-              };
-              chtconso_24h.update("none");
-            });
-          }
-
-          updateOta();
-          updateWatts();
-          updateDimmer();
-          updateData_24h();
-          updateData_1h();
-          updateData_15min();
-
-          setInterval(updateOta,        1000);
-          setInterval(updateWatts,      2000);
-          setInterval(updateDimmer,     2000);
-          setInterval(updateData_24h, 180000);
-          setInterval(updateData_1h,    8000);
-          setInterval(updateData_15min, 2000);
+          setInterval(updateOta,    1000);
+          setInterval(updateWatts,  2000);
+          setInterval(updateDimmer, 2000);
+          setInterval(updateData, 180000, "24h");
+          setInterval(updateData,   8000, "1h");
+          setInterval(updateData,   2000, "15min");
+          labels.forEach(updateData);
+          
+          // updateScreen();
+          // setInterval(updateScreen,     2000);
         });
       })();
       </script>
@@ -317,13 +273,23 @@ namespace html
         </li>
       </ul>
       <h2>Consommation/surplus</h2>
-      <!-- <div><canvas id="screen">Loading screen...
-      </canvas></div> -->
+
+      <div>0.<input type="number" id="ekWh" value="2874" />
+      &nbsp;<label for="ekWh">€ / kWh</label></div>
+
       <h3>Consommation sur 24 heures</h3>
+      <p>Cumulé : <b id="cumul_24h"></b></p>
+      <p>Solaire vers chauffe-eau : <b id="eco_24h"></b></p>
       <div><canvas id="pltconso_24h"></canvas></div>
+
       <h3>Consommation sur une heure</h3>
+      <p>Cumulé : <b id="cumul_1h"></b></p>
+      <p>Solaire vers chauffe-eau : <b id="eco_1h"></b></p>
       <div><canvas id="pltconso_1h"></canvas></div>
+
       <h3>Consommation sur 15 minutes</h3>
+      <p>Cumulé : <b id="cumul_15min"></b></p>
+      <p>Solaire vers chauffe-eau : <b id="eco_15min"></b></p>
       <div><canvas id="pltconso_15min"></canvas></div>
 
       <div id="ota" class="disabled">
@@ -333,6 +299,9 @@ namespace html
           Pas de mise à jour en cours.
         </progress>
       </div>
+
+      <div><canvas id="screen">Écran</canvas></div>
+      </canvas></div>
     </body>
   </html>)%";
 }

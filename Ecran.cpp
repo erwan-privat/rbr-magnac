@@ -6,7 +6,6 @@
 #include "Ota.h"
 #include "Watts.h"
 #include "WiFiMagnac.h"
-#include <U8g2lib.h>
 #include <NTPClient.h>
 #include <dimmable_light.h>
 #include <WiFi.h>
@@ -23,15 +22,8 @@ namespace Ecran
   constexpr auto ico_warn    = 0x0118;
   constexpr auto max_switch  = 7;
 
-  // U8G2    // nom de la bibliothèque
-  // SH1106  // contrôleur
-  // 128X64  // taille en px²
-  // NONAME  // nom de l'écran
-  // F       // Full buffer, garde en mémoire tout l'écran
-  // 4W      // 4-Wire mode (clock, data, cs, dc)
-  // HW      // Hardware, doit être branché au bon endroit
-  // SPI     // protocole SPI (et non I2C)
-  using OledScreen = U8G2_SH1106_128X64_NONAME_F_4W_HW_SPI;
+  constexpr auto ota_warn_delay = 500'000u; // µs
+
   // U8G2_R0 pour sans rotation (paysage)
   OledScreen screen(U8G2_R0, oled_cs, oled_dc, oled_res);
 
@@ -40,7 +32,15 @@ namespace Ecran
   unsigned last_bang_micros = esp_timer_get_time();
   bool warn_toggle = false;
   
-  constexpr auto ota_warn_delay = 500'000u; // µs
+  unsigned getLength()
+  {
+    return screen_w * screen_h / 8;
+  }
+
+  OledScreen& getScreen()
+  {
+    return screen;
+  }
 
   void progressbar(int x, int y, int w, int h, float value)
   {
@@ -62,9 +62,9 @@ namespace Ecran
       screen.print(Ota::progress);
       screen.print(F(" %"));
       progressbar(
-          margin, screen_h - margin - height,
-          screen_w - 2 * margin, height,
-          Ota::progress / 100.0f);
+        margin, screen_h - margin - height,
+        screen_w - 2 * margin, height,
+        Ota::progress / 100.0f);
     }
     else
     {

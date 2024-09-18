@@ -4,6 +4,7 @@
 #include "html/favicon.h"
 #include "Data.h"
 #include "Dimmer.h"
+#include "Ecran.h"
 #include "Heure.h"
 #include "Ota.h"
 #include "Watts.h"
@@ -13,7 +14,7 @@
 
 #define CONFIG_ASYNC_TCP_USE_WDT 1
 #include <ESPAsyncWebServer.h>
-// #include <Base64.h>
+#include <Base64.h>
 
 namespace ServeurWeb
 {
@@ -22,8 +23,6 @@ namespace ServeurWeb
   using Req = AsyncWebServerRequest;
   using Rst = AsyncResponseStream;
   // using Prm = AsyncWebParameter;
-
-  // FIXME use const for eg "/watts"
 
   AsyncWebServer server(80);
 
@@ -97,6 +96,29 @@ namespace ServeurWeb
       req->send(res);
     });
 
+    server.on("/screen", HTTP_GET, [](Req* req)
+    {
+      constexpr auto screen64_size = 1368;
+      char screen64[screen64_size + 1];
+
+      auto* screen = (char*)Ecran::getScreen()
+        .getBufferPtr();
+
+      Base64.encode(screen64, screen, screen64_size); 
+
+      DynamicJsonBuffer jsonBuffer;
+      JsonObject& root = jsonBuffer.createObject();
+      root["length"] = screen64_size;
+      auto& arr_screen = root.createNestedArray("xbmp64");
+      for (auto pix : screen64)
+        arr_screen.add(pix);
+
+      Rst* res = req->beginResponseStream(
+        "application/json");
+      root.printTo(*res);
+      req->send(res);
+    });
+
     server.on("/data_15min", HTTP_GET, [](Req* req)
     {
       if (Ota::updating)
@@ -143,6 +165,9 @@ namespace ServeurWeb
 
     server.on("/data_24h", HTTP_GET, [](Req* req)
     {
+      if (Ota::updating)
+        return;
+
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["res"] = Data::res_24h;
