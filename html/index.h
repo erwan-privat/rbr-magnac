@@ -27,11 +27,11 @@ namespace html
           width: 235px;
         }
         label::after {
-          content: "\00a0;: ";
+          content: "\00a0: ";
         }
-        b {
+        b, b.input {
           font-family: monospace;
-          font-weight: semi-bold;
+          font-weight: bold;
           font-size: 1.2em;
         }
         #screen {
@@ -225,7 +225,7 @@ namespace html
               const euro  = cumul * Magnac.prix / 1e4;
               byId("cumul_" + label).innerHTML = 
                 `${cumul.toFixed(3)} kWh
-                &times 0.${Magnac.prix} € / kWh =
+                &times 0.${Magnac.prix} €/kWh =
                 ${euro.toFixed(2)} €`;
 
               const eco = onlyPos(p1);
@@ -233,7 +233,7 @@ namespace html
               const eur_eco = total * Magnac.prix / 1e4;
               byId("eco_" + label).innerHTML =
                 `${total.toFixed(3)} kWh
-                &times 0.${Magnac.prix} € / kWh =
+                &times 0.${Magnac.prix} €/kWh =
                 ${eur_eco.toFixed(2)} € ! FIXME compte les hc`;
 
               Magnac.chtconso[label].data = {
@@ -287,7 +287,7 @@ namespace html
           <b id="ptot"></b></div>
         <div><label>Consommation effective</label>
           <b id="p2"></b></div>
-        <div><label>Consommation du chauffe-eau</label>
+        <div><label>Chauffe-eau</label>
           <b id="p1"></b>
         </div>
       </ul>
@@ -295,31 +295,33 @@ namespace html
       <h2>Consommation/surplus</h2>
       <div>
         <label for="ekWh_hp">Heure pleine</label>
-        <b>0.</b>
-        <input type="number" id="ekWh_hp" value="2874" />
-        <b>€ / kWh</b>
+        <b>0.<input type="number"
+               id="ekWh_hp" value="2874" />
+        €/kWh</b>
       </div>
 
       <h3>Consommation sur 24 heures</h3>
-      <p><label>Cumulé</label> <b id="cumul_24h"></b></p>
-      <p><label>Solaire vers chauffe-eau</label>
-        <b id="eco_24h"></b></p>
+      <div><label>Cumulé</label> <b id="cumul_24h"></b></div>
+      <div><label>Solaire vers chauffe-eau</label>
+        <b id="eco_24h"></b></div>
       <div><canvas id="pltconso_24h"></canvas></div>
 
       <h3>Consommation sur une heure</h3>
-      <p><label>Cumulé</label> <b id="cumul_1h"></b></p>
-      <p><label>Solaire vers chauffe-eau</label>
+      <div><label>Cumulé</label> <b id="cumul_1h"></b></div>
+      <div><label>Solaire vers chauffe-eau</label>
         <b id="eco_1h"></b></p>
       <div><canvas id="pltconso_1h"></canvas></div>
 
       <h3>Consommation sur 15 minutes</h3>
-      <p><label>Cumulé</label> <b id="cumul_15min"></b></p>
-      <p><label>Solaire vers chauffe-eau</label>
+      <div>
+        <label>Cumulé</label> <b id="cumul_15min"></b>
+      </div>
+      <div><label>Solaire vers chauffe-eau</label>
         <b id="eco_15min"></b></p>
       <div><canvas id="pltconso_15min"></canvas></div>
 
       <div id="ota" class="disabled">
-      <h2>Mise à jour OTA</h2>
+        <h2>Mise à jour OTA</h2>
         <b id="ota_text">Pas de mise à jour en cours.</b>
         <progress id="ota_progress" max="100">
           Pas de mise à jour en cours.
@@ -327,7 +329,6 @@ namespace html
       </div>
 
       <div><canvas id="screen">Écran</canvas></div>
-      </canvas></div>
     </body>
   </html>)%";
 }

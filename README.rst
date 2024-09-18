@@ -78,8 +78,8 @@ asynchrone dans dans la bibliothèque `AsyncTCP`, sinon le
 chien de garde risque d'attendre trop longtemps la tâche et
 va rebooter la machine.
 
-Pour ce faire j'ai modifié le fichier dans la bibliothèque
-le fichier `AsyncTCP.cpp:98`, remplaçant par::
+Pour ce faire j'ai modifié dans la bibliothèque le fichier
+`AsyncTCP.cpp:98`, remplaçant par::
 
   _async_queue = xQueueCreate(256, sizeof(lwip_event_packet_t *));
 
