@@ -218,7 +218,7 @@ namespace html
               byId("eco_" + label).innerHTML =
                 `${total.toFixed(3)} kWh
                 &times 0.${Magnac.prix} € / kWh =
-                ${eur_eco.toFixed(2)} €`;
+                ${eur_eco.toFixed(2)} € ! FIXME compte les hc`;
 
               Magnac.chtconso[label].data = {
                 labels: hoursLabels(j.p2.length, j.res),
