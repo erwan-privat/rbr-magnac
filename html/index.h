@@ -16,8 +16,23 @@ namespace html
       <meta charset="utf-8" />
       <style>
         body {
+          font-family: sans-serif;
           width: 80%;
           margin: auto;
+          background: hsl(60, 100%, 90%);
+          color: #222;
+        }
+        label {
+          display: inline-block;
+          width: 235px;
+        }
+        label::after {
+          content: "\00a0;: ";
+        }
+        b {
+          font-family: monospace;
+          font-weight: semi-bold;
+          font-size: 1.2em;
         }
         #screen {
           border: 1px solid grey;
@@ -73,6 +88,7 @@ namespace html
           Magnac.prix = 2874;
           Magnac.chtconso = {};
 
+          Chart.defaults.font.size = 14;
           labels.forEach(function (label) {
             Magnac.chtconso[label] = new Chart(
               byId("pltconso_" + label), {
@@ -190,7 +206,7 @@ namespace html
           const onlyPos = arr =>
             arr.map(x => Math.max(x, 0));
 
-          byId("ekWh").addEventListener("change", () => {
+          byId("ekWh_hp").addEventListener("change", () => {
             Magnac.prix = parseInt(this.value);
             labels.forEach(updateData);
           });
@@ -264,32 +280,42 @@ namespace html
         <li><a href="/webserial">Web serial</a></li>
       </menu>
       <h2>À l'instant</h2>
-      <ul class="data">
-        <li>Dernier reboot : <b id="last_boot"></b></li>
-        <li>Consommation totale : <b id="ptot"></b></li>
-        <li>Consommation effective : <b id="p2"></b></li>
-        <li>Consommation du chauffe-eau :
+      <div>
+        <div><label>Dernier reboot</label>
+          <b id="last_boot"></b></div>
+        <div><label>Consommation totale</label>
+          <b id="ptot"></b></div>
+        <div><label>Consommation effective</label>
+          <b id="p2"></b></div>
+        <div><label>Consommation du chauffe-eau</label>
           <b id="p1"></b>
-        </li>
+        </div>
       </ul>
-      <h2>Consommation/surplus</h2>
 
-      <div>0.<input type="number" id="ekWh" value="2874" />
-      &nbsp;<label for="ekWh">€ / kWh</label></div>
+      <h2>Consommation/surplus</h2>
+      <div>
+        <label for="ekWh_hp">Heure pleine</label>
+        <b>0.</b>
+        <input type="number" id="ekWh_hp" value="2874" />
+        <b>€ / kWh</b>
+      </div>
 
       <h3>Consommation sur 24 heures</h3>
-      <p>Cumulé : <b id="cumul_24h"></b></p>
-      <p>Solaire vers chauffe-eau : <b id="eco_24h"></b></p>
+      <p><label>Cumulé</label> <b id="cumul_24h"></b></p>
+      <p><label>Solaire vers chauffe-eau</label>
+        <b id="eco_24h"></b></p>
       <div><canvas id="pltconso_24h"></canvas></div>
 
       <h3>Consommation sur une heure</h3>
-      <p>Cumulé : <b id="cumul_1h"></b></p>
-      <p>Solaire vers chauffe-eau : <b id="eco_1h"></b></p>
+      <p><label>Cumulé</label> <b id="cumul_1h"></b></p>
+      <p><label>Solaire vers chauffe-eau</label>
+        <b id="eco_1h"></b></p>
       <div><canvas id="pltconso_1h"></canvas></div>
 
       <h3>Consommation sur 15 minutes</h3>
-      <p>Cumulé : <b id="cumul_15min"></b></p>
-      <p>Solaire vers chauffe-eau : <b id="eco_15min"></b></p>
+      <p><label>Cumulé</label> <b id="cumul_15min"></b></p>
+      <p><label>Solaire vers chauffe-eau</label>
+        <b id="eco_15min"></b></p>
       <div><canvas id="pltconso_15min"></canvas></div>
 
       <div id="ota" class="disabled">
