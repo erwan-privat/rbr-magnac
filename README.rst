@@ -57,9 +57,10 @@ comprend :
 * |ss| Serveur web pour tracer les graphes de consommation
   etc. |se|
 * |ss| Implementation cpp/h. |se|
-* Bug d'affichage pour la production en heures creuses.
-* Style de la page.
-* Calculer les économies réelles journalières.
+*  |ss| Bug d'affichage pour la production en heures
+  creuses. |se|
+* [EN COURS] Style de la page.
+* [EN COURS] Calculer les économies réelles journalières.
 * [PEUT-ÊTRE] Utiliser l'API REST pour modifier les
   paramètres.
 * [PEUT-ÊTRE] Fusioner les fonctions pour 15 min, 1 h et 24
@@ -147,9 +148,9 @@ Todo
 * |ss| Web server for plotting power use and monitoring misc
   data. |se|
 * |ss| Switch to cpp/h implementation. |se|
-* Display bug in off-peak hours for consumption.
-* Compute actual savings per the day;
-* Style the web page.
+* |ss| Display bug in off-peak hours for consumption. |se|
+* [WIP] Compute actual savings per the day;
+* [WIP] Style the web page.
 * [MAYBE] Use REST API to update some settings.
 * [MAYBE] Merge functions for 15 min, 1 h and 24 h.
 * [MAYBE] Screen reproduction.
@@ -167,7 +168,7 @@ because of the watchdog being impatient on `AsyncTCP`.
 In the library file `AsyncTCP.cpp:98` I modified the
 initialization of the queue as such::
 
-  _async_queue = xQueueCreate(256, sizeof(lwip_event_packet_t *));
+  _async_queue = xQueueCreate(1024, sizeof(lwip_event_packet_t *));
 
 
 License

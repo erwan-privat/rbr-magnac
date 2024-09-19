@@ -149,7 +149,10 @@ namespace html
                   .toggle("enabled", true);
               }
               else if (ota_refresh)
-                location.reload();
+              {
+                setTimeout(() => window.location.reload(),
+                  1000);
+              }    
             });
           }
 
@@ -269,7 +272,6 @@ namespace html
               return r.json();
             }).then(function (j) {
               j = cleanUpData(j, label);
-              console.log(j);
 
               // ["hp", "hc"].forEach(h => {
               ["hp"].forEach(h => {
@@ -301,6 +303,7 @@ namespace html
                   label: "Consommation/surplus (W) HP",
                   data: rotateArray(j.p2_hp, j.ix),
                   pointStyle: false,
+                  borderColor: "#36a2eb",
                   fill: {
                     target: "origin",
                     above: "#ff000044",
@@ -309,6 +312,7 @@ namespace html
                 },
                 {
                   pointStyle: false,
+                  borderColor: "#cf0911",
                   label: "Chauffe-eau (W) HP",
                   data: rotateArray(j.p1_hp, j.ix),
                 },
@@ -316,14 +320,16 @@ namespace html
                   label: "Consommation/surplus (W) HC",
                   data: rotateArray(j.p2_hc, j.ix),
                   pointStyle: false,
+                  borderColor: "#7a49a5",
                   fill: {
                     target: "origin",
-                    above: "#ff880044",
+                    above: "#ffce5644",
                     below: "#00ff0044",
                   },
                 },
                 {
                   pointStyle: false,
+                  borderColor: "#ffce56",
                   label: "Chauffe-eau (W) HC",
                   data: rotateArray(j.p1_hc, j.ix),
                 },
