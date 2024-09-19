@@ -46,6 +46,12 @@ namespace Dimmer
     return static_cast<byte>(round(val));
   }
 
+  bool isHC()
+  {
+    const auto h = Heure::getTimeHMS();
+    return h >= start_hc || h < end_hc;
+  }
+
   void taskChofo(void*)
   {
     for (;;)
@@ -56,8 +62,8 @@ namespace Dimmer
       float amount = pavailable * max_value / max_chofo;
       value = redress(amount);
 
-      const auto h = Heure::getTimeHM();
-      force_on = h >= start_hc || h < end_hc;
+      // FIXME removed hc for tests
+      // force_on = isHC();
 
       delay(2000);
 

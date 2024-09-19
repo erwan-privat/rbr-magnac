@@ -86,9 +86,9 @@ namespace ServeurWeb
       JsonObject& root = jsonBuffer.createObject();
       root["force_off"] = Dimmer::force_off;
       root["force_on"]  = Dimmer::force_on;
-      root["start_hc"]  = Dimmer::start_hc;
-      root["end_hc"]    = Dimmer::end_hc;
-      root["time"]      = Heure::getTimeHM();
+      root["start_hp"]  = Dimmer::start_hc;
+      root["end_hp"]    = Dimmer::end_hc;
+      root["time"]      = Heure::getTimeHMS();
 
       Rst* res = req->beginResponseStream(
         "application/json");
@@ -128,12 +128,18 @@ namespace ServeurWeb
       JsonObject& root = jsonBuffer.createObject();
       root["res"] = Data::res_15min;
       root["ix"] = Data::ix_15min;
-      auto& arr_p1 = root.createNestedArray("p1");
-      for (auto f : Data::buf_p1_15min)
-        arr_p1.add(f);
-      auto& arr_p2 = root.createNestedArray("p2");
-      for (auto f : Data::buf_p2_15min)
-        arr_p2.add(f);
+      auto& arr_p1_hp = root.createNestedArray("p1_hp");
+      for (auto f : Data::buf_p1_hp_15min)
+        arr_p1_hp.add(f);
+      auto& arr_p2_hp = root.createNestedArray("p2_hp");
+      for (auto f : Data::buf_p2_hp_15min)
+        arr_p2_hp.add(f);
+      auto& arr_p1_hc = root.createNestedArray("p1_hc");
+      for (auto f : Data::buf_p1_hc_15min)
+        arr_p1_hc.add(f);
+      auto& arr_p2_hc = root.createNestedArray("p2_hc");
+      for (auto f : Data::buf_p2_hc_15min)
+        arr_p2_hc.add(f);
 
       Rst* res = req->beginResponseStream(
         "application/json");
@@ -150,12 +156,18 @@ namespace ServeurWeb
       JsonObject& root = jsonBuffer.createObject();
       root["res"] = Data::res_1h;
       root["ix"] = Data::ix_1h;
-      auto& arr_p1 = root.createNestedArray("p1");
-      for (auto f : Data::buf_p1_1h)
-        arr_p1.add(f);
-      auto& arr_p2 = root.createNestedArray("p2");
-      for (auto f : Data::buf_p2_1h)
-        arr_p2.add(f);
+      auto& arr_p1_hp = root.createNestedArray("p1_hp");
+      for (auto f : Data::buf_p1_hp_1h)
+        arr_p1_hp.add(f);
+      auto& arr_p2_hp = root.createNestedArray("p2_hp");
+      for (auto f : Data::buf_p2_hp_1h)
+        arr_p2_hp.add(f);
+      auto& arr_p1_hc = root.createNestedArray("p1_hc");
+      for (auto f : Data::buf_p1_hc_1h)
+        arr_p1_hc.add(f);
+      auto& arr_p2_hc = root.createNestedArray("p2_hc");
+      for (auto f : Data::buf_p2_hc_1h)
+        arr_p2_hc.add(f);
 
       Rst* res = req->beginResponseStream(
         "application/json");
@@ -172,12 +184,18 @@ namespace ServeurWeb
       JsonObject& root = jsonBuffer.createObject();
       root["res"] = Data::res_24h;
       root["ix"] = Data::ix_24h;
-      auto& arr_p1 = root.createNestedArray("p1");
-      for (auto f : Data::buf_p1_24h)
-        arr_p1.add(f);
-      auto& arr_p2 = root.createNestedArray("p2");
-      for (auto f : Data::buf_p2_24h)
-        arr_p2.add(f);
+      auto& arr_p1_hp = root.createNestedArray("p1_hp");
+      for (auto f : Data::buf_p1_hp_24h)
+        arr_p1_hp.add(f);
+      auto& arr_p2_hp = root.createNestedArray("p2_hp");
+      for (auto f : Data::buf_p2_hp_24h)
+        arr_p2_hp.add(f);
+      auto& arr_p1_hc = root.createNestedArray("p1_hc");
+      for (auto f : Data::buf_p1_hc_24h)
+        arr_p1_hc.add(f);
+      auto& arr_p2_hc = root.createNestedArray("p2_hc");
+      for (auto f : Data::buf_p2_hc_24h)
+        arr_p2_hc.add(f);
 
       Rst* res = req->beginResponseStream(
         "application/json");

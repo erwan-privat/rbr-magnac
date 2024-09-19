@@ -11,10 +11,14 @@ namespace Heure
     time_offset, // décalage horaire UTC en secondes
     static_cast<unsigned long>(-1)); // pas d'update auto
 
-  int getTimeHM()
+  int getTimeHMS()
   {
-    return 100 * time_client.getHours()
-      + time_client.getMinutes();
+    int hms = time_client.getHours();
+    hms *= 100;
+    hms += time_client.getMinutes();
+    hms *= 100;
+    hms += time_client.getSeconds();
+    return hms;
   }
 
   void taskUpdate(void*)

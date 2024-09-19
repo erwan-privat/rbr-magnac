@@ -1,6 +1,7 @@
 #include "Data.h"
 
 #include "Heure.h"
+#include "Dimmer.h"
 #include "Watts.h"
 
 #include <Arduino.h>
@@ -10,12 +11,20 @@ namespace Data
 {
   extern unsigned long last_boot = 0;
 
-  float buf_p1_15min[size_15min];
-  float buf_p2_15min[size_15min];
-  float buf_p1_1h[size_1h];
-  float buf_p2_1h[size_1h];
-  float buf_p1_24h[size_24h];
-  float buf_p2_24h[size_24h];
+  float buf_p1_hp_15min[size_15min];
+  float buf_p2_hp_15min[size_15min];
+  float buf_p1_hc_15min[size_15min];
+  float buf_p2_hc_15min[size_15min];
+  
+  float buf_p1_hp_1h[size_1h];
+  float buf_p2_hp_1h[size_1h];
+  float buf_p1_hc_1h[size_1h];
+  float buf_p2_hc_1h[size_1h];
+
+  float buf_p1_hp_24h[size_24h];
+  float buf_p2_hp_24h[size_24h];
+  float buf_p1_hc_24h[size_24h];
+  float buf_p2_hc_24h[size_24h];
 
   extern unsigned ix_15min = 0;
   extern unsigned ix_1h    = 0;
@@ -25,8 +34,22 @@ namespace Data
   {
     for (;;)
     {
-      buf_p1_15min[ix_15min] = Watts::power1;
-      buf_p2_15min[ix_15min] = Watts::power2;
+      if (Dimmer::isHC())
+      {
+        buf_p1_hc_15min[ix_15min] = Watts::power1;
+        buf_p2_hc_15min[ix_15min] = Watts::power2;
+        buf_p1_hp_15min[ix_15min] = 0;
+        buf_p2_hp_15min[ix_15min] = 0;
+      }
+      else
+      {
+
+        buf_p1_hc_15min[ix_15min] = 0;
+        buf_p2_hc_15min[ix_15min] = 0;
+        buf_p1_hp_15min[ix_15min] = Watts::power1;
+        buf_p2_hp_15min[ix_15min] = Watts::power2;
+      }
+
       ix_15min = (ix_15min + 1) % size_15min;
 
       // weblogf("task data2 %u unused from 3000\n",
@@ -39,8 +62,22 @@ namespace Data
   {
     for (;;)
     {
-      buf_p1_1h[ix_1h] = Watts::power1;
-      buf_p2_1h[ix_1h] = Watts::power2;
+      if (Dimmer::isHC())
+      {
+        buf_p1_hc_1h[ix_1h] = Watts::power1;
+        buf_p2_hc_1h[ix_1h] = Watts::power2;
+        buf_p1_hp_1h[ix_1h] = 0;
+        buf_p2_hp_1h[ix_1h] = 0;
+      }
+      else
+      {
+
+        buf_p1_hc_1h[ix_1h] = 0;
+        buf_p2_hc_1h[ix_1h] = 0;
+        buf_p1_hp_1h[ix_1h] = Watts::power1;
+        buf_p2_hp_1h[ix_1h] = Watts::power2;
+      }
+
       ix_1h = (ix_1h + 1) % size_1h;
 
       // weblogf("task data2 %u unused from 3000\n",
@@ -49,13 +86,27 @@ namespace Data
     }
   }
 
-  // FIXME moyenne des points par 15 min ?
+  // TODO moyenne des points par 15 min ?
   void taskData_24h(void*)
   {
     for (;;)
     {
-      buf_p1_24h[ix_24h] = Watts::power1;
-      buf_p2_24h[ix_24h] = Watts::power2;
+      if (Dimmer::isHC())
+      {
+        buf_p1_hc_24h[ix_24h] = Watts::power1;
+        buf_p2_hc_24h[ix_24h] = Watts::power2;
+        buf_p1_hp_24h[ix_24h] = 0;
+        buf_p2_hp_24h[ix_24h] = 0;
+      }
+      else
+      {
+
+        buf_p1_hc_24h[ix_24h] = 0;
+        buf_p2_hc_24h[ix_24h] = 0;
+        buf_p1_hp_24h[ix_24h] = Watts::power1;
+        buf_p2_hp_24h[ix_24h] = Watts::power2;
+      }
+
       ix_24h = (ix_24h + 1) % size_24h;
 
       // weblogf("task data180 %u unused from 3000\n",

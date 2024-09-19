@@ -10,8 +10,8 @@ namespace Dimmer
   // réponse du triac.
   inline constexpr float seuil_chofo =  -50; // W
   inline constexpr float max_chofo   = 2300; // W
-  inline constexpr int   start_hc    = 20'56; // 20 h 56
-  inline constexpr int   end_hc      =  4'56; // 04 h 56
+  inline constexpr int   start_hc    = 20'56'00; // 20 h 56
+  inline constexpr int   end_hc      =  4'56'00; // 04 h 56
 
   inline constexpr byte  max_value   = 255;
 
@@ -20,6 +20,7 @@ namespace Dimmer
 
   extern DimmableLight dimmer;
 
+  bool isHC();
   void begin();
 }
 

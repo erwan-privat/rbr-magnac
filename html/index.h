@@ -66,8 +66,8 @@ namespace html
           border: 1px solid #ededf0;
         }
       </style>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js">
-      </script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/3.0.1/chartjs-plugin-annotation.min.js" integrity="sha512-Hn1w6YiiFw6p6S2lXv6yKeqTk0PLVzeCwWY9n32beuPjQ5HLcvz5l2QsP+KilEr1ws37rCTw3bZpvfvVIeTh0Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
       <script>
 
       (function () {
@@ -85,8 +85,10 @@ namespace html
 
         document.addEventListener("DOMContentLoaded", () =>{ 
           const labels = ["24h", "1h", "15min"];
-          Magnac.prix = 2874;
+          Magnac.prix_hp = 2874;
+          Magnac.prix_hc = 2088;
           Magnac.chtconso = {};
+          Magnac.data = {};
 
           Chart.defaults.font.size = 14;
           labels.forEach(function (label) {
@@ -179,25 +181,25 @@ namespace html
             });
           }
 
-          function drawScreen(bin) {
+          // function drawScreen(bin) {
             // console.log(bin);
-          }
+          // }
 
-          const ctx = byId("screen").getContext("2d");
-          ctx.font = "28px sans-serif";
-          ctx.fillText("RBR Magnac", 24, 36);
-          function updateScreen() {
-            fetch("/screen").then(r => {
-              if (!r.ok)
-                throw new Error("screen HTTP " + r.status);
-              return r.json();
-            }).then(function (j) {
-              Magnac.screen = j;
-              // TODO decode 64
-              console.log(j.xbmp64)
-              drawScreen(atob(j.xbmp64));
-            });
-          }
+          // const ctx = byId("screen").getContext("2d");
+          // ctx.font = "28px sans-serif";
+          // ctx.fillText("RBR Magnac", 24, 36);
+          // function updateScreen() {
+            // fetch("/screen").then(r => {
+              // if (!r.ok)
+                // throw new Error("screen HTTP " + r.status);
+              // return r.json();
+            // }).then(function (j) {
+              // Magnac.screen = j;
+              // // TODO decode 64
+              // console.log(j.xbmp64)
+              // drawScreen(atob(j.xbmp64));
+            // });
+          // }
 
           function integrate(yy, dx) {
             return yy.reduce((a, y) => a + y * dx);
@@ -206,10 +208,59 @@ namespace html
           const onlyPos = arr =>
             arr.map(x => Math.max(x, 0));
 
-          byId("ekWh_hp").addEventListener("change", () => {
-            Magnac.prix = parseInt(this.value);
+          function inputChanged () {
+            Magnac.prix_hp = parseInt(byId("ekWh_hp").value);
+            Magnac.prix_hc = parseInt(byId("ekWh_hc").value);
             labels.forEach(updateData);
-          });
+          }
+
+          byId("ekWh_hp").addEventListener("change",
+            inputChanged);
+          byId("ekWh_hc").addEventListener("change",
+            inputChanged);
+
+          function closestIx(num, arr) {
+            var curr = arr[0];
+            var curr_ix = 0;
+            var diff = Math.abs(num - curr);
+            for (var ix = 1; ix < arr.length; ++ix) {
+              var newdiff = Math.abs(num - arr[ix]);
+              if (newdiff < diff) {
+                diff = newdiff;
+                curr = arr[ix];
+                curr_ix = ix;
+              }
+            }
+            return curr_ix;
+          }
+
+          // function parseHM(hm) {
+            // const h = Math.floor(hm / 100);
+            // const m = hm % 100;
+            // return { h: h, m: m };
+          // }
+
+          // function indexOfHM(label, hm) {
+            // const d = Magnac.data[label];
+            // const tt = hoursLabels(d.p2.length, d.res);
+            // const tt_int = tt.map(t =>
+              // parseInt(t.replaceAll(":", "")));
+            // const time = parseInt(hm) * 100;
+            // return closestIx(tt_int, time);
+          // }
+
+          function cleanUpData(j, label) {
+            j.p1_hc = j.p1_hc.map(x => -x);
+            j.p1_hp = j.p1_hp.map(x => -x);
+            Magnac.data[label] = j;
+            const p1 = j.p1_hc.map((x, i) =>
+              x + j.p1_hp[i]);
+            const p2 = j.p2_hc.map((x, i) =>
+              x + j.p2_hp[i]);
+            Magnac.data[label].p1 = p1;
+            Magnac.data[label].p2 = p2;
+            return j;
+          }
 
           function updateData(label) {
             fetch("/data_" + label).then(r => {
@@ -217,55 +268,86 @@ namespace html
                 throw new Error(`${label} HTTP${r.status}`);
               return r.json();
             }).then(function (j) {
-              Magnac.data = { label: j };
-              const p1 = j.p1.map(x => -x);
+              j = cleanUpData(j, label);
+              console.log(j);
 
-              const conso = onlyPos(j.p2);
-              const cumul = integrate(conso, j.res) /3600e3;
-              const euro  = cumul * Magnac.prix / 1e4;
-              byId("cumul_" + label).innerHTML = 
-                `${cumul.toFixed(3)} kWh
-                &times 0.${Magnac.prix} €/kWh =
-                ${euro.toFixed(2)} €`;
+              // ["hp", "hc"].forEach(h => {
+              ["hp"].forEach(h => {
+                const conso = onlyPos(j["p2_" + h]);
+                const cumul = integrate(conso, j.res)
+                  / 3600e3;
+                const prix = Magnac["prix_" + h];
+                const euro = cumul * prix / 1e4;
+                byId(`cumul_${h}_${label}`).innerHTML = 
+                  `${cumul.toFixed(3)} kWh
+                  &times; 0.${prix} €/kWh =
+                  ${euro.toFixed(2)} €`;
 
-              const eco = onlyPos(p1);
-              const total = integrate(eco, j.res) / 3600e3;
-              const eur_eco = total * Magnac.prix / 1e4;
-              byId("eco_" + label).innerHTML =
-                `${total.toFixed(3)} kWh
-                &times 0.${Magnac.prix} €/kWh =
-                ${eur_eco.toFixed(2)} € ! FIXME compte les hc`;
+                const eco = onlyPos(j["p1_" + h]);
+                const total = integrate(eco, j.res) / 3600e3;
+                const eur_eco = total * prix / 1e4;
+                byId(`eco_${h}_${label}`).innerHTML =
+                  `${total.toFixed(3)} kWh
+                  &times; 0.${prix} €/kWh =
+                  ${eur_eco.toFixed(2)} €`;
+              }); // hp hc
 
+              const t_labels = hoursLabels(j.p2.length,
+                j.res);
               Magnac.chtconso[label].data = {
-                labels: hoursLabels(j.p2.length, j.res),
+                labels: t_labels,
                 datasets: [
                 {
-                  label: "Consommation/surplus (W)",
-                  data: rotateArray(j.p2, j.ix),
+                  label: "Consommation/surplus (W) HP",
+                  data: rotateArray(j.p2_hp, j.ix),
                   pointStyle: false,
                   fill: {
-                    target: 'origin',
+                    target: "origin",
                     above: "#ff000044",
                     below: "#00ff0044",
                   },
                 },
                 {
                   pointStyle: false,
-                  label: "Chauffe-eau (W)",
-                  data: rotateArray(p1, j.ix),
-                }]
+                  label: "Chauffe-eau (W) HP",
+                  data: rotateArray(j.p1_hp, j.ix),
+                },
+                {
+                  label: "Consommation/surplus (W) HC",
+                  data: rotateArray(j.p2_hc, j.ix),
+                  pointStyle: false,
+                  fill: {
+                    target: "origin",
+                    above: "#ff880044",
+                    below: "#00ff0044",
+                  },
+                },
+                {
+                  pointStyle: false,
+                  label: "Chauffe-eau (W) HC",
+                  data: rotateArray(j.p1_hc, j.ix),
+                },
+                ],
               };
+
               Magnac.chtconso[label].update("none");
             });
           }
 
-          setInterval(updateOta,    1000);
-          setInterval(updateWatts,  2000);
-          setInterval(updateDimmer, 2000);
-          setInterval(updateData, 180000, "24h");
-          setInterval(updateData,   8000, "1h");
-          setInterval(updateData,   2000, "15min");
-          labels.forEach(updateData);
+          window.setWaitingInterval = function(f, d, p) {
+            f(p);
+            setTimeout(function rf (p) {
+              f(p);
+              setTimeout(rf, d, p);
+            }, d, p);
+          }
+
+          setWaitingInterval(updateOta,    1000);
+          setWaitingInterval(updateWatts,  2000);
+          setWaitingInterval(updateDimmer, 2000);
+          setWaitingInterval(updateData, 180000, "24h");
+          setWaitingInterval(updateData,   8000, "1h");
+          setWaitingInterval(updateData,   2000, "15min");
           
           // updateScreen();
           // setInterval(updateScreen,     2000);
@@ -299,25 +381,32 @@ namespace html
                id="ekWh_hp" value="2874" />
         €/kWh</b>
       </div>
+      <div>
+        <label for="ekWh_hc">Heure creuse</label>
+        <b>0.<input type="number"
+               id="ekWh_hc" value="2088" />
+        €/kWh</b>
+      </div>
 
       <h3>Consommation sur 24 heures</h3>
-      <div><label>Cumulé</label> <b id="cumul_24h"></b></div>
-      <div><label>Solaire vers chauffe-eau</label>
-        <b id="eco_24h"></b></div>
+      <div><label>Cumulé HP</label>
+        <b id="cumul_hp_24h"></b></div>
+      <div><label>Chauffe-eau HP</label>
+        <b id="eco_hp_24h"></b></div>
       <div><canvas id="pltconso_24h"></canvas></div>
 
       <h3>Consommation sur une heure</h3>
-      <div><label>Cumulé</label> <b id="cumul_1h"></b></div>
-      <div><label>Solaire vers chauffe-eau</label>
-        <b id="eco_1h"></b></p>
+      <div><label>Cumulé HP</label> <b id="cumul_hp_1h"></b></div>
+      <div><label>Chauffe-eau HP</label>
+        <b id="eco_hp_1h"></b></p>
       <div><canvas id="pltconso_1h"></canvas></div>
 
       <h3>Consommation sur 15 minutes</h3>
       <div>
-        <label>Cumulé</label> <b id="cumul_15min"></b>
+        <label>Cumulé HP</label> <b id="cumul_hp_15min"></b>
       </div>
-      <div><label>Solaire vers chauffe-eau</label>
-        <b id="eco_15min"></b></p>
+      <div><label>Chauffe-eau HP</label>
+        <b id="eco_hp_15min"></b></p>
       <div><canvas id="pltconso_15min"></canvas></div>
 
       <div id="ota" class="disabled">
@@ -328,7 +417,7 @@ namespace html
         </progress>
       </div>
 
-      <div><canvas id="screen">Écran</canvas></div>
+      <!-- <div><canvas id="screen">Écran</canvas></div> -->
     </body>
   </html>)%";
 }

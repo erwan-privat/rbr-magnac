@@ -11,7 +11,7 @@ namespace Heure
   inline constexpr unsigned long update_interval = 3600'000l;
   extern NTPClient time_client;
   
-  int getTimeHM();
+  int getTimeHMS();
   void taskUpdate(void*);
   void taskForceUpdate(void*);
   void begin();
