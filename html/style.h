@@ -23,13 +23,17 @@ namespace html
         content: "\00a0: ";
       }
 
-      b, b.input {
+      b, b input {
         font-family: "Courier New", monospace;
         font-weight: bold;
         /* font-size: 1.1em; */
       }
 
-      .eco_hp {
+      .heures_hphc.hc::after {
+        content: " ✓";
+      }
+
+      .eco_hp, .heures_hphc.hc {
         color: hsl(135, 90%, 30%);
       }
       .eco_hc, .cumul {

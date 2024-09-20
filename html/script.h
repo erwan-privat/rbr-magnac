@@ -138,9 +138,12 @@ namespace html
             byId("force_off").checked = j.force_off;
             byId("force_on" ).checked = j.force_on;
             byId("hc_on"    ).checked = j.hc_on;
-            byId("heures_hphc").innerHTML =
+
+            const hphc = byId("heures_hphc");
+            hphc.innerHTML =
               `${decodeHMS(j.start_hc)} –­
                ${decodeHMS(j.end_hc)}`;
+            hphc.classList.toggle("hc", j.hc_on);
           }).finally(function (j) {
             setTimeout(updateDimmer, 2000);
           });

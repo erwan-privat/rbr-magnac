@@ -59,7 +59,7 @@ namespace html
               disabled="disabled" />
           </div>
           <div>
-            <b id="heures_hphc"></b>
+            <span id="heures_hphc"></span>
           </div>
         </div>
       </div>
