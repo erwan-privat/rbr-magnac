@@ -11,6 +11,7 @@ namespace Dimmer
 {
   extern bool force_off = true;
   extern bool force_on  = false;
+  extern bool hc_on     = false;
 
   extern DimmableLight dimmer(dimmer_com);
   byte value = 0;
@@ -23,7 +24,7 @@ namespace Dimmer
 
       if (force_off)
         dimmer.setBrightness(0);
-      else if (force_on)
+      else if (force_on || hc_on)
         dimmer.setBrightness(max_value);
       else
         dimmer.setBrightness(value);
@@ -63,21 +64,9 @@ namespace Dimmer
       value = redress(amount);
 
       // FIXME removed hc for tests
-      // force_on = isHC();
+      hc_on = isHC();
 
       delay(2000);
-
-      // weblogf("tot = %f W, dispo = %f W, value = %d, "
-              // "sending_th = %f, sending = %f W\n",
-          // ptot, pavailable, value,
-          // max_chofo * (float)value / max_value,
-          // -Watts::power1);
-
-      // weblogf("> value = %d, redressed = %d\n",
-          // value, redress(amount));
-      // weblogf("H = %d, force_on = %d\n", h, force_on);
-      // for (int i = 0 ; i < 256 ; i += 10)
-        // weblogf("%d -> %d\n", i, redress(i));
     }
   }
 

@@ -1,6 +1,8 @@
 #include "ServeurWeb.h"
 
 #include "html/index.h"
+#include "html/style.h"
+#include "html/script.h"
 #include "html/favicon.h"
 #include "Data.h"
 #include "Dimmer.h"
@@ -22,7 +24,7 @@ namespace ServeurWeb
   using Res = AsyncWebServerResponse;
   using Req = AsyncWebServerRequest;
   using Rst = AsyncResponseStream;
-  // using Prm = AsyncWebParameter;
+  using Prm = AsyncWebParameter;
 
   AsyncWebServer server(80);
 
@@ -35,21 +37,35 @@ namespace ServeurWeb
   {
     server.on("/", HTTP_GET, [](Req* req)
     {
+      weblog("GET /");
       Rst* res = req->beginResponseStream("text/html");
-      res->print(html::content);
+      res->print(html::index_start);
+      res->print(html::style);
+      res->print(html::script);
+      res->print(html::index_end);
       req->send(res);
     });
 
     server.on("/favicon.ico", HTTP_GET, [](Req* req)
     {
+      weblog("GET /favicon.ico");
       Res* response = req->beginResponse_P(200,
         "image/x-icon",
         html::favicon_ico, html::favicon_ico_len);
       req->send(response);
     });
+
+    server.on("/robots.txt", HTTP_GET, [](Req* req)
+    {
+      weblog("Request /robots.txt");
+      req->send(200, "text/plain",
+          "User-agent: *\n"
+          "Disallow: /\n");
+    });
     
     server.on("/ota", HTTP_GET, [](Req* req)
     {
+      weblog("GET /ota");
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["last_boot"] = Data::last_boot;
@@ -64,6 +80,7 @@ namespace ServeurWeb
     
     server.on("/watts", HTTP_GET, [](Req* req)
     {
+      weblog("GET /watts");
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["power1"] = Watts::power1;
@@ -82,12 +99,14 @@ namespace ServeurWeb
 
     server.on("/dimmer", HTTP_GET, [](Req* req)
     {
+      weblog("GET /dimmer");
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["force_off"] = Dimmer::force_off;
       root["force_on"]  = Dimmer::force_on;
-      root["start_hp"]  = Dimmer::start_hc;
-      root["end_hp"]    = Dimmer::end_hc;
+      root["hc_on"]     = Dimmer::hc_on;
+      root["start_hc"]  = Dimmer::start_hc;
+      root["end_hc"]    = Dimmer::end_hc;
       root["time"]      = Heure::getTimeHMS();
 
       Rst* res = req->beginResponseStream(
@@ -98,6 +117,7 @@ namespace ServeurWeb
 
     server.on("/screen", HTTP_GET, [](Req* req)
     {
+      weblog("GET /screen");
       constexpr auto screen64_size = 1368;
       char screen64[screen64_size + 1];
 
@@ -121,6 +141,7 @@ namespace ServeurWeb
 
     server.on("/data_15min", HTTP_GET, [](Req* req)
     {
+      weblog("GET /data_15min");
       if (Ota::updating)
         return;
 
@@ -149,6 +170,7 @@ namespace ServeurWeb
 
     server.on("/data_1h", HTTP_GET, [](Req* req)
     {
+      weblog("GET /data_1h");
       if (Ota::updating)
         return;
 
@@ -177,6 +199,7 @@ namespace ServeurWeb
 
     server.on("/data_24h", HTTP_GET, [](Req* req)
     {
+      weblog("GET /data_24h");
       if (Ota::updating)
         return;
 
@@ -201,6 +224,29 @@ namespace ServeurWeb
         "application/json");
       root.printTo(*res);
       req->send(res);
+    });
+
+    // server.on("/control", HTTP_POST, [](Req* req)
+    server.on("/control", HTTP_GET, [](Req* req)
+    {
+      // weblog("POST /control");
+      weblog("GET /control");
+
+      if (req->hasParam("force_off"))
+      {
+        Prm* p_off = req->getParam("force_off");
+        Dimmer::force_off = p_off->value() == "true";
+        weblogf("force_off: %s\n", p_off->value());
+      }
+
+      if (req->hasParam("force_on"))
+      {
+        Prm* p_on = req->getParam("force_on");
+        Dimmer::force_on = p_on->value() == "true";
+        weblogf("force_on: %s\n", p_on->value());
+      }
+
+      req->send(200);
     });
 
     server.begin();
