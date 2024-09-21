@@ -246,6 +246,13 @@ namespace ServeurWeb
         weblogf("force_on: %s\n", p_on->value());
       }
 
+      if (req->hasParam("hc_on"))
+      {
+        Prm* p = req->getParam("hc_on");
+        Dimmer::hc_on = p->value() == "true";
+        weblogf("hc_on: %s\n", p->value());
+      }
+
       req->send(200);
     });
 

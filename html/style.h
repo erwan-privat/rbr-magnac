@@ -8,7 +8,7 @@ namespace html
       body {
         font-family: Ubuntu, "Segoe UI", sans-serif;
         font-size: 1em;
-        width: 80%;
+        width: 85%;
         margin: auto;
         background: hsl(50, 100%, 90%);
         color: #222;
@@ -23,17 +23,19 @@ namespace html
         content: "\00a0: ";
       }
 
-      b, b input {
+      b {
         font-family: "Courier New", monospace;
         font-weight: bold;
-        /* font-size: 1.1em; */
+      }
+      b input {
+        font: inherit;
       }
 
-      .heures_hphc.hc::after {
+      #heures_hphc.hc::after {
         content: " ✓";
       }
 
-      .eco_hp, .heures_hphc.hc {
+      .eco_hp, #heures_hphc.hc {
         color: hsl(135, 90%, 30%);
       }
       .eco_hc, .cumul {

@@ -56,7 +56,7 @@ namespace html
               Marche heure creuse
             </label>
             <input type="checkbox" id="hc_on"
-              disabled="disabled" />
+              name="hc_on" />
           </div>
           <div>
             <span id="heures_hphc"></span>

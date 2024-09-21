@@ -11,7 +11,7 @@ namespace Dimmer
 {
   extern bool force_off = true;
   extern bool force_on  = false;
-  extern bool hc_on     = false;
+  extern bool hc_on     = true;
 
   extern DimmableLight dimmer(dimmer_com);
   byte value = 0;
@@ -24,7 +24,7 @@ namespace Dimmer
 
       if (force_off)
         dimmer.setBrightness(0);
-      else if (force_on || hc_on)
+      else if (force_on || (hc_on && isHC()))
         dimmer.setBrightness(max_value);
       else
         dimmer.setBrightness(value);
@@ -62,9 +62,6 @@ namespace Dimmer
 
       float amount = pavailable * max_value / max_chofo;
       value = redress(amount);
-
-      // FIXME removed hc for tests
-      hc_on = isHC();
 
       delay(2000);
     }

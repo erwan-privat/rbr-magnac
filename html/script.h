@@ -92,7 +92,7 @@ namespace html
             }
 
           }).finally(function (j) {
-            setTimeout(updateOta, 1000);
+            setTimeout(updateOta, 10000);
           });
         }
 
@@ -113,7 +113,7 @@ namespace html
                 Math.round(j.power2 - j.power1) + " W";
 
             }).finally(function (j) {
-              setTimeout(updateWatts, 2000);
+              setTimeout(updateWatts, 4000);
             });
         }
 
@@ -143,9 +143,9 @@ namespace html
             hphc.innerHTML =
               `${decodeHMS(j.start_hc)} –­
                ${decodeHMS(j.end_hc)}`;
-            hphc.classList.toggle("hc", j.hc_on);
+            // hphc.classList.toggle("hc", j.hc_on);
           }).finally(function (j) {
-            setTimeout(updateDimmer, 2000);
+            setTimeout(updateDimmer, 4000);
           });
         }
 
@@ -163,6 +163,8 @@ namespace html
         byId("force_on").addEventListener("change",
           updateControl);
         byId("force_off").addEventListener("change",
+          updateControl);
+        byId("hc_on").addEventListener("change",
           updateControl);
 
         function integrate(yy, dx) {
@@ -199,7 +201,7 @@ namespace html
         const time_updateData = {};
         time_updateData["24h"]   = 180000;
         time_updateData["1h"]    =   8000;
-        time_updateData["15min"] =   2000;
+        time_updateData["15min"] =   4000;
 
         function updateData(label) {
           fetch("/data_" + label).then(r => {
@@ -227,7 +229,7 @@ namespace html
 
               const eco = onlyPos(j["p1_" + h]);
               const total = integrate(eco, j.res) / 3600e3;
-              const eur_eco = -total * prix / 1e4;
+              const eur_eco = total * prix / 1e4;
               byId(`eco_${h}_${label}`).innerHTML =
                 `${total.toFixed(3)} kWh
                 &times; 0.${prix} €/kWh =
