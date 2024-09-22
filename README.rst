@@ -57,14 +57,13 @@ comprend :
 * |ss| Serveur web pour tracer les graphes de consommation
   etc. |se|
 * |ss| Implementation cpp/h. |se|
-*  |ss| Bug d'affichage pour la production en heures
+* |ss| Bug d'affichage pour la production en heures
   creuses. |se|
-* [EN COURS] Style de la page.
-* [EN COURS] Calculer les économies réelles journalières.
-* [PEUT-ÊTRE] Utiliser l'API REST pour modifier les
-  paramètres.
-* [PEUT-ÊTRE] Fusioner les fonctions pour 15 min, 1 h et 24
-  h.
+* |ss| Style de la page. |se|
+* Bouger l'endroit du « dernier reboot », j'aime pas là.
+* |ss| Calculer les économies réelles journalières. |se|
+* |ss| Utiliser l'API REST pour modifier les paramètres.
+  |se|
 * [PEUT-ÊTRE] Reproduction de l'écran.
 * [PEUT-ÊTRE] Gestion du ventilateur du thyristor (peut-être
   ; j'ai mesuré au maximum une température de 28 °C sur le
@@ -149,10 +148,10 @@ Todo
   data. |se|
 * |ss| Switch to cpp/h implementation. |se|
 * |ss| Display bug in off-peak hours for consumption. |se|
-* [WIP] Compute actual savings per the day;
-* [WIP] Style the web page.
-* [MAYBE] Use REST API to update some settings.
-* [MAYBE] Merge functions for 15 min, 1 h and 24 h.
+* |ss| Compute actual savings per the day; |se|
+* |ss| Style the web page. |ss|
+* |ss| Use REST API to update some settings. |se|
+* Move "last reboot" and kwH price, don't like it here.
 * [MAYBE] Screen reproduction.
 * [MAYBE] Fan control. Not needed right now, the maximum
   temperature I measured on the thyristor (equipped with a

@@ -22,11 +22,12 @@ namespace html
       <h1><img src="/favicon.ico" alt="sun" />
       Routeur solaire RBR Magnac</h1>
       <menu>
-        <li><a href="/webserial">Web serial</a></li>
+        <li><a href="/webserial" target="_blank">
+            Web serial</a></li>
       </menu>
       <div class="flex-container">
         <div id="instant" class="box">
-          <h2>⚡ À l'instant</h2>
+          <h2>À l'instant</h2>
           <div class="item"><label>Dernier reboot</label>
             <b id="last_boot"></b></div>
           <div class="item"><label>Conso totale</label>
@@ -37,7 +38,7 @@ namespace html
             <b id="p1">0 W</b></div>
         </div>
         <div id="control" class="box">
-          <h2>⚙️ &nbsp;Contrôle</h2>
+          <h2>Contrôle</h2>
           <div class="item">
             <label for="force_off">
               Arrêt forcé
@@ -57,12 +58,12 @@ namespace html
             <input type="checkbox" id="hc_on" name="hc_on">
           </div>
           <div>
-            <span id="heures_hphc">🕘 20 h 56 –­04 h 56</span>
+            <span id="heures_hphc">20 h 56 –­04 h 56</span>
           </div>
         </div>
       </div>
 
-      <h2>📈 Données et consommation</h2>
+      <h2 id="donnees_conso">Données et consommation</h2>
       <div>
         <label for="ekWh_hp">Heure pleine</label>
         <b>0.<input type="number" id="ekWh_hp" value="2874">

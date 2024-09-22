@@ -11,12 +11,9 @@ namespace html
 <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Inria+Sans:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
     <style>
       :root {
-        /* --bg:   hsl(50, 100%, 90%); */
         --bg:   hsl(180, 100%, 90%);
         --good: hsl(135, 90%, 30%);
         --bad:  hsl(0,   90%, 30%);
-        --box-bg: hsla(50, 100%, 90%, 40%);
-        /* --box-bg: #fefefe; */
       }
 
       body {
@@ -24,12 +21,35 @@ namespace html
         font-size: 1em;
         width: calc(100% - 60px);
         margin: auto;
+        margin-bottom: 50px;
         background-color: var(--bg);
         background-image: radial-gradient(
           circle at 30px 30px,
           #fff 0%, #ff8 10%, var(--bg) 50%);
         background-attachment: fixed;
-        color: #222;
+        color: #111;
+      }
+
+      menu { 
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        padding: 10px;
+      }
+
+      menu li {
+        list-style: none;
+      }
+      menu li a {
+        display: inline-block;
+        padding: 5px;
+        text-decoration: none;
+      }
+      menu li a::after {
+        content: "\00a0🗒️";
+      }
+      menu li a:hover {
+        background: #0002;
       }
 
       h1 {
@@ -58,10 +78,6 @@ namespace html
         background: #fff8;
         border: 0;
         border-bottom: 1px solid #0008;
-      }
-
-      #heures_hphc::before {
-        content: "🕘 \00a0";
       }
 
       #heures_hphc.hc::after {
@@ -107,6 +123,18 @@ namespace html
       #instant label {
         width: 120px;
       }
+      #instant h2::before {
+        content: "⚡\00a0";
+      }
+      #control h2::before {
+        content: "⚙️\00a0\00a0";
+      }
+      #donnees_conso::before {
+        content: "📈\00a0";
+      }
+      #heures_hphc::before {
+        content: "🕘\00a0";
+      }
 
       #ota.disabled {
         display: none;
@@ -139,12 +167,6 @@ namespace html
         margin: 20px;
         height: 20px;
         border: 1px solid #ededf0;
-      }
-
-      /* dev test only */
-      .chart img {
-        width: 100%;
-        margin-top: 30px;
       }
     </style>
   )%";

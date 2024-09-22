@@ -113,8 +113,11 @@ namespace html
               byId("p2").innerHTML =
                 Math.round(j.power2) + " W";
 
+              var ptot = j.power2 - j.power1;
+              if (Magnac.dimmer.hc_on)
+                ptot = j.power2;
               byId("ptot").innerHTML =
-                Math.round(j.power2 - j.power1) + " W";
+                Math.round(ptot) + " W";
 
             }).finally(function (j) {
               setTimeout(updateWatts, 4000);
@@ -163,7 +166,9 @@ namespace html
           const checked = event.currentTarget.checked;
           const name    = event.currentTarget.name;
           const param = `${name}=${checked}`;
-          event.currentTarget.disabled = true;
+          byId("force_off").disabled = true;
+          byId("force_on" ).disabled = true;
+          byId("hc_on"    ).disabled = true;
           console.log(param)
           fetch("/control?" + param).then(r => {
             if (!r.ok)
