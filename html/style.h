@@ -55,7 +55,7 @@ namespace html
       }
       b input {
         font: inherit;
-        background: #0002;
+        background: #fff8;
         border: 0;
         border-bottom: 1px solid #0008;
       }

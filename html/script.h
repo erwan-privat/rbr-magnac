@@ -152,6 +152,10 @@ namespace html
             hphc.classList.toggle("hc", j.hc_on);
           }).finally(function (j) {
             setTimeout(updateDimmer, 4000);
+
+            byId("force_off").disabled = false;
+            byId("force_on" ).disabled = false;
+            byId("hc_on"    ).disabled = false;
           });
         }
 
@@ -159,6 +163,7 @@ namespace html
           const checked = event.currentTarget.checked;
           const name    = event.currentTarget.name;
           const param = `${name}=${checked}`;
+          event.currentTarget.disabled = true;
           console.log(param)
           fetch("/control?" + param).then(r => {
             if (!r.ok)
