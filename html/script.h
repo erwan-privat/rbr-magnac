@@ -152,7 +152,7 @@ namespace html
                ${decodeHMS(j.end_hc)}`;
             const in_hc = j.hc_on
               && j.time >= j.start_hc && j.time < j.end_hc;
-            hphc.classList.toggle("hc", j.hc_on);
+            hphc.classList.toggle("hc", in_hc);
           }).finally(function (j) {
             setTimeout(updateDimmer, 4000);
 
