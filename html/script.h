@@ -64,6 +64,7 @@ namespace html
         }
 
         function updateOta() {
+          var ongoing = false;
           fetch("/ota").then(function (r) {
             if (!r.ok)
               throw new Error("ota HTTP " + r.status);
@@ -83,16 +84,19 @@ namespace html
                 .toggle("disabled", false);
               byId("ota").classList
                 .toggle("enabled", true);
+
+              ongoing = true;
             }
             else if (ota_refresh)
             {
+              ongoing = false;
               setTimeout(() => window.location.reload(),
                 5000);
               return;
             }
 
           }).finally(function (j) {
-            setTimeout(updateOta, 10000);
+            setTimeout(updateOta, ongoing ? 500 : 3000);
           });
         }
 
@@ -143,7 +147,9 @@ namespace html
             hphc.innerHTML =
               `${decodeHMS(j.start_hc)} –­
                ${decodeHMS(j.end_hc)}`;
-            // hphc.classList.toggle("hc", j.hc_on);
+            const in_hc = j.hc_on
+              && j.time >= j.start_hc && j.time < j.end_hc;
+            hphc.classList.toggle("hc", j.hc_on);
           }).finally(function (j) {
             setTimeout(updateDimmer, 4000);
           });
