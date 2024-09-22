@@ -108,7 +108,7 @@ namespace html
         background: #0005;
         border-radius: 5px 5px 0 0;
         color: #fff;
-        text-shadow: 0 0 1px #000, 0 0 1px #000;
+        /* text-shadow: 0 0 1px #000, 0 0 1px #000; */
       }
 
       .box {
