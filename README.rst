@@ -11,8 +11,6 @@ English below.
 FRANÇAIS
 =========
 
-Vous voulez me filer un coup de pouce ? J'ai une
-`page Ko-Fi <https://ko-fi.com/eprivat/goal?g=0>`_. 
 
 Lisez-moi
 ---------
@@ -81,7 +79,7 @@ va rebooter la machine.
 Pour ce faire j'ai modifié dans la bibliothèque le fichier
 `AsyncTCP.cpp:98`, remplaçant par::
 
-  _async_queue = xQueueCreate(256, sizeof(lwip_event_packet_t *));
+  _async_queue = xQueueCreate(1024, sizeof(lwip_event_packet_t *));
 
 
 Licence
@@ -94,15 +92,12 @@ dans un cadre capitaliste.
 Aide
 ----
 
-Comme énoncé plus haut, si vous pouviez contribuer sur ma
+Vous pouvez faire un don quelque soit le montan
 `page Ko-Fi <https://ko-fi.com/eprivat/goal?g=0>`_ ça
 m'aiderait énormément, si vous en avez les moyens.
 
 ENGLISH
 =======
-
-Want to help? Please check my `Ko-Fi page
-<https://ko-fi.com/eprivat/goal?g=0>`_.
 
 Readme
 ------
@@ -179,7 +174,7 @@ are not using it as part of a capitalist organisation.
 Can I help?
 -----------
 
-As I mentionned before, please take a look at my
+Please take a look at my
 `Ko-Fi page <https://ko-fi.com/eprivat/goal?g=0>`_, and
 consider tipping if you can afford it, that would help
 enormously.

@@ -47,7 +47,9 @@ namespace WiFiMagnac
         // Ecran::wifi_connected = true;
         break;
 
+      case ARDUINO_EVENT_WIFI_STA_LOST_IP:
       case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+        connected = false;
         eplog("WiFi disconnected.");
         // Ecran::wifi_connected = false;
         WiFi.reconnect();

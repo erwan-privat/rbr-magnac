@@ -12,8 +12,10 @@ namespace html
     <style>
       :root {
         --bg:   hsl(180, 100%, 90%);
-        --good: hsl(135, 90%, 30%);
-        --bad:  hsl(0,   90%, 30%);
+        --good: hsl(135,  90%, 30%);
+        --bad:  hsl(  0,  90%, 30%);
+        /* --sky: hsla(200, 100%, 14%, 50); */
+        --sky: #0005;
       }
 
       body {
@@ -105,10 +107,11 @@ namespace html
         margin: -10px;
         margin-bottom: 10px;
         padding: 10px;
-        background: #0005;
+        background: var(--sky);
         border-radius: 5px 5px 0 0;
         color: #fff;
         /* text-shadow: 0 0 1px #000, 0 0 1px #000; */
+        font-size: 1.3em;
       }
 
       .box {

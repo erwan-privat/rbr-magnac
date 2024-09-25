@@ -114,7 +114,7 @@ namespace html
                 Math.round(j.power2) + " W";
 
               var ptot = j.power2 - j.power1;
-              if (Magnac.dimmer.hc_on)
+              if (Magnac.dimmer?.hc_on)
                 ptot = j.power2;
               byId("ptot").innerHTML =
                 Math.round(ptot) + " W";
@@ -268,7 +268,7 @@ namespace html
               labels: t_labels,
               datasets: [
               {
-                label: "Consommation/surplus (W) HP",
+                label: "Consommation/surplus HP (W)",
                 data: rotateArray(j.p2_hp, j.ix),
                 pointStyle: false,
                 borderColor: "#36a2eb",
@@ -281,24 +281,24 @@ namespace html
               {
                 pointStyle: false,
                 borderColor: "#cf0911",
-                label: "Chauffe-eau (W) HP",
+                label: "Chauffe-eau HP (W)",
                 data: rotateArray(j.p1_hp, j.ix),
               },
               {
-                label: "Consommation/surplus (W) HC",
+                label: "Consommation HC (W)",
                 data: rotateArray(j.p2_hc, j.ix),
                 pointStyle: false,
                 borderColor: "#7a49a5",
                 fill: {
                   target: "origin",
-                  above: "#ffce5644",
+                  above: "#7a49a544",
                   below: "#00ff0044",
                 },
               },
               {
                 pointStyle: false,
-                borderColor: "#ffce56",
-                label: "Chauffe-eau (W) HC",
+                borderColor: "#ff8800",
+                label: "Chauffe-eau HC (W)",
                 data: rotateArray(j.p1_hc, j.ix),
               },
               ],
