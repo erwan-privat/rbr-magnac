@@ -116,7 +116,7 @@ ENGLISH
 
 HERE
 
-.. image:: https://github.com/erwan-privat/rbr-magnac/blob/master/screenshot1.png?raw=true
+.. image:: https://raw.githubusercontent.com/erwan-privat/rbr-magnac/refs/heads/master/screenshot1.png
    :width: 100px
    :alt: Screenshot showing the basic interface to control
    the water-heater behavior, and data about the electrical
