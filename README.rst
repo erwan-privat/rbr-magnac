@@ -118,6 +118,8 @@ HERE
 
 <img src="https://github.com/erwan-privat/rbr-magnac/blob/master/screenshot1.png?raw=true" />
 
+![image](https://github.com/erwan-privat/rbr-magnac/blob/master/screenshot1.png?raw=true)
+
 .. .. image:: https://github.com/erwan-privat/rbr-magnac/blob/master/screenshot1.png?raw=true
 ..    :alt: Screenshot showing the basic interface to control
 ..    the water-heater behavior, and data about the electrical
