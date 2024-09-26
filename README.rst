@@ -11,6 +11,18 @@ English below.
 FRANÇAIS
 =========
 
+.. image:: screenshot1.png
+   :alt: Capture d'écran montrant l'interface de contrôle du
+   cheauffe-eau pour différent scénarios |ss| (et non pas
+   scénarii) |se| et les données sur le coût en électricité
+   ainsi que les économies réalisées calculées en fonction
+   du prix en euro au kilowatt·heure inscrit.
+
+.. image:: screenshot1.png
+   :alt: Capture d'écran montrant un graphique composé de la
+   consommation en heure creuse et pleine, ainsi que le
+   consommation du surplus par le cheauffe-eau sur les
+   dernières 24 heures.
 
 Lisez-moi
 ---------
@@ -98,6 +110,18 @@ m'aiderait énormément, si vous en avez les moyens.
 
 ENGLISH
 =======
+
+.. image:: screenshot1.png
+   :alt: Screenshot showing the basic interface to control
+   the water-heater behavior, and data about the electrical
+   costs and savings based on inputs setting the price in
+   euro per kilowatt·hour.
+
+.. image:: screenshot1.png
+   :alt: Screeshot showing a graph of the last 24 hours
+   comprised of the total consumption, the water-heater
+   consumption in off-peak hours and the over-production
+   taken by said water-heater.
 
 Readme
 ------
