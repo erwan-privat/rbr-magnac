@@ -114,8 +114,9 @@ m'aiderait énormément, si vous en avez les moyens.
 ENGLISH
 =======
 
+HERE
 
-.. image:: /erwan-privat/rbr-magnac/blob/master/screenshot1.png?raw=true
+.. image:: https://github.com/erwan-privat/rbr-magnac/blob/master/screenshot1.png?raw=true
    :alt: Screenshot showing the basic interface to control
    the water-heater behavior, and data about the electrical
    costs and savings based on inputs setting the price in
@@ -128,6 +129,7 @@ ENGLISH
    consumption in off-peak hours and the over-production
    taken by said water-heater.
 
+WAS HERE
 
 Readme
 ------
