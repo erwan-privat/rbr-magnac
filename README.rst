@@ -30,6 +30,7 @@ comprend :
   marche forcée ;
 
 .. image:: screenshot1.png
+   :align: center
    :alt: Capture d'écran montrant l'interface de contrôle du chauffe-eau pour différent scénarios (et non pas scénarii) et les données sur le coût en électricité ainsi que les économies réalisées calculées en fonction du prix en euro au kilowatt·heure inscrit.
 
 * information sur écran avec écran de chargement (mon chat),
@@ -42,6 +43,7 @@ comprend :
   <https://chartjs.org>`_ ;
 
 .. image:: screenshot2.png
+   :align: center
    :alt: Capture d'écran montrant un graphique composé de la consommation en heure creuse et pleine, ainsi que le consommation du surplus par le chauffe-eau sur les dernières 24 heures.
 
 * code découpé en tâches permettant une bonne séparation des
@@ -125,7 +127,8 @@ overproduction to say a water-heater, including:
   solar (non-)production at night or whenever without the
   need of a relay;
 
-.. image:: https://raw.githubusercontent.com/erwan-privat/rbr-magnac/refs/heads/master/screenshot1.png
+.. image:: screenshot1.png
+   :align: center
    :alt: Screenshot showing the basic interface to control the water-heater behavior, and data about the electrical costs and savings based on inputs setting the price in euro per kilowatt·hour.
 
 * screen info with loading splash screen (my cat), time,
@@ -137,7 +140,8 @@ overproduction to say a water-heater, including:
   device consumption using `Chart.js
   <https://chartjs.org>`_;
 
-.. image:: screenshot2.png?raw=true
+.. image:: screenshot2.png
+   :align: center
    :alt: Screeshot showing a graph of the last 24 hours comprised of the total consumption, the water-heater consumption in off-peak hours and the over-production taken by said water-heater.
 
 * task oriented code allowing good isolation of code modules
