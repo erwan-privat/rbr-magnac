@@ -14,8 +14,8 @@ FRANÇAIS
 
 .. image:: screenshot1.png
    :alt: Capture d'écran montrant l'interface de contrôle du
-   cheauffe-eau pour différent scénarios |ss| (et non pas
-   scénarii) |se| et les données sur le coût en électricité
+   cheauffe-eau pour différent scénarios (et non pas
+   scénarii) et les données sur le coût en électricité
    ainsi que les économies réalisées calculées en fonction
    du prix en euro au kilowatt·heure inscrit.
 
