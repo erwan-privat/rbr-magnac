@@ -115,7 +115,7 @@ ENGLISH
 =======
 
 
-.. image:: screenshot1.png?raw=true
+.. image:: /erwan-privat/rbr-magnac/blob/master/screenshot1.png?raw=true
    :alt: Screenshot showing the basic interface to control
    the water-heater behavior, and data about the electrical
    costs and savings based on inputs setting the price in
