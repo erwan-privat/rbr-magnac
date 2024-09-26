@@ -115,14 +115,14 @@ ENGLISH
 =======
 
 
-.. image:: screenshot1.png
+.. image:: screenshot1.png?raw=true
    :alt: Screenshot showing the basic interface to control
    the water-heater behavior, and data about the electrical
    costs and savings based on inputs setting the price in
    euro per kilowatt·hour.
 
 
-.. image:: screenshot2.png
+.. image:: screenshot2.png?raw=true
    :alt: Screeshot showing a graph of the last 24 hours
    comprised of the total consumption, the water-heater
    consumption in off-peak hours and the over-production
