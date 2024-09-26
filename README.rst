@@ -174,7 +174,7 @@ Todo
 * |ss| Switch to cpp/h implementation. |se|
 * |ss| Display bug in off-peak hours for consumption. |se|
 * |ss| Compute actual savings per the day; |se|
-* |ss| Style the web page. |ss|
+* |ss| Style the web page. |se|
 * |ss| Use REST API to update some settings. |se|
 * Move "last reboot" and kwH price, don't like it here.
 * [MAYBE] Screen reproduction.
