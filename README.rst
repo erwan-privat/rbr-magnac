@@ -6,6 +6,8 @@
 
   </strike>
 
+.. image:: screenshot1.png
+
 English below.
 
 FRANÇAIS
@@ -28,11 +30,6 @@ comprend :
   ouvert à 10 % de 2400 W qui ne délivre que 30 W) ;
 * gestion des heures creuses sans nécessiter de relai de
   marche forcée ;
-
-.. image:: screenshot1.png
-   :align: center
-   :alt: Capture d'écran montrant l'interface de contrôle du chauffe-eau pour différent scénarios (et non pas scénarii) et les données sur le coût en électricité ainsi que les économies réalisées calculées en fonction du prix en euro au kilowatt·heure inscrit.
-
 * information sur écran avec écran de chargement (mon chat),
   l'heure, l'affichage de la consommation du foyer si le
   chauffe-eau n'est pas alimenté, ou, de la consommation
@@ -41,11 +38,6 @@ comprend :
 * graphe des dernières 15 minutes et 24 heures de la conso
   générale et de l'appareil avec `Chart.js
   <https://chartjs.org>`_ ;
-
-.. image:: screenshot2.png
-   :align: center
-   :alt: Capture d'écran montrant un graphique composé de la consommation en heure creuse et pleine, ainsi que le consommation du surplus par le chauffe-eau sur les dernières 24 heures.
-
 * code découpé en tâches permettant une bonne séparation des
   différents modules basé sur le principe de responsabilité
   unique (*sole responsability principle*, même si j'avoue
@@ -126,11 +118,6 @@ overproduction to say a water-heater, including:
 * off-peak hours handling (« *heures creuses* ») to override
   solar (non-)production at night or whenever without the
   need of a relay;
-
-.. image:: screenshot1.png
-   :align: center
-   :alt: Screenshot showing the basic interface to control the water-heater behavior, and data about the electrical costs and savings based on inputs setting the price in euro per kilowatt·hour.
-
 * screen info with loading splash screen (my cat), time,
   ip address, and displaying the actual consumption of the
   household if not powering the water-heater, or the actual
@@ -139,11 +126,6 @@ overproduction to say a water-heater, including:
 * Plot of the last 15 minutes and 24 hours of the total and
   device consumption using `Chart.js
   <https://chartjs.org>`_;
-
-.. image:: screenshot2.png
-   :align: center
-   :alt: Screeshot showing a graph of the last 24 hours comprised of the total consumption, the water-heater consumption in off-peak hours and the over-production taken by said water-heater.
-
 * task oriented code allowing good isolation of code modules
   (sole responsability principle, could be better I admit)
   and using all cores of any FreeRTOS based device;
