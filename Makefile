@@ -94,11 +94,11 @@ SPEEDLABEL = UploadSpeed
 SPEEDUP = 115200
 # SPEEDUP = 921600
 
-ifdef GIT_VERSION
+# ifdef GIT_VERSION
   # CFLAGS = --build-property compiler.cpp.extra_flags=-DMYVERSION=\"$(GIT_VERSION)\"
-else
-  CFLAGS = --warnings all
-endif
+# else
+CFLAGS = --warnings all
+# endif
 
 V          ?= 0
 VFLAG      =

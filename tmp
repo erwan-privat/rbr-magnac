@@ -1,0 +1,48 @@
+[EP] 20894 us data
+[EP] 530 us begin
+[EP] 972112 us printTo
+[EP] 6602 us send
+
+[EP] GET /data_15min
+[EP] 14696 us data
+[EP] 747 us begin
+[EP] 512455 us printTo
+[EP] 4838 us send
+[EP] GET /dimmer
+[EP] GET /ota
+[EP] GET /watts
+[EP] GET /data_1h
+[EP] GET /data_15min
+[EP] 14713 us data
+[EP] 680 us begin
+[EP] 522407 us printTo
+[EP] 4831 us send
+[EP] GET /dimmer
+[EP] GET /ota
+[EP] GET /watts
+[EP] GET /ota
+[EP] GET /dimmer
+[EP] GET /data_15min
+[EP] 14742 us data
+[EP] 680 us begin
+[EP] 517928 us printTo
+[EP] 4791 us send
+[EP] GET /watts
+[EP] GET /ota
+[EP] GET /data_1h
+[EP] GET /dimmer
+[EP] GET /data_15min
+[EP] 14726 us data
+[EP] 671 us begin
+[EP] 521078 us printTo
+[EP] 4855 us send
+[EP] GET /ota
+[EP] GET /watts
+[EP] GET /dimmer
+[EP] GET /data_15min
+[EP] 14715 us data
+[EP] 681 us begin
+[EP] 515904 us printTo
+[EP] 4780 us send
+[EP] GET /ota
+[EP] GET /watts

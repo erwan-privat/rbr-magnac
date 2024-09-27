@@ -13,7 +13,6 @@ English below.
 FRANÇAIS
 =========
 
-
 Lisez-moi
 ---------
 
@@ -52,14 +51,6 @@ comprend :
 À faire
 -------
 
-* |ss| Utiliser une seule requête JSON pour récupérer
-  les données plutôt que plusieurs text/plain. |se|
-* |ss| Serveur web pour tracer les graphes de consommation
-  etc. |se|
-* |ss| Implementation cpp/h. |se|
-* |ss| Bug d'affichage pour la production en heures
-  creuses. |se|
-* |ss| Style de la page. |se|
 * Bouger l'endroit du « dernier reboot », j'aime pas là.
 * |ss| Calculer les économies réelles journalières. |se|
 * |ss| Utiliser l'API REST pour modifier les paramètres.
@@ -82,6 +73,13 @@ Pour ce faire j'ai modifié dans la bibliothèque le fichier
 `AsyncTCP.cpp:98`, remplaçant par::
 
   _async_queue = xQueueCreate(1024, sizeof(lwip_event_packet_t *));
+
+Mieux encore, à partir de cette version j'utilise le `fork
+de Mathieu Carbou
+<https://registry.platformio.org/libraries/mathieucarbou/ESPAsyncWebServer>`_
+pour les bibliothèques AsyncTCP et ESPAsyncWebServer.
+L'API ne change (quasiment) pas, le serveur est beaucoup
+plus stable et le chien de garde est content.
 
 
 Licence
@@ -139,15 +137,6 @@ overproduction to say a water-heater, including:
 Todo
 ----
 
-* |ss| Using one JSON request instead of several 
-  text/plain. |se|
-* |ss| Web server for plotting power use and monitoring misc
-  data. |se|
-* |ss| Switch to cpp/h implementation. |se|
-* |ss| Display bug in off-peak hours for consumption. |se|
-* |ss| Compute actual savings per the day; |se|
-* |ss| Style the web page. |se|
-* |ss| Use REST API to update some settings. |se|
 * Move "last reboot" and kwH price, don't like it here.
 * [MAYBE] Screen reproduction.
 * [MAYBE] Fan control. Not needed right now, the maximum
@@ -166,6 +155,12 @@ initialization of the queue as such::
 
   _async_queue = xQueueCreate(1024, sizeof(lwip_event_packet_t *));
 
+
+Even better, for now on I use `Mathieu Carbou's fork
+<https://registry.platformio.org/libraries/mathieucarbou/ESPAsyncWebServer>`_
+of AsyncTCP and ESPAsyncWebServer. The API is (almost
+exactly) the same and the server is way more stable for a
+happy watchdog.
 
 License
 -------

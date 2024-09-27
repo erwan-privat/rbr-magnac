@@ -3,6 +3,8 @@
 #ifndef WIFISERIAL_H
 #define WIFISERIAL_H
 
+#include "AsyncWebServerConfig.h"
+
 #include <Arduino.h>
 #include <WebSerialLite.h>
 

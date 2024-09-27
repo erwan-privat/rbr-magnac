@@ -50,7 +50,7 @@ namespace ServeurWeb
     server.on("/favicon.ico", HTTP_GET, [](Req* req)
     {
       weblog("GET /favicon.ico");
-      Res* response = req->beginResponse_P(200,
+      Res* response = req->beginResponse(200,
         "image/x-icon",
         html::favicon_ico, html::favicon_ico_len);
       req->send(response);
@@ -288,21 +288,21 @@ namespace ServeurWeb
 
       if (req->hasParam("force_off"))
       {
-        Prm* p_off = req->getParam("force_off");
+        const Prm* p_off = req->getParam("force_off");
         Dimmer::force_off = p_off->value() == "true";
         weblogf("force_off: %s\n", p_off->value());
       }
 
       if (req->hasParam("force_on"))
       {
-        Prm* p_on = req->getParam("force_on");
+        const Prm* p_on = req->getParam("force_on");
         Dimmer::force_on = p_on->value() == "true";
         weblogf("force_on: %s\n", p_on->value());
       }
 
       if (req->hasParam("hc_on"))
       {
-        Prm* p = req->getParam("hc_on");
+        const Prm* p = req->getParam("hc_on");
         Dimmer::hc_on = p->value() == "true";
         weblogf("hc_on: %s\n", p->value());
       }
