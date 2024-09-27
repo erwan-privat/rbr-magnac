@@ -51,9 +51,8 @@ comprend :
 À faire
 -------
 
+* |ss| Suppression de ArduinoJSON. |se|
 * Bouger l'endroit du « dernier reboot », j'aime pas là.
-* |ss| Calculer les économies réelles journalières. |se|
-* |ss| Utiliser l'API REST pour modifier les paramètres.
   |se|
 * [PEUT-ÊTRE] Reproduction de l'écran.
 * [PEUT-ÊTRE] Gestion du ventilateur du thyristor (peut-être
@@ -137,6 +136,7 @@ overproduction to say a water-heater, including:
 Todo
 ----
 
+* |ss| Remove ArduinoJSON. |se|
 * Move "last reboot" and kwH price, don't like it here.
 * [MAYBE] Screen reproduction.
 * [MAYBE] Fan control. Not needed right now, the maximum

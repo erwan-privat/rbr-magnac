@@ -91,7 +91,7 @@ namespace html
             {
               ongoing = false;
               setTimeout(() => window.location.reload(),
-                5000);
+                3000);
               return;
             }
 
@@ -120,7 +120,7 @@ namespace html
                 Math.round(ptot) + " W";
 
             }).finally(function (j) {
-              setTimeout(updateWatts, 4000);
+              setTimeout(updateWatts, 2000);
             });
         }
 
@@ -154,7 +154,7 @@ namespace html
               && j.time >= j.start_hc && j.time < j.end_hc;
             hphc.classList.toggle("hc", in_hc);
           }).finally(function (j) {
-            setTimeout(updateDimmer, 4000);
+            setTimeout(updateDimmer, 1000);
 
             byId("force_off").disabled = false;
             byId("force_on" ).disabled = false;
@@ -217,7 +217,7 @@ namespace html
         const time_updateData = {};
         time_updateData["24h"]   = 180000;
         time_updateData["1h"]    =   8000;
-        time_updateData["15min"] =   4000;
+        time_updateData["15min"] =   2000;
 
         function updateData(label) {
           fetch("/data_" + label).then(r => {

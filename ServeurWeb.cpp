@@ -14,7 +14,7 @@
 #include <ESPAsyncWebServer.h>
 #include <Base64.h>
 
-#define INCLUDE_TEST_JSON
+// #define INCLUDE_TEST_JSON
 #ifdef INCLUDE_TEST_JSON
 #include <ArduinoJson.h>
 #endif
@@ -35,9 +35,50 @@ namespace ServeurWeb
     return server;
   }
 
+  const char* btoc(bool b)
+  {
+    return b ? "true" : "false";
+  }
+
+  void printArrJson(Rst* stream,
+    const float* arr, size_t size)
+  {
+    stream->print('[');
+    stream->print(arr[0]);
+
+    for (size_t i = 1; i < size; ++i)
+      stream->printf(", %.2f", arr[i]);
+
+    stream->print(']');
+  }
+
+  void serveData(Req* req, size_t size, int r, unsigned ix,
+    const float* p1_hp, const float* p2_hp,
+    const float* p1_hc, const float* p2_hc)
+  {
+      Rst* res = req->beginResponseStream("application/json");
+
+      res->printf("{\"res\": %d, \"ix\": %d, ", r, ix);
+
+      res->print("\"p1_hp\": ");
+      printArrJson(res, p1_hp, size);
+      res->print(',');
+      res->print("\"p1_hc\": ");
+      printArrJson(res, p1_hc, size);
+      res->print(',');
+      res->print("\"p2_hp\": ");
+      printArrJson(res, p2_hp, size);
+      res->print(',');
+      res->print("\"p2_hc\": ");
+      printArrJson(res, p2_hc, size);
+      res->print('}');
+
+      req->send(res);
+  }
+
+
   void begin()
   {
-
     server.on("/", HTTP_GET, [](Req* req)
     {
       weblog("GET /");
@@ -72,9 +113,10 @@ namespace ServeurWeb
 
       Rst* res = req->beginResponseStream(
         "application/json");
-      res->printf("{\"last_boot\": %d, \"updating\": %s,"
-          "\"progress\": %d}",
-        Data::last_boot, Ota::updating, Ota::progess);
+      res->printf("{\"last_boot\": %lu, \"updating\": %s,"
+          "\"progress\": %u}",
+        Data::last_boot, btoc(Ota::updating),
+        Ota::progress);
 
       req->send(res);
     });
@@ -83,40 +125,28 @@ namespace ServeurWeb
     {
       weblog("GET /watts");
 
-      constexpr auto bufsize = JSON_OBJECT_SIZE(2);
-      StaticJsonBuffer<bufsize> jsonBuffer;
-      JsonObject& root = jsonBuffer.createObject();
-      root["power1"] = Watts::power1;
-      root["power2"] = Watts::power2;
-
       Rst* res = req->beginResponseStream(
         "application/json");
-      root.printTo(*res);
+      res->printf("{\"power1\": %f, \"power2\": %f}",
+          Watts::power1, Watts::power2);
       req->send(res);
-      jsonBuffer.clear();
     });
 
     server.on("/dimmer", HTTP_GET, [](Req* req)
     {
       weblog("GET /dimmer");
 
-      constexpr auto bufsize = JSON_OBJECT_SIZE(6);
-      StaticJsonBuffer<bufsize> jsonBuffer;
-      JsonObject& root = jsonBuffer.createObject();
-      root["force_off"] = Dimmer::force_off;
-      root["force_on"]  = Dimmer::force_on;
-      root["hc_on"]     = Dimmer::hc_on;
-      root["start_hc"]  = Dimmer::start_hc;
-      root["end_hc"]    = Dimmer::end_hc;
-      root["time"]      = Heure::getTimeHMS();
-
-      yield();
-
       Rst* res = req->beginResponseStream(
         "application/json");
-      root.printTo(*res);
+
+      res->printf("{\"force_on\": %s, \"force_off\": %s,"
+          "\"hc_on\": %s, \"start_hc\": %d, \"end_hc\": %d"
+          "\"time\": %d}",
+        btoc(Dimmer::force_on), btoc(Dimmer::force_off),
+        btoc(Dimmer::hc_on), Dimmer::start_hc,
+        Dimmer::end_hc, Heure::getTimeHMS());
+
       req->send(res);
-      jsonBuffer.clear();
     });
 
     server.on("/screen", HTTP_GET, [](Req* req)
@@ -130,154 +160,78 @@ namespace ServeurWeb
 
       Base64.encode(screen64, screen, screen64_size); 
 
-      DynamicJsonBuffer jsonBuffer;
-      JsonObject& root = jsonBuffer.createObject();
-      root["length"] = screen64_size;
-      auto& arr_screen = root.createNestedArray("xbmp64");
-      for (auto pix : screen64)
-        arr_screen.add(pix);
-
-      yield();
-
-      Rst* res = req->beginResponseStream(
-        "application/json");
-      root.printTo(*res);
+      Rst* res = req->beginResponseStream("text/plain");
+      res->print(screen64);
       req->send(res);
-      jsonBuffer.clear();
     });
 
     server.on("/data_15min", HTTP_GET, [](Req* req)
     {
       weblog("GET /data_15min");
 
-      int m = esp_timer_get_time();
-      int prev_m = m;
-
       if (Ota::updating)
         return;
 
-      // constexpr auto bufsize = 4 * JSON_ARRAY_SIZE(450)
-      //   + JSON_OBJECT_SIZE(6);
-      // StaticJsonBuffer<bufsize> jsonBuffer;
-      DynamicJsonBuffer jsonBuffer;
-      JsonObject& root = jsonBuffer.createObject();
-      root["res"] = Data::res_15min;
-      root["ix"] = Data::ix_15min;
-      auto& arr_p1_hp = root.createNestedArray("p1_hp");
-      for (auto f : Data::buf_p1_hp_15min)
-        arr_p1_hp.add(f);
-      auto& arr_p2_hp = root.createNestedArray("p2_hp");
-      for (auto f : Data::buf_p2_hp_15min)
-        arr_p2_hp.add(f);
-      auto& arr_p1_hc = root.createNestedArray("p1_hc");
-      for (auto f : Data::buf_p1_hc_15min)
-        arr_p1_hc.add(f);
-      auto& arr_p2_hc = root.createNestedArray("p2_hc");
-      for (auto f : Data::buf_p2_hc_15min)
-        arr_p2_hc.add(f);
+      int m = esp_timer_get_time();
+      int prev_m = m;
+
+      serveData(req,
+        Data::size_15min,
+        Data::res_15min,
+        Data::ix_15min,
+        Data::buf_p1_hp_15min,
+        Data::buf_p2_hp_15min,
+        Data::buf_p1_hc_15min,
+        Data::buf_p2_hc_15min);   
 
       m = esp_timer_get_time();
-      weblogf("%d us data\n", m - prev_m);
-      prev_m = m;
-
-      yield();
-
-      Rst* res = req->beginResponseStream(
-        "application/json");
-      
-      m = esp_timer_get_time();
-      weblogf("%d us begin\n", m - prev_m);
-      prev_m = m;
-      
-      yield();
-      root.printTo(*res);
-
-      m = esp_timer_get_time();
-      weblogf("%d us printTo\n", m - prev_m);
-      prev_m = m;
-
-      yield();
-      req->send(res);
-
-      m = esp_timer_get_time();
-      weblogf("%d us send\n", m - prev_m);
-      prev_m = m;
-
-      jsonBuffer.clear();
+      weblogf("data_15min %d µs\n", m - prev_m);
     });
 
     server.on("/data_1h", HTTP_GET, [](Req* req)
     {
       weblog("GET /data_1h");
+
       if (Ota::updating)
         return;
 
-      // constexpr auto bufsize = 4 * JSON_ARRAY_SIZE(450)
-      //   + JSON_OBJECT_SIZE(6);
-      // StaticJsonBuffer<bufsize> jsonBuffer;
-      DynamicJsonBuffer jsonBuffer;
-      JsonObject& root = jsonBuffer.createObject();
-      root["res"] = Data::res_1h;
-      root["ix"] = Data::ix_1h;
-      auto& arr_p1_hp = root.createNestedArray("p1_hp");
-      for (auto f : Data::buf_p1_hp_1h)
-        arr_p1_hp.add(f);
-      auto& arr_p2_hp = root.createNestedArray("p2_hp");
-      for (auto f : Data::buf_p2_hp_1h)
-        arr_p2_hp.add(f);
-      auto& arr_p1_hc = root.createNestedArray("p1_hc");
-      for (auto f : Data::buf_p1_hc_1h)
-        arr_p1_hc.add(f);
-      auto& arr_p2_hc = root.createNestedArray("p2_hc");
-      for (auto f : Data::buf_p2_hc_1h)
-        arr_p2_hc.add(f);
+      int m = esp_timer_get_time();
+      int prev_m = m;
 
-      yield();
+      serveData(req,
+        Data::size_1h,
+        Data::res_1h,
+        Data::ix_1h,
+        Data::buf_p1_hp_1h,
+        Data::buf_p2_hp_1h,
+        Data::buf_p1_hc_1h,
+        Data::buf_p2_hc_1h);   
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
-      yield();
-      root.printTo(*res);
-      yield();
-      req->send(res);
-      jsonBuffer.clear();
+      m = esp_timer_get_time();
+      weblogf("data_1h %d µs\n", m - prev_m);
     });
 
     server.on("/data_24h", HTTP_GET, [](Req* req)
     {
       weblog("GET /data_24h");
+
       if (Ota::updating)
         return;
 
-      // constexpr auto bufsize = 4 * JSON_ARRAY_SIZE(450)
-      //   + JSON_OBJECT_SIZE(6);
-      // StaticJsonBuffer<bufsize> jsonBuffer;
-      DynamicJsonBuffer jsonBuffer;
-      JsonObject& root = jsonBuffer.createObject();
-      root["res"] = Data::res_24h;
-      root["ix"] = Data::ix_24h;
-      auto& arr_p1_hp = root.createNestedArray("p1_hp");
-      for (auto f : Data::buf_p1_hp_24h)
-        arr_p1_hp.add(f);
-      auto& arr_p2_hp = root.createNestedArray("p2_hp");
-      for (auto f : Data::buf_p2_hp_24h)
-        arr_p2_hp.add(f);
-      auto& arr_p1_hc = root.createNestedArray("p1_hc");
-      for (auto f : Data::buf_p1_hc_24h)
-        arr_p1_hc.add(f);
-      auto& arr_p2_hc = root.createNestedArray("p2_hc");
-      for (auto f : Data::buf_p2_hc_24h)
-        arr_p2_hc.add(f);
+      int m = esp_timer_get_time();
+      int prev_m = m;
 
-      yield();
+      serveData(req,
+        Data::size_24h,
+        Data::res_24h,
+        Data::ix_24h,
+        Data::buf_p1_hp_24h,
+        Data::buf_p2_hp_24h,
+        Data::buf_p1_hc_24h,
+        Data::buf_p2_hc_24h);   
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
-      yield();
-      root.printTo(*res);
-      yield();
-      req->send(res);
-      jsonBuffer.clear();
+      m = esp_timer_get_time();
+      weblogf("data_24h %d µs\n", m - prev_m);
     });
 
     // server.on("/control", HTTP_POST, [](Req* req)

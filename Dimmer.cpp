@@ -11,7 +11,7 @@ namespace Dimmer
 {
   extern bool force_off = true;
   extern bool force_on  = false;
-  extern bool hc_on     = true;
+  extern bool hc_on     = false;
 
   extern DimmableLight dimmer(dimmer_com);
   byte value = 0;

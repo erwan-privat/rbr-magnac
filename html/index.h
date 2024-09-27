@@ -16,12 +16,12 @@ namespace html
       <meta charset="utf-8" />)%";
 
   constexpr char index_end[] PROGMEM = R"%(
-      <title>RBR Magnac | v1.1</title>
+      <title>RBR Magnac | v1.2</title>
     </head>
     <body>
       <h1><img src="/favicon.ico" alt="sun" />
-        Routeur solaire RBR Magnac<span class="version">
-          v1.1</span></h1>
+        Routeur solaire RBR Magnac
+        <span class="version">v1.2</span></h1>
       <menu>
         <li><a href="/webserial" target="_blank">
             Web serial</a></li>

@@ -1,9 +1,8 @@
-ArduinoJson@5.13.5
 ArduinoSTL
-AsyncTCP
+mathieucarbou/AsyncTCP
 Base64
 Dimmable Light for Arduino
-ESPAsyncWebServer
+mathieucarbou/ESPAsyncWebServer
 NTPClient
 U8g2
 WebSerialLite
