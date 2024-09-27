@@ -70,18 +70,13 @@ namespace ServeurWeb
     {
       weblog("GET /ota");
 
-      constexpr auto bufsize = JSON_OBJECT_SIZE(3);
-      StaticJsonBuffer<bufsize> jsonBuffer;
-      JsonObject& root = jsonBuffer.createObject();
-      root["last_boot"] = Data::last_boot;
-      root["updating"]  = Ota::updating;
-      root["progress"]  = Ota::progress;
-
       Rst* res = req->beginResponseStream(
         "application/json");
-      root.printTo(*res);
+      res->printf("{\"last_boot\": %d, \"updating\": %s,"
+          "\"progress\": %d}",
+        Data::last_boot, Ota::updating, Ota::progess);
+
       req->send(res);
-      jsonBuffer.clear();
     });
     
     server.on("/watts", HTTP_GET, [](Req* req)
