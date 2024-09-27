@@ -26,6 +26,7 @@ namespace ServeurWeb
   using Rst = AsyncResponseStream;
   using Prm = AsyncWebParameter;
 
+
   AsyncWebServer server(80);
 
   AsyncWebServer& getServer()
@@ -66,7 +67,9 @@ namespace ServeurWeb
     server.on("/ota", HTTP_GET, [](Req* req)
     {
       weblog("GET /ota");
-      DynamicJsonBuffer jsonBuffer;
+
+      constexpr auto bufsize = JSON_OBJECT_SIZE(3);
+      StaticJsonBuffer<bufsize> jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["last_boot"] = Data::last_boot;
       root["updating"]  = Ota::updating;
@@ -81,7 +84,9 @@ namespace ServeurWeb
     server.on("/watts", HTTP_GET, [](Req* req)
     {
       weblog("GET /watts");
-      DynamicJsonBuffer jsonBuffer;
+
+      constexpr auto bufsize = JSON_OBJECT_SIZE(2);
+      StaticJsonBuffer<bufsize> jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["power1"] = Watts::power1;
       root["power2"] = Watts::power2;
@@ -100,7 +105,9 @@ namespace ServeurWeb
     server.on("/dimmer", HTTP_GET, [](Req* req)
     {
       weblog("GET /dimmer");
-      DynamicJsonBuffer jsonBuffer;
+
+      constexpr auto bufsize = JSON_OBJECT_SIZE(6);
+      StaticJsonBuffer<bufsize> jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["force_off"] = Dimmer::force_off;
       root["force_on"]  = Dimmer::force_on;
@@ -108,6 +115,8 @@ namespace ServeurWeb
       root["start_hc"]  = Dimmer::start_hc;
       root["end_hc"]    = Dimmer::end_hc;
       root["time"]      = Heure::getTimeHMS();
+
+      yield();
 
       Rst* res = req->beginResponseStream(
         "application/json");
@@ -133,6 +142,8 @@ namespace ServeurWeb
       for (auto pix : screen64)
         arr_screen.add(pix);
 
+      yield();
+
       Rst* res = req->beginResponseStream(
         "application/json");
       root.printTo(*res);
@@ -142,9 +153,16 @@ namespace ServeurWeb
     server.on("/data_15min", HTTP_GET, [](Req* req)
     {
       weblog("GET /data_15min");
+
+      int m = esp_timer_get_time();
+      int prev_m = m;
+
       if (Ota::updating)
         return;
 
+      // constexpr auto bufsize = 4 * JSON_ARRAY_SIZE(450)
+      //   + JSON_OBJECT_SIZE(6);
+      // StaticJsonBuffer<bufsize> jsonBuffer;
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["res"] = Data::res_15min;
@@ -162,10 +180,32 @@ namespace ServeurWeb
       for (auto f : Data::buf_p2_hc_15min)
         arr_p2_hc.add(f);
 
+      m = esp_timer_get_time();
+      weblogf("%d us data\n", m - prev_m);
+      prev_m = m;
+
+      yield();
+
       Rst* res = req->beginResponseStream(
         "application/json");
+      
+      m = esp_timer_get_time();
+      weblogf("%d us begin\n", m - prev_m);
+      prev_m = m;
+      
+      yield();
       root.printTo(*res);
+
+      m = esp_timer_get_time();
+      weblogf("%d us printTo\n", m - prev_m);
+      prev_m = m;
+
+      yield();
       req->send(res);
+
+      m = esp_timer_get_time();
+      weblogf("%d us send\n", m - prev_m);
+      prev_m = m;
     });
 
     server.on("/data_1h", HTTP_GET, [](Req* req)
@@ -174,6 +214,9 @@ namespace ServeurWeb
       if (Ota::updating)
         return;
 
+      // constexpr auto bufsize = 4 * JSON_ARRAY_SIZE(450)
+      //   + JSON_OBJECT_SIZE(6);
+      // StaticJsonBuffer<bufsize> jsonBuffer;
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["res"] = Data::res_1h;
@@ -191,9 +234,13 @@ namespace ServeurWeb
       for (auto f : Data::buf_p2_hc_1h)
         arr_p2_hc.add(f);
 
+      yield();
+
       Rst* res = req->beginResponseStream(
         "application/json");
+      yield();
       root.printTo(*res);
+      yield();
       req->send(res);
     });
 
@@ -203,6 +250,9 @@ namespace ServeurWeb
       if (Ota::updating)
         return;
 
+      // constexpr auto bufsize = 4 * JSON_ARRAY_SIZE(450)
+      //   + JSON_OBJECT_SIZE(6);
+      // StaticJsonBuffer<bufsize> jsonBuffer;
       DynamicJsonBuffer jsonBuffer;
       JsonObject& root = jsonBuffer.createObject();
       root["res"] = Data::res_24h;
@@ -220,9 +270,13 @@ namespace ServeurWeb
       for (auto f : Data::buf_p2_hc_24h)
         arr_p2_hc.add(f);
 
+      yield();
+
       Rst* res = req->beginResponseStream(
         "application/json");
+      yield();
       root.printTo(*res);
+      yield();
       req->send(res);
     });
 
