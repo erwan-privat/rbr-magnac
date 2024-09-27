@@ -62,6 +62,13 @@ namespace html
         color: transparent;
       }
 
+      .version {
+        font-size: 66%;
+        font-family: "Inconsolata", monospace;
+        opacity: 50%;
+        margin-left: 5px;
+      }
+
       label {
         display: inline-block;
         width: 170px;

@@ -11,12 +11,13 @@
 #include "Ota.h"
 #include "Watts.h"
 #include "WiFiSerial.h"
-
-#include <ArduinoJson.h>
-
-#define CONFIG_ASYNC_TCP_USE_WDT 1
 #include <ESPAsyncWebServer.h>
 #include <Base64.h>
+
+#define INCLUDE_TEST_JSON
+#ifdef INCLUDE_TEST_JSON
+#include <ArduinoJson.h>
+#endif
 
 namespace ServeurWeb
 {
@@ -36,6 +37,7 @@ namespace ServeurWeb
 
   void begin()
   {
+
     server.on("/", HTTP_GET, [](Req* req)
     {
       weblog("GET /");
@@ -79,6 +81,7 @@ namespace ServeurWeb
         "application/json");
       root.printTo(*res);
       req->send(res);
+      jsonBuffer.clear();
     });
     
     server.on("/watts", HTTP_GET, [](Req* req)
@@ -90,16 +93,12 @@ namespace ServeurWeb
       JsonObject& root = jsonBuffer.createObject();
       root["power1"] = Watts::power1;
       root["power2"] = Watts::power2;
-      // root["current1"] = Watts::current1;
-      // root["voltage1"] = Watts::voltage1;
-      // root["current2"] = Watts::current2;
-      // root["voltage2"] = Watts::voltage2;
-      // root["freq"]     = Watts::frequency;
 
       Rst* res = req->beginResponseStream(
         "application/json");
       root.printTo(*res);
       req->send(res);
+      jsonBuffer.clear();
     });
 
     server.on("/dimmer", HTTP_GET, [](Req* req)
@@ -122,6 +121,7 @@ namespace ServeurWeb
         "application/json");
       root.printTo(*res);
       req->send(res);
+      jsonBuffer.clear();
     });
 
     server.on("/screen", HTTP_GET, [](Req* req)
@@ -148,6 +148,7 @@ namespace ServeurWeb
         "application/json");
       root.printTo(*res);
       req->send(res);
+      jsonBuffer.clear();
     });
 
     server.on("/data_15min", HTTP_GET, [](Req* req)
@@ -206,6 +207,8 @@ namespace ServeurWeb
       m = esp_timer_get_time();
       weblogf("%d us send\n", m - prev_m);
       prev_m = m;
+
+      jsonBuffer.clear();
     });
 
     server.on("/data_1h", HTTP_GET, [](Req* req)
@@ -242,6 +245,7 @@ namespace ServeurWeb
       root.printTo(*res);
       yield();
       req->send(res);
+      jsonBuffer.clear();
     });
 
     server.on("/data_24h", HTTP_GET, [](Req* req)
@@ -278,6 +282,7 @@ namespace ServeurWeb
       root.printTo(*res);
       yield();
       req->send(res);
+      jsonBuffer.clear();
     });
 
     // server.on("/control", HTTP_POST, [](Req* req)
@@ -309,6 +314,102 @@ namespace ServeurWeb
 
       req->send(200);
     });
+
+#ifdef INCLUDE_TEST_JSON
+    server.on("/test-lib", HTTP_GET, [](Req* req)
+    {
+      weblog("GET /test-lib");
+
+      unsigned long tot = 0;
+      unsigned long m;
+      unsigned long prev_m = esp_timer_get_time();
+      auto chrono = [&](const char* tag)
+      {
+        m = esp_timer_get_time();
+        tot += m - prev_m;
+        weblogf("test-lib: %d µs (%s)\n", m - prev_m, tag);
+        prev_m = m;
+      };
+
+      chrono("start");
+      DynamicJsonBuffer jsonBuffer;
+      chrono("jsonBuffer");
+      JsonObject& root = jsonBuffer.createObject();
+      root["power1"] = Watts::power1;
+      root["power2"] = Watts::power2;
+      root["current1"] = Watts::current1;
+      root["voltage1"] = Watts::voltage1;
+      root["current2"] = Watts::current2;
+      root["voltage2"] = Watts::voltage2;
+      root["freq"]     = Watts::frequency;
+      chrono("createObject");
+
+      auto& arr1 = root.createNestedArray("arr1");
+      for (int i = 0; i < 1000; ++i)
+        arr1.add(i);
+      chrono("createArray1");
+      auto& arr2 = root.createNestedArray("arr2");
+      for (int i = 0; i < 1000; ++i)
+        arr2.add(i + 1000);
+      chrono("createArray2");
+
+      Rst* res = req->beginResponseStream(
+        "application/json");
+      chrono("beginResponseStream");
+      root.printTo(*res);
+      chrono("printTo");
+      req->send(res);
+      chrono("send");
+      weblogf("test-lib tot: %d µs\n", tot);
+      // jsonBuffer.clear();
+    });
+
+    server.on("/test-nolib", HTTP_GET, [](Req* req)
+    {
+      weblog("GET /test-nolib");
+
+      unsigned long tot = 0;
+      unsigned long m;
+      unsigned long prev_m = esp_timer_get_time();
+      auto chrono = [&](const char* tag)
+      {
+        m = esp_timer_get_time();
+        tot += m - prev_m;
+        weblogf("test-nolib: %d µs (%s)\n", m - prev_m, tag);
+        prev_m = m;
+      };
+
+      chrono("start");
+      Rst* res = req->beginResponseStream(
+        "application/json");
+      chrono("beginResponseStream");
+
+      res->print('{');
+
+      res->printf("\"power1\": %f,", Watts::power1);
+      res->printf("\"power2\": %f,", Watts::power2);
+      res->printf("\"current1\": %f,", Watts::current1);
+      res->printf("\"voltage1\": %f,", Watts::voltage1);
+      res->printf("\"current2\": %f,", Watts::current2);
+      res->printf("\"voltage2\": %f,", Watts::voltage2);
+      res->printf("\"freq\": %lu,", Watts::frequency);
+      chrono("printed object");
+
+      res->print("\"arr1\": [0");
+      for (int i = 1; i < 1000; ++i)
+        res->printf(", %d", i);
+      res->print("], \"arr2\": [0");
+      for (int i = 1; i < 1000; ++i)
+        res->printf(", %d", i + 1000);
+      res->print("]}");
+
+      chrono("printed array");
+
+      req->send(res);
+      chrono("send");
+      weblogf("test-nolib tot: %d µs\n", tot);
+    });
+#endif
 
     server.begin();
   }
