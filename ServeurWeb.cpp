@@ -140,7 +140,7 @@ namespace ServeurWeb
         "application/json");
 
       res->printf("{\"force_on\": %s, \"force_off\": %s,"
-          "\"hc_on\": %s, \"start_hc\": %d, \"end_hc\": %d"
+          "\"hc_on\": %s, \"start_hc\": %d, \"end_hc\": %d,"
           "\"time\": %d}",
         btoc(Dimmer::force_on), btoc(Dimmer::force_off),
         btoc(Dimmer::hc_on), Dimmer::start_hc,
