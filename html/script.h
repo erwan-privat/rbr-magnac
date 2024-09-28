@@ -96,7 +96,7 @@ namespace html
             }
 
           }).catch(function (e) {
-            console.err(e);
+            console.error(e);
           }).finally(function (j) {
             setTimeout(updateOta, ongoing ? 500 : 3000);
           });
@@ -122,7 +122,7 @@ namespace html
                 Math.round(ptot) + " W";
 
             }).catch(function (e) {
-              console.err(e);
+              console.error(e);
             }).finally(function (j) {
               setTimeout(updateWatts, 2000);
             });
@@ -158,7 +158,7 @@ namespace html
               && j.time >= j.start_hc && j.time < j.end_hc;
             hphc.classList.toggle("hc", in_hc);
           }).catch(function (e) {
-            console.err(e);
+            console.error(e);
           }).finally(function (j) {
             setTimeout(updateDimmer, 1000);
 
@@ -312,7 +312,7 @@ namespace html
 
             Magnac.chtconso[label].update("none");
           }).catch(function (e) {
-            console.err(e);
+            console.error(e);
           }).finally(function (j) {
             setTimeout(updateData, time_updateData[label],
               label); 

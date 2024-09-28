@@ -46,8 +46,12 @@ namespace ServeurWeb
     stream->print('[');
     stream->print(arr[0]);
 
-    for (size_t i = 1; i < size; ++i)
-      stream->printf(", %.2f", arr[i]);
+    for (size_t i = 1; i < size; ++i) {
+      if (i == size / 2)
+        yield();
+
+      stream->printf(", %.0f", arr[i]);
+    }
 
     stream->print(']');
   }
@@ -62,12 +66,15 @@ namespace ServeurWeb
 
       res->print("\"p1_hp\": ");
       printArrJson(res, p1_hp, size);
+      yield();
       res->print(',');
       res->print("\"p1_hc\": ");
       printArrJson(res, p1_hc, size);
+      yield();
       res->print(',');
       res->print("\"p2_hp\": ");
       printArrJson(res, p2_hp, size);
+      yield();
       res->print(',');
       res->print("\"p2_hc\": ");
       printArrJson(res, p2_hc, size);
@@ -335,13 +342,13 @@ namespace ServeurWeb
 
       res->print('{');
 
-      res->printf("\"power1\": %f,", Watts::power1);
-      res->printf("\"power2\": %f,", Watts::power2);
+      res->printf("\"power1\": %f,",   Watts::power1);
+      res->printf("\"power2\": %f,",   Watts::power2);
       res->printf("\"current1\": %f,", Watts::current1);
       res->printf("\"voltage1\": %f,", Watts::voltage1);
       res->printf("\"current2\": %f,", Watts::current2);
       res->printf("\"voltage2\": %f,", Watts::voltage2);
-      res->printf("\"freq\": %lu,", Watts::frequency);
+      res->printf("\"freq\": %lu,",    Watts::frequency);
       chrono("printed object");
 
       res->print("\"arr1\": [0");
