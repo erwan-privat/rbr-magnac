@@ -247,11 +247,13 @@ namespace html
                   ${euro.toFixed(2)} €
                 </span>`;
 
-              hphc.push({ cumul, euro });
 
               const eco = onlyPos(j["p1_" + h]);
               const total = integrate(eco, j.res) / 3600e3;
               const eur_eco = total * prix / 1e4;
+
+              hphc.push({ cumul, euro, total });
+
               byId(`eco_${h}_${label}`).innerHTML =
                 `${total.toFixed(3)} kWh
                 &times; 0.${prix} €/kWh =
@@ -267,6 +269,16 @@ namespace html
               <span class="cumul">
                 ${eurtot.toFixed(2)} €
               </span>`;
+
+            const consotot = cumtot + hphc[0].total;
+            const ratio = 1 - cumtot / consotot;
+            ratio = ratio || 0;
+            byId(`autoconso_${label}`).innerHTML =
+              `1 - ${cumtot.toFixed(3)}
+                / ${consotot.toFixed(3)}
+                = <span class="eco_hp">
+                ${ratio.toFixed(2) * 100} %
+                </span>`;
 
             const t_labels = hoursLabels(j.p2.length,
               j.res);

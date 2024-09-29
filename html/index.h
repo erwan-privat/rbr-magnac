@@ -111,6 +111,11 @@ namespace html
                 <span class="eco_hc">
                   0.00 €
                 </span></b></div>
+          <div><label>Auto-consommation</label>
+            <b id="autoconso_24h">(x.xx + x.xx) / x.xx =
+                <span class="eco_hc">
+                  x %
+                </span></b></div>
         </div>
       </div>
 
@@ -152,6 +157,11 @@ namespace html
                 <span class="eco_hc">
                   0.00 €
                 </span></b></div>
+          <div><label>Auto-consommation</label>
+            <b id="autoconso_1h">(x.xx + x.xx) / x.xx =
+                <span class="eco_hc">
+                  x %
+                </span></b></div>
         </div>
       </div>
       
@@ -192,6 +202,11 @@ namespace html
                 × 0.2088 €/kWh =
                 <span class="eco_hc">
                   0.00 €
+                </span></b></div>
+          <div><label>Auto-consommation</label>
+            <b id="autoconso_15min">(x.xx + x.xx) / x.xx =
+                <span class="eco_hc">
+                  x %
                 </span></b></div>
         </div>
       </div>
