@@ -6,6 +6,7 @@
 #include "html/favicon.h"
 #include "Data.h"
 #include "Dimmer.h"
+#include "Radiateur.h"
 #include "Ecran.h"
 #include "Heure.h"
 #include "Ota.h"
@@ -266,6 +267,20 @@ namespace ServeurWeb
         const Prm* p = req->getParam("hc_on");
         Dimmer::hc_on = p->value() == "true";
         weblogf("hc_on: %s\n", p->value());
+      }
+
+      if (req->hasParam("force_off_radi"))
+      {
+        const Prm* p_off = req->getParam("force_off_radi");
+        Radiateur::force_off = p_off->value() == "true";
+        weblogf("force_off_radi: %s\n", p_off->value());
+      }
+
+      if (req->hasParam("force_on_radi"))
+      {
+        const Prm* p_on = req->getParam("force_on_radi");
+        Radiateur::force_on = p_on->value() == "true";
+        weblogf("force_on_radi: %s\n", p_on->value());
       }
 
       req->send(200);

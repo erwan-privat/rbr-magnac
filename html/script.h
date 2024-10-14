@@ -162,9 +162,11 @@ namespace html
           }).finally(function (j) {
             setTimeout(updateDimmer, 1000);
 
-            byId("force_off").disabled = false;
-            byId("force_on" ).disabled = false;
-            byId("hc_on"    ).disabled = false;
+            byId("force_off"     ).disabled = false;
+            byId("force_on"      ).disabled = false;
+            byId("hc_on"         ).disabled = false;
+            byId("force_off_radi").disabled = false;
+            byId("force_on_radi" ).disabled = false;
           });
         }
 
@@ -172,9 +174,11 @@ namespace html
           const checked = event.currentTarget.checked;
           const name    = event.currentTarget.name;
           const param = `${name}=${checked}`;
-          byId("force_off").disabled = true;
-          byId("force_on" ).disabled = true;
-          byId("hc_on"    ).disabled = true;
+          byId("force_off"     ).disabled = true;
+          byId("force_on"      ).disabled = true;
+          byId("hc_on"         ).disabled = true;
+          byId("force_off_radi").disabled = true;
+          byId("force_on_radi" ).disabled = true;
           console.log(param)
           fetch("/control?" + param).then(r => {
             if (!r.ok)
@@ -182,11 +186,15 @@ namespace html
           });
         }
 
-        byId("force_on").addEventListener("change",
+        byId("force_on"      ).addEventListener("change",
           updateControl);
-        byId("force_off").addEventListener("change",
+        byId("force_off"     ).addEventListener("change",
           updateControl);
-        byId("hc_on").addEventListener("change",
+        byId("hc_on"         ).addEventListener("change",
+          updateControl);
+        byId("force_on_radi" ).addEventListener("change",
+          updateControl);
+        byId("force_off_radi").addEventListener("change",
           updateControl);
 
         function integrate(yy, dx) {
@@ -271,7 +279,7 @@ namespace html
               </span>`;
 
             const consotot = cumtot + hphc[0].total;
-            const ratio = 1 - cumtot / consotot;
+            var ratio = 1 - cumtot / consotot;
             ratio = ratio || 0;
             byId(`autoconso_${label}`).innerHTML =
               `1 - ${cumtot.toFixed(3)}

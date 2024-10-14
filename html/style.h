@@ -136,6 +136,9 @@ namespace html
       #instant h2::before {
         content: "⚡\00a0";
       }
+      #radiateur h2::before {
+        content: "🔌\00a0";
+      }
       #control h2::before {
         content: "⚙️\00a0\00a0";
       }

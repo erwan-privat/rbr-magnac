@@ -8,7 +8,7 @@ namespace Dimmer
 {
   // On garde une petite marge pour compenser la courbe de
   // réponse du triac.
-  inline constexpr float seuil_chofo =  -50; // W
+  inline constexpr float seuil_chofo =  -20; // W
   inline constexpr float max_chofo   = 2300; // W
   inline constexpr int   start_hc    = 20'56'00; // 20 h 56
   inline constexpr int   end_hc      =  4'56'00; // 04 h 56

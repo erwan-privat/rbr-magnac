@@ -2,7 +2,7 @@
 #include "pins.h"
 #include "Watts.h"
 #include "Heure.h"
-// #include "WiFiSerial.h"
+#include "Radiateur.h"
 #include "Ota.h"
 #include <numbers>
 #include <cmath>
@@ -57,11 +57,15 @@ namespace Dimmer
   {
     for (;;)
     {
-      float ptot = Watts::power1 - (-Watts::power2);
+      float p2 = -Watts::power2;
+      float ptot = Watts::power1 - p2;
       float pavailable = seuil_chofo - ptot;
 
       float amount = pavailable * max_value / max_chofo;
       value = redress(amount);
+
+      Radiateur::is_on = pavailable > Radiateur::max_power
+        && p2 <= 0
 
       delay(2000);
     }
