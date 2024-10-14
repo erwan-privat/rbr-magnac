@@ -16,10 +16,10 @@ namespace html
         b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
         return b;
       }
-      
+
       let ota_refresh = false;
 
-      document.addEventListener("DOMContentLoaded", () =>{ 
+      document.addEventListener("DOMContentLoaded", () =>{
         const labels = ["24h", "1h", "15min"];
         Magnac.prix_hp = 2874;
         Magnac.prix_hc = 2088;
@@ -45,7 +45,7 @@ namespace html
               },
             });
         });
-        
+
         function rotateArray(arr, ix) {
           const left = arr.slice(0, ix);
           const right = arr.slice(ix, arr.length);
@@ -240,7 +240,7 @@ namespace html
                 / 3600e3;
               const prix = Magnac["prix_" + h];
               const euro = cumul * prix / 1e4;
-              byId(`cumul_${h}_${label}`).innerHTML = 
+              byId(`cumul_${h}_${label}`).innerHTML =
                 `${cumul.toFixed(3)} kWh
                 &times; 0.${prix} €/kWh =
                 <span class="cumul">
@@ -264,7 +264,7 @@ namespace html
 
             const cumtot = hphc[0].cumul + hphc[1].cumul;
             const eurtot = hphc[0].euro  + hphc[1].euro;
-            byId(`cumul_tot_${label}`).innerHTML = 
+            byId(`cumul_tot_${label}`).innerHTML =
               `${cumtot.toFixed(3)} kWh,
               <span class="cumul">
                 ${eurtot.toFixed(2)} €
@@ -277,7 +277,7 @@ namespace html
               `1 - ${cumtot.toFixed(3)}
                 / ${consotot.toFixed(3)}
                 = <span class="eco_hp">
-                ${ratio.toFixed(2) * 100} %
+                ${(ratio * 100).toFixed(2)} %
                 </span>`;
 
             const t_labels = hoursLabels(j.p2.length,
@@ -327,7 +327,7 @@ namespace html
             console.error(e);
           }).finally(function (j) {
             setTimeout(updateData, time_updateData[label],
-              label); 
+              label);
           });
         }
 
