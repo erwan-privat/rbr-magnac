@@ -146,16 +146,26 @@ namespace html
             return r.json();
           }).then(function (j) {
             Magnac.dimmer = j;
-            byId("force_off").checked = j.force_off;
-            byId("force_on" ).checked = j.force_on;
-            byId("hc_on"    ).checked = j.hc_on;
+            byId("force_off"     ).checked = j.force_off;
+            byId("force_on"      ).checked = j.force_on;
+            byId("hc_on"         ).checked = j.hc_on;
+            byId("force_off_radi").checked = j.force_off_radi;
+            byId("force_on_radi" ).checked = j.force_on_radi;
+
+            var is_on = byId("is_on_radi");
+            is_on.innerHTML = "normalement "
+              + (j.is_on_radi ? "allumé" : "éteint");
+            is_on.classList.toggle("on", j.is_on_radi);
+            is_on.classList.toggle("off", !j.is_on_radi);
 
             const hphc = byId("heures_hphc");
             hphc.innerHTML =
               `${decodeHMS(j.start_hc)} –­
                ${decodeHMS(j.end_hc)}`;
-            const in_hc = j.hc_on
-              && j.time >= j.start_hc && j.time < j.end_hc;
+            const in_hc = j.time >= j.start_hc
+              && j.time < j.end_hc;
+            // const in_hc = j.hc_on
+            //   && j.time >= j.start_hc && j.time < j.end_hc;
             hphc.classList.toggle("hc", in_hc);
           }).catch(function (e) {
             console.error(e);

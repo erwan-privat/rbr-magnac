@@ -100,6 +100,19 @@ namespace html
         color: var(--bad);
       }
 
+      #is_on_radi.off {
+        color: var(--bad);
+      }
+      #is_on_radi.off::after {
+        content: " ❌";
+      }
+      #is_on_rad.on {
+        color: var(--good);
+      }
+      #is_on_radi.on::after {
+        content: " ✓";
+      }
+
       canvas {
         margin-top: 30px;
       }

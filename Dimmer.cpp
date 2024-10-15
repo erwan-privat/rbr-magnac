@@ -60,12 +60,15 @@ namespace Dimmer
       float p2 = -Watts::power2;
       float ptot = Watts::power1 - p2;
       float pavailable = seuil_chofo - ptot;
+      float pavail_chofo = pavailable;
 
-      float amount = pavailable * max_value / max_chofo;
+      if (Radiateur::is_on)
+        pavail_chofo += Radiateur::max_power;
+
+      float amount = pavail_chofo * max_value / max_chofo;
       value = redress(amount);
 
-      Radiateur::is_on = pavailable > Radiateur::max_power
-        && p2 <= 0
+      Radiateur::is_on = pavailable > Radiateur::max_power;
 
       delay(2000);
     }

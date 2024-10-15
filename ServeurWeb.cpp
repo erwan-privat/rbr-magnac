@@ -147,12 +147,27 @@ namespace ServeurWeb
       Rst* res = req->beginResponseStream(
         "application/json");
 
-      res->printf("{\"force_on\": %s, \"force_off\": %s,"
-          "\"hc_on\": %s, \"start_hc\": %d, \"end_hc\": %d,"
-          "\"time\": %d}",
-        btoc(Dimmer::force_on), btoc(Dimmer::force_off),
-        btoc(Dimmer::hc_on), Dimmer::start_hc,
-        Dimmer::end_hc, Heure::getTimeHMS());
+      res->printf("{"
+          "\"force_on\": %s,"
+          "\"force_off\": %s,"
+          "\"hc_on\": %s,"
+          "\"start_hc\": %d,"
+          "\"end_hc\": %d,"
+          "\"time\": %d,"
+          "\"force_on_radi\": %s,"
+          "\"force_off_radi\": %s,"
+          "\"is_on_radi\": %s"
+          "}",
+        btoc(Dimmer::force_on),
+        btoc(Dimmer::force_off),
+        btoc(Dimmer::hc_on),
+        Dimmer::start_hc,
+        Dimmer::end_hc,
+        Heure::getTimeHMS(),
+        btoc(Radiateur::force_on),
+        btoc(Radiateur::force_off),
+        btoc(Radiateur::is_on)
+      );
 
       req->send(res);
     });

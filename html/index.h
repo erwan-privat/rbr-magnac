@@ -55,6 +55,9 @@ namespace html
             <input type="checkbox" id="force_on_radi"
                 name="force_on_radi">
           </div>
+          <div class="item">
+            <span id="is_on_radi">normalement éteint</span>
+          </div>
         </div>
 
         <div id="control" class="box">
