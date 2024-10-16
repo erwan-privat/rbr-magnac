@@ -5,6 +5,7 @@
 #include "Dimmer.h"
 #include "Heure.h"
 #include "Ota.h"
+#include "Radiateur.h"
 #include "Watts.h"
 #include "WiFiMagnac.h"
 #include <NTPClient.h>
@@ -145,6 +146,9 @@ namespace Ecran
 
     auto img = p1 > 0 ? bmp_chauffe_eau
       : bmp_chauffe_eau_nope;
+
+    if (Radiateur::force_on || Radiateur::is_on)
+      img = bmp_radiateur;
 
     screen.drawXBMP((screen_w + w) / 2 - 40, 8, 44, 40, img);
   }
