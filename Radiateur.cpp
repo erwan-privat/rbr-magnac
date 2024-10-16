@@ -2,6 +2,7 @@
 
 #include "pins.h"
 #include "Ota.h"
+#include "Watts.h"
 #include "WiFiSerial.h"
 
 namespace Radiateur
@@ -27,11 +28,27 @@ namespace Radiateur
     }
   }
 
+  void taskTrigger(void*)
+  {
+    for (;;)
+    {
+      float p2 = -Watts::power2;
+      is_on = p2 > Radiateur::max_power;
+
+      // à adapter en fonction du temps de démarrage du
+      // radiateur
+      delay(5000);
+    }
+  }
+
   void begin()
   {
     pinMode(relay_pin, OUTPUT);
+
     xTaskCreate(taskRadiateur, "task radiateur", 
       3000, nullptr, 7, nullptr);
+    xTaskCreate(taskTrigger, "task trigger", 
+      3000, nullptr, 6, nullptr);
 
     force_off = false;
   }

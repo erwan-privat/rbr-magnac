@@ -1,9 +1,11 @@
 #include "Dimmer.h"
+
 #include "pins.h"
-#include "Watts.h"
 #include "Heure.h"
-#include "Radiateur.h"
 #include "Ota.h"
+#include "Radiateur.h"
+#include "Watts.h"
+#include "WiFiSerial.h"
 #include <numbers>
 #include <cmath>
 
@@ -68,7 +70,8 @@ namespace Dimmer
       float amount = pavail_chofo * max_value / max_chofo;
       value = redress(amount);
 
-      Radiateur::is_on = pavailable > Radiateur::max_power;
+      weblogf("p1 = %f, p2 = %f, pa = %f, paf = %f\n",
+          Watts::power1, p2, pavailable, pavail_chofo);
 
       delay(2000);
     }

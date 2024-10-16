@@ -100,6 +100,11 @@ namespace html
         color: var(--bad);
       }
 
+      #radiateur {
+        margin-left: auto;
+        margin-right: 20px;
+      }
+
       #is_on_radi.off {
         color: var(--bad);
       }
@@ -141,6 +146,10 @@ namespace html
         margin-top: 20px;
         border-radius: 5px;
         backdrop-filter: blur(10px);
+      }
+
+      #instant {
+        margin-right: 20px;
       }
 
       #instant label {
