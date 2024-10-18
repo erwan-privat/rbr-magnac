@@ -123,8 +123,10 @@ namespace Data
   {
     for (;;)
     {
-      Chart& c = Data::charts.at(Key::D_24H);
-
+      Chart& c24 = Data::charts.at(Key::D_24H);
+      Chart& c15 = Data::charts.at(Key::D_24H);
+      // weblogf("24h: %d\n", c24[Category::P1_HP].size());
+      // weblogf("15minh: %d\n", c15[Category::P1_HP].size());
       
       delay(1000);
     }
