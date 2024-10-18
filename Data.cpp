@@ -1,15 +1,17 @@
 #include "Data.h"
 
-#include "Heure.h"
+#include "ChartData.h"
 #include "Dimmer.h"
+#include "Heure.h"
 #include "Watts.h"
+#include "WiFiSerial.h"
 
 #include <Arduino.h>
 #include <NTPClient.h>
 
 namespace Data
 {
-  extern unsigned long last_boot = 0;
+  unsigned long last_boot = 0;
 
   float buf_p1_hp_15min[size_15min];
   float buf_p2_hp_15min[size_15min];
@@ -26,9 +28,9 @@ namespace Data
   float buf_p1_hc_24h[size_24h];
   float buf_p2_hc_24h[size_24h];
 
-  extern unsigned ix_15min = 0;
-  extern unsigned ix_1h    = 0;
-  extern unsigned ix_24h   = 0;
+  unsigned ix_15min = 0;
+  unsigned ix_1h    = 0;
+  unsigned ix_24h   = 0;
 
   void taskData_15min(void*)
   {
@@ -43,11 +45,15 @@ namespace Data
       }
       else
       {
-
         buf_p1_hc_15min[ix_15min] = 0;
         buf_p2_hc_15min[ix_15min] = 0;
         buf_p1_hp_15min[ix_15min] = Watts::power1;
         buf_p2_hp_15min[ix_15min] = Watts::power2;
+
+        // char_map[Key::D_15MIN].set_current(Category::P1_HP,
+        //     Watts::power1);
+        // char_map[Key::D_15MIN].set_current(Category::P2_HP,
+        //     Watts::power2);
       }
 
       ix_15min = (ix_15min + 1) % size_15min;
@@ -71,7 +77,6 @@ namespace Data
       }
       else
       {
-
         buf_p1_hc_1h[ix_1h] = 0;
         buf_p2_hc_1h[ix_1h] = 0;
         buf_p1_hp_1h[ix_1h] = Watts::power1;
@@ -100,7 +105,6 @@ namespace Data
       }
       else
       {
-
         buf_p1_hc_24h[ix_24h] = 0;
         buf_p2_hc_24h[ix_24h] = 0;
         buf_p1_hp_24h[ix_24h] = Watts::power1;
@@ -115,6 +119,18 @@ namespace Data
     }
   }
 
+  void taskTest(void*)
+  {
+    for (;;)
+    {
+      Chart& c = Data::charts.at(Key::D_24H);
+
+      
+      delay(1000);
+    }
+  }
+
+
   void begin()
   {
     while (!Heure::time_client.isTimeSet())
@@ -127,6 +143,9 @@ namespace Data
     xTaskCreate(taskData_1h, "task data_1h",
       3000, nullptr, 3, nullptr);
     xTaskCreate(taskData_24h, "task data_24h",
+      3000, nullptr, 3, nullptr);
+
+    xTaskCreate(taskTest, "TASK TEST",
       3000, nullptr, 3, nullptr);
   }
 }

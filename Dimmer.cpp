@@ -13,7 +13,7 @@ namespace Dimmer
 {
   extern bool force_off = true;
   extern bool force_on  = false;
-  extern bool hc_on     = false;
+  extern bool hc_on     = true;
 
   extern DimmableLight dimmer(dimmer_com);
   byte value = 0;
@@ -70,8 +70,8 @@ namespace Dimmer
       float amount = pavail_chofo * max_value / max_chofo;
       value = redress(amount);
 
-      weblogf("p1 = %f, p2 = %f, pa = %f, paf = %f\n",
-          Watts::power1, p2, pavailable, pavail_chofo);
+      // weblogf("p1 = %f, p2 = %f, pa = %f, paf = %f\n",
+      //     Watts::power1, p2, pavailable, pavail_chofo);
 
       delay(2000);
     }

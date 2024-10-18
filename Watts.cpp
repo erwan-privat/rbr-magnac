@@ -14,15 +14,15 @@ namespace Watts
   extern float energy1         = 0; // kWh
   extern float energyReturned1 = 0; // kWh
   extern float power1          = 0; // W
-  extern float powerFactor1    = 0;
+  extern float powerFactor1    = 0; // ?
   extern float voltage1        = 0; // V
 
-  // clamp (or second clamp)
+  // clamp or second clamp
   extern float current2        = 0; // A
   extern float energy2         = 0; // kWh
   extern float energyReturned2 = 0; // kWh
   extern float power2          = 0; // W
-  extern float powerFactor2    = 0;
+  extern float powerFactor2    = 0; // ?
   extern float voltage2        = 0; // V
 
   extern uint32_t frequency    = 0; // Hz

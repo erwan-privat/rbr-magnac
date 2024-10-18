@@ -13,7 +13,7 @@
 #include "Watts.h"
 #include "WiFiSerial.h"
 #include <ESPAsyncWebServer.h>
-#include <Base64.h>
+// #include <Base64.h>
 
 // #define INCLUDE_TEST_JSON
 #ifdef INCLUDE_TEST_JSON
@@ -47,12 +47,8 @@ namespace ServeurWeb
     stream->print('[');
     stream->print(arr[0]);
 
-    for (size_t i = 1; i < size; ++i) {
-      if (i == size / 2)
-        yield();
-
+    for (size_t i = 1; i < size; ++i)
       stream->printf(", %.0f", arr[i]);
-    }
 
     stream->print(']');
   }
@@ -67,15 +63,12 @@ namespace ServeurWeb
 
       res->print("\"p1_hp\": ");
       printArrJson(res, p1_hp, size);
-      yield();
       res->print(',');
       res->print("\"p1_hc\": ");
       printArrJson(res, p1_hc, size);
-      yield();
       res->print(',');
       res->print("\"p2_hp\": ");
       printArrJson(res, p2_hp, size);
-      yield();
       res->print(',');
       res->print("\"p2_hc\": ");
       printArrJson(res, p2_hc, size);
@@ -172,21 +165,21 @@ namespace ServeurWeb
       req->send(res);
     });
 
-    server.on("/screen", HTTP_GET, [](Req* req)
-    {
-      weblog("GET /screen");
-      constexpr auto screen64_size = 1368;
-      char screen64[screen64_size + 1];
+    // server.on("/screen", HTTP_GET, [](Req* req)
+    // {
+    //   weblog("GET /screen");
+    //   constexpr auto screen64_size = 1368;
+    //   char screen64[screen64_size + 1];
 
-      auto* screen = (char*)Ecran::getScreen()
-        .getBufferPtr();
+    //   auto* screen = (char*)Ecran::getScreen()
+    //     .getBufferPtr();
 
-      Base64.encode(screen64, screen, screen64_size); 
+    //   Base64.encode(screen64, screen, screen64_size); 
 
-      Rst* res = req->beginResponseStream("text/plain");
-      res->print(screen64);
-      req->send(res);
-    });
+    //   Rst* res = req->beginResponseStream("text/plain");
+    //   res->print(screen64);
+    //   req->send(res);
+    // });
 
     server.on("/data_15min", HTTP_GET, [](Req* req)
     {

@@ -22,7 +22,7 @@ void println(T t)
   EP_SERIAL.println();
 }
 
-#define eplog(s) println(F("[EP] " s))
-#define eplogf(f, ...) EP_SERIAL.printf(F("[EP] " f), __VA_ARGS__)
+#define eplog(s) println(F(s))
+#define eplogf(f, ...) EP_SERIAL.printf(F(f), __VA_ARGS__)
   
 #endif
