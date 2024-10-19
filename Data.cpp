@@ -1,9 +1,8 @@
 #include "Data.h"
 
-// #include "ChartData.h"
+#include "ChartData.h"
 #include "Dimmer.h"
 #include "Heure.h"
-#include "RingBuffer.h"
 #include "Watts.h"
 #include "WiFiSerial.h"
 
@@ -51,10 +50,10 @@ namespace Data
         buf_p1_hp_15min[ix_15min] = Watts::power1;
         buf_p2_hp_15min[ix_15min] = Watts::power2;
 
-        // char_map[Key::D_15MIN].set_current(Category::P1_HP,
-        //     Watts::power1);
-        // char_map[Key::D_15MIN].set_current(Category::P2_HP,
-        //     Watts::power2);
+        charts.at(Key::D_15MIN)[Category::P2_HP]
+          .push_back(Watts::power2);
+
+        weblogf(">>> p2 = %f W\n", Watts::power2);
       }
 
       ix_15min = (ix_15min + 1) % size_15min;
@@ -122,24 +121,26 @@ namespace Data
 
   void taskTest(void*)
   {
-    constexpr size_t size = 16;
-    RingBuffer rb(size);
-    int n = 0;
+    Chart& c = Data::charts.at(Key::D_15MIN);
 
     for (;;)
     {
       // Chart& c24h = Data::charts.at(Key::D_24H);
       // Chart& c1h = Data::charts.at(Key::D_1H);
       // Chart& c15min = Data::charts.at(Key::D_15MIN);
-      // weblogf("24h:   %d\n", c24h[Category::P1_HP].size);
-      // weblogf("1h:    %d\n", c1h[Category::P1_HP].size);
-      // weblogf("15min: %d\n", c15min[Category::P1_HP].size);
+      // weblogf("24h:   %d\n", c24h[Category::P1_HP].index);
+      // weblogf("1h:    %d\n", c1h[Category::P1_HP].index);
+      // weblogf("15min: %d\n", c15min[Category::P1_HP].back());
 
-      rb.push_back(n++);
-      for (size_t i = 0 ; i < size; ++i)
-        weblogf("%f, ", rb.buffer[i]);
-      weblogf("\n> %d\n", rb.index);
-      
+      RingBuffer& rb = c[Category::P2_HP];
+      for (size_t i = 0; i < rb.size; ++i)
+      {
+        if (i == rb.index)
+          weblogf("[%f], ", rb.buffer[i]);
+        else
+          weblogf("%f, ", rb.buffer[i]);
+      }
+      weblog("");
       delay(1000);
     }
   }

@@ -1,7 +1,7 @@
 #include "RingBuffer.h"
 
 RingBuffer::RingBuffer(std::size_t size)
-  : size(size), buffer(size)
+  : size(size), buffer(size), index(0)
 {}
 
 void RingBuffer::push_back(float element)
