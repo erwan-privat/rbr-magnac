@@ -4,9 +4,9 @@
 
 namespace Ota
 {
-  extern bool updating = false;
-  extern byte progress = 0;
-  extern int  error    = 666;
+  bool updating = false;
+  byte progress = 0;
+  int  error    = 666;
 
   void taskUpdate(void*)
   {

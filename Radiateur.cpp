@@ -7,9 +7,9 @@
 
 namespace Radiateur
 {
-  extern bool force_off = true;
-  extern bool force_on = false;
-  extern bool is_on = false;
+  bool force_off = true;
+  bool force_on = false;
+  bool is_on = false;
 
   void taskRadiateur(void*)
   {
