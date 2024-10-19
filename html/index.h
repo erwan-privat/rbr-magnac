@@ -8,7 +8,7 @@
 // #endif
 // #define TEMPLATE_PLACEHOLDER '$'
 
-#define VERSION "v2.0.2"
+#define VERSION "v2.0.3"
 
 namespace html
 {
