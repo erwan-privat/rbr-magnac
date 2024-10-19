@@ -119,31 +119,31 @@ namespace Data
     }
   }
 
-  void taskTest(void*)
-  {
-    Chart& c = Data::charts.at(Key::D_15MIN);
+  // void taskTest(void*)
+  // {
+  //   Chart& c = Data::charts.at(Key::D_15MIN);
 
-    for (;;)
-    {
-      // Chart& c24h = Data::charts.at(Key::D_24H);
-      // Chart& c1h = Data::charts.at(Key::D_1H);
-      // Chart& c15min = Data::charts.at(Key::D_15MIN);
-      // weblogf("24h:   %d\n", c24h[Category::P1_HP].index);
-      // weblogf("1h:    %d\n", c1h[Category::P1_HP].index);
-      // weblogf("15min: %d\n", c15min[Category::P1_HP].back());
+  //   for (;;)
+  //   {
+  //     // Chart& c24h = Data::charts.at(Key::D_24H);
+  //     // Chart& c1h = Data::charts.at(Key::D_1H);
+  //     // Chart& c15min = Data::charts.at(Key::D_15MIN);
+  //     // weblogf("24h:   %d\n", c24h[Category::P1_HP].index);
+  //     // weblogf("1h:    %d\n", c1h[Category::P1_HP].index);
+  //     // weblogf("15min: %d\n", c15min[Category::P1_HP].back());
 
-      RingBuffer& rb = c[Category::P2_HP];
-      for (size_t i = 0; i < rb.size; ++i)
-      {
-        if (i == rb.index)
-          weblogf("[%f], ", rb.buffer[i]);
-        else
-          weblogf("%f, ", rb.buffer[i]);
-      }
-      weblog("");
-      delay(1000);
-    }
-  }
+  //     RingBuffer& rb = c[Category::P2_HP];
+  //     for (size_t i = 0; i < rb.size; ++i)
+  //     {
+  //       if (i == rb.index)
+  //         weblogf("[%f], ", rb.buffer[i]);
+  //       else
+  //         weblogf("%f, ", rb.buffer[i]);
+  //     }
+  //     weblog("");
+  //     delay(1000);
+  //   }
+  // }
 
 
   void begin()
@@ -160,7 +160,7 @@ namespace Data
     xTaskCreate(taskData_24h, "task data_24h",
       3000, nullptr, 3, nullptr);
 
-    xTaskCreate(taskTest, "TASK TEST",
-      3000, nullptr, 3, nullptr);
+    // xTaskCreate(taskTest, "TASK TEST",
+    //   3000, nullptr, 3, nullptr);
   }
 }
