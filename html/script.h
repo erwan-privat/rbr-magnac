@@ -271,7 +271,7 @@ namespace html
               </span>`;
 
             const consotot = cumtot + hphc[0].total;
-            const ratio = 1 - cumtot / consotot;
+            var ratio = 1 - cumtot / consotot;
             ratio = ratio || 0;
             byId(`autoconso_${label}`).innerHTML =
               `1 - ${cumtot.toFixed(3)}
