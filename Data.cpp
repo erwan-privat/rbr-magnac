@@ -1,6 +1,6 @@
 #include "Data.h"
 
-#include "ChartData.h"
+// #include "ChartData.h"
 #include "Dimmer.h"
 #include "Heure.h"
 #include "Watts.h"
@@ -123,14 +123,15 @@ namespace Data
   {
     for (;;)
     {
-      Chart& c24h = Data::charts.at(Key::D_24H);
-      Chart& c1h = Data::charts.at(Key::D_1H);
-      Chart& c15min = Data::charts.at(Key::D_15MIN);
-      weblogf("24h:   %d\n", c24h[Category::P1_HP].size);
-      weblogf("1h:    %d\n", c1h[Category::P1_HP].size);
-      weblogf("15min: %d\n", c15min[Category::P1_HP].size);
+      // Chart& c24h = Data::charts.at(Key::D_24H);
+      // Chart& c1h = Data::charts.at(Key::D_1H);
+      // Chart& c15min = Data::charts.at(Key::D_15MIN);
+      // weblogf("24h:   %d\n", c24h[Category::P1_HP].size);
+      // weblogf("1h:    %d\n", c1h[Category::P1_HP].size);
+      // weblogf("15min: %d\n", c15min[Category::P1_HP].size);
+      weblog("HERBERT");
       
-      delay(10000);
+      delay(1000);
     }
   }
 
