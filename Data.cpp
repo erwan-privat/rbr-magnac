@@ -3,6 +3,7 @@
 // #include "ChartData.h"
 #include "Dimmer.h"
 #include "Heure.h"
+#include "RingBuffer.h"
 #include "Watts.h"
 #include "WiFiSerial.h"
 
@@ -121,6 +122,10 @@ namespace Data
 
   void taskTest(void*)
   {
+    constexpr size_t size = 16;
+    RingBuffer rb(size);
+    int n = 0;
+
     for (;;)
     {
       // Chart& c24h = Data::charts.at(Key::D_24H);
@@ -129,7 +134,11 @@ namespace Data
       // weblogf("24h:   %d\n", c24h[Category::P1_HP].size);
       // weblogf("1h:    %d\n", c1h[Category::P1_HP].size);
       // weblogf("15min: %d\n", c15min[Category::P1_HP].size);
-      weblog("HERBERT");
+
+      rb.push_back(n++);
+      for (size_t i = 0 ; i < size; ++i)
+        weblogf("%f, ", rb.buffer[i]);
+      weblogf("\n> %d\n", rb.index);
       
       delay(1000);
     }

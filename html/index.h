@@ -8,6 +8,8 @@
 // #endif
 // #define TEMPLATE_PLACEHOLDER '$'
 
+#define VERSION "v2.0.2"
+
 namespace html
 {
   constexpr char index_start[] PROGMEM = R"%(<!DOCTYPE html>
@@ -16,12 +18,12 @@ namespace html
       <meta charset="utf-8" />)%";
 
   constexpr char index_end[] PROGMEM = R"%(
-      <title>RBR Magnac | v2.0.1</title>
+      <title>RBR Magnac | )%" VERSION R"%(</title>
     </head>
     <body>
       <h1><img src="/favicon.ico" alt="sun" />
         Routeur solaire RBR Magnac
-        <span class="version">v2.0.1</span></h1>
+        <span class="version">)%" VERSION R"%(</span></h1>
       <menu>
         <li><a href="/webserial" target="_blank">
             Web serial</a></li>
