@@ -119,18 +119,20 @@ namespace Data
     }
   }
 
-  void taskTest(void*)
-  {
-    for (;;)
-    {
-      Chart& c24 = Data::charts.at(Key::D_24H);
-      Chart& c15 = Data::charts.at(Key::D_24H);
-      // weblogf("24h: %d\n", c24[Category::P1_HP].size());
-      // weblogf("15minh: %d\n", c15[Category::P1_HP].size());
+  // void taskTest(void*)
+  // {
+  //   for (;;)
+  //   {
+  //     Chart& c24h = Data::charts.at(Key::D_24H);
+  //     Chart& c1h = Data::charts.at(Key::D_1H);
+  //     Chart& c15min = Data::charts.at(Key::D_15MIN);
+  //     weblogf("24h:   %d\n", c24h[Category::P1_HP].size);
+  //     weblogf("1h:    %d\n", c1h[Category::P1_HP].size);
+  //     weblogf("15min: %d\n", c15min[Category::P1_HP].size);
       
-      delay(1000);
-    }
-  }
+  //     delay(10000);
+  //   }
+  // }
 
 
   void begin()
@@ -147,7 +149,7 @@ namespace Data
     xTaskCreate(taskData_24h, "task data_24h",
       3000, nullptr, 3, nullptr);
 
-    xTaskCreate(taskTest, "TASK TEST",
-      3000, nullptr, 3, nullptr);
+    // xTaskCreate(taskTest, "TASK TEST",
+    //   3000, nullptr, 3, nullptr);
   }
 }
