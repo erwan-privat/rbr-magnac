@@ -100,6 +100,24 @@ namespace html
         color: var(--bad);
       }
 
+      #radiateur {
+        margin-left: auto;
+        margin-right: 20px;
+      }
+
+      #is_on_radi.off {
+        color: var(--bad);
+      }
+      #is_on_radi.off::after {
+        content: " ❌";
+      }
+      #is_on_rad.on {
+        color: var(--good);
+      }
+      #is_on_radi.on::after {
+        content: " ✓";
+      }
+
       canvas {
         margin-top: 30px;
       }
@@ -130,11 +148,18 @@ namespace html
         backdrop-filter: blur(10px);
       }
 
+      #instant {
+        margin-right: 20px;
+      }
+
       #instant label {
         width: 120px;
       }
       #instant h2::before {
         content: "⚡\00a0";
+      }
+      #radiateur h2::before {
+        content: "🔌\00a0";
       }
       #control h2::before {
         content: "⚙️\00a0\00a0";

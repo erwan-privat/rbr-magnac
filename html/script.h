@@ -20,6 +20,7 @@ namespace html
       let ota_refresh = false;
 
       document.addEventListener("DOMContentLoaded", () =>{
+        //TODO tie that to C++ code
         const labels = ["24h", "1h", "15min"];
         Magnac.prix_hp = 2874;
         Magnac.prix_hc = 2088;
@@ -146,25 +147,37 @@ namespace html
             return r.json();
           }).then(function (j) {
             Magnac.dimmer = j;
-            byId("force_off").checked = j.force_off;
-            byId("force_on" ).checked = j.force_on;
-            byId("hc_on"    ).checked = j.hc_on;
+            byId("force_off"     ).checked = j.force_off;
+            byId("force_on"      ).checked = j.force_on;
+            byId("hc_on"         ).checked = j.hc_on;
+            byId("force_off_radi").checked = j.force_off_radi;
+            byId("force_on_radi" ).checked = j.force_on_radi;
+
+            var is_on = byId("is_on_radi");
+            is_on.innerHTML = "normalement "
+              + (j.is_on_radi ? "allumé" : "éteint");
+            is_on.classList.toggle("on", j.is_on_radi);
+            is_on.classList.toggle("off", !j.is_on_radi);
 
             const hphc = byId("heures_hphc");
             hphc.innerHTML =
               `${decodeHMS(j.start_hc)} –­
                ${decodeHMS(j.end_hc)}`;
-            const in_hc = j.hc_on
-              && j.time >= j.start_hc && j.time < j.end_hc;
+            const in_hc = j.time >= j.start_hc
+              && j.time < j.end_hc;
+            // const in_hc = j.hc_on
+            //   && j.time >= j.start_hc && j.time < j.end_hc;
             hphc.classList.toggle("hc", in_hc);
           }).catch(function (e) {
             console.error(e);
           }).finally(function (j) {
             setTimeout(updateDimmer, 1000);
 
-            byId("force_off").disabled = false;
-            byId("force_on" ).disabled = false;
-            byId("hc_on"    ).disabled = false;
+            byId("force_off"     ).disabled = false;
+            byId("force_on"      ).disabled = false;
+            byId("hc_on"         ).disabled = false;
+            byId("force_off_radi").disabled = false;
+            byId("force_on_radi" ).disabled = false;
           });
         }
 
@@ -172,9 +185,11 @@ namespace html
           const checked = event.currentTarget.checked;
           const name    = event.currentTarget.name;
           const param = `${name}=${checked}`;
-          byId("force_off").disabled = true;
-          byId("force_on" ).disabled = true;
-          byId("hc_on"    ).disabled = true;
+          byId("force_off"     ).disabled = true;
+          byId("force_on"      ).disabled = true;
+          byId("hc_on"         ).disabled = true;
+          byId("force_off_radi").disabled = true;
+          byId("force_on_radi" ).disabled = true;
           console.log(param)
           fetch("/control?" + param).then(r => {
             if (!r.ok)
@@ -182,11 +197,15 @@ namespace html
           });
         }
 
-        byId("force_on").addEventListener("change",
+        byId("force_on"      ).addEventListener("change",
           updateControl);
-        byId("force_off").addEventListener("change",
+        byId("force_off"     ).addEventListener("change",
           updateControl);
-        byId("hc_on").addEventListener("change",
+        byId("hc_on"         ).addEventListener("change",
+          updateControl);
+        byId("force_on_radi" ).addEventListener("change",
+          updateControl);
+        byId("force_off_radi").addEventListener("change",
           updateControl);
 
         function integrate(yy, dx) {
@@ -221,12 +240,13 @@ namespace html
         }
 
         const time_updateData = {};
+        // TODO detetermine this from C++ code
         time_updateData["24h"]   = 180000;
         time_updateData["1h"]    =   8000;
         time_updateData["15min"] =   2000;
 
         function updateData(label) {
-          fetch("/data_" + label).then(r => {
+          fetch("/chart?" + label).then(r => {
             if (!r.ok)
               throw new Error(`${label} HTTP${r.status}`);
             return r.json();

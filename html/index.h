@@ -3,10 +3,7 @@
 
 #include <Arduino.h>
 
-// #ifdef  TEMPLATE_PLACEHOLDER
-   // #undef  TEMPLATE_PLACEHOLDER
-// #endif
-// #define TEMPLATE_PLACEHOLDER '$'
+#define VERSION "v2.0.8"
 
 namespace html
 {
@@ -16,12 +13,12 @@ namespace html
       <meta charset="utf-8" />)%";
 
   constexpr char index_end[] PROGMEM = R"%(
-      <title>RBR Magnac | v1.2</title>
+      <title>RBR Magnac | )%" VERSION R"%(</title>
     </head>
     <body>
       <h1><img src="/favicon.ico" alt="sun" />
         Routeur solaire RBR Magnac
-        <span class="version">v1.2</span></h1>
+        <span class="version">)%" VERSION R"%(</span></h1>
       <menu>
         <li><a href="/webserial" target="_blank">
             Web serial</a></li>
@@ -38,8 +35,30 @@ namespace html
           <div class="item"><label>Chauffe-eau</label>
             <b id="p1">0 W</b></div>
         </div>
+
+        <div id="radiateur" class="box">
+          <h2>Contrôle radiateur</h2>
+          <div class="item">
+            <label for="force_off_radi">
+              Arrêt forcé
+            </label>
+            <input type="checkbox" id="force_off_radi"
+                name="force_off_radi">
+          </div>
+          <div class="item">
+            <label for="force_on_radi">
+              Marche forcée
+            </label>
+            <input type="checkbox" id="force_on_radi"
+                name="force_on_radi">
+          </div>
+          <div class="item">
+            <span id="is_on_radi">normalement éteint</span>
+          </div>
+        </div>
+
         <div id="control" class="box">
-          <h2>Contrôle</h2>
+          <h2>Contrôle chauffe-eau</h2>
           <div class="item">
             <label for="force_off">
               Arrêt forcé

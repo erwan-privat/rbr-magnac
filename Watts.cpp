@@ -10,22 +10,22 @@
 namespace Watts
 {
   // tore or first clamp
-  extern float current1        = 0; // A
-  extern float energy1         = 0; // kWh
-  extern float energyReturned1 = 0; // kWh
-  extern float power1          = 0; // W
-  extern float powerFactor1    = 0;
-  extern float voltage1        = 0; // V
+  float current1        = 0; // A
+  float energy1         = 0; // kWh
+  float energyReturned1 = 0; // kWh
+  float power1          = 0; // W
+  float powerFactor1    = 0; // ?
+  float voltage1        = 0; // V
 
-  // clamp (or second clamp)
-  extern float current2        = 0; // A
-  extern float energy2         = 0; // kWh
-  extern float energyReturned2 = 0; // kWh
-  extern float power2          = 0; // W
-  extern float powerFactor2    = 0;
-  extern float voltage2        = 0; // V
+  // clamp or second clamp
+  float current2        = 0; // A
+  float energy2         = 0; // kWh
+  float energyReturned2 = 0; // kWh
+  float power2          = 0; // W
+  float powerFactor2    = 0; // ?
+  float voltage2        = 0; // V
 
-  extern uint32_t frequency    = 0; // Hz
+  uint32_t frequency    = 0; // Hz
 
   uint8_t buffer[61];
 

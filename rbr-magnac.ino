@@ -9,6 +9,7 @@
 #include "Heure.h"
 #include "Watts.h"
 #include "Dimmer.h"
+#include "Radiateur.h"
 #include "ServeurWeb.h"
 #include "Data.h"
 
@@ -33,6 +34,7 @@ void setup()
   Data::begin();
   Watts::begin();
   Dimmer::begin();
+  Radiateur::begin();
 
   eplog("Herbert !");
   weblogf("%s\n", "Herbert !");

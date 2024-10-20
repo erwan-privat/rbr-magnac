@@ -20,6 +20,3 @@ namespace WiFiSerial
     WebSerial.onMessage(receiveData);
   }
 }
-
-#define weblog(f) WebSerial.print(F("[EP] " f "\n"))
-#define weblogf(f, ...) WebSerial.printf(F("[EP] " f), __VA_ARGS__)

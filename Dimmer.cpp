@@ -1,19 +1,21 @@
 #include "Dimmer.h"
+
 #include "pins.h"
-#include "Watts.h"
 #include "Heure.h"
-// #include "WiFiSerial.h"
 #include "Ota.h"
+#include "Radiateur.h"
+#include "Watts.h"
+#include "WiFiSerial.h"
 #include <numbers>
 #include <cmath>
 
 namespace Dimmer
 {
-  extern bool force_off = true;
-  extern bool force_on  = false;
-  extern bool hc_on     = true;
+  bool force_off = true;
+  bool force_on  = false;
+  bool hc_on     = true;
 
-  extern DimmableLight dimmer(dimmer_com);
+  DimmableLight dimmer(dimmer_com);
   byte value = 0;
 
   void taskDimmer(void*)
@@ -57,11 +59,19 @@ namespace Dimmer
   {
     for (;;)
     {
-      float ptot = Watts::power1 - (-Watts::power2);
+      float p2 = -Watts::power2;
+      float ptot = Watts::power1 - p2;
       float pavailable = seuil_chofo - ptot;
+      float pavail_chofo = pavailable;
 
-      float amount = pavailable * max_value / max_chofo;
+      if (Radiateur::is_on)
+        pavail_chofo += Radiateur::max_power;
+
+      float amount = pavail_chofo * max_value / max_chofo;
       value = redress(amount);
+
+      // weblogf("p1 = %f, p2 = %f, pa = %f, paf = %f\n",
+      //     Watts::power1, p2, pavailable, pavail_chofo);
 
       delay(2000);
     }

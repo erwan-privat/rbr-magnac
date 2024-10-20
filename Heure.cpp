@@ -6,7 +6,7 @@ namespace Heure
 {
   WiFiUDP udp;
 
-  extern NTPClient time_client(udp,
+  NTPClient time_client(udp,
     "time.google.com",
     time_offset, // décalage horaire UTC en secondes
     static_cast<unsigned long>(-1)); // pas d'update auto
