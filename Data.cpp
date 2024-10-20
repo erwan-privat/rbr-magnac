@@ -38,10 +38,10 @@ namespace Data
     {
       if (Dimmer::isHC())
       {
-        buf_p1_hc_15min[ix_15min] = Watts::power1;
-        buf_p2_hc_15min[ix_15min] = Watts::power2;
-        buf_p1_hp_15min[ix_15min] = 0;
-        buf_p2_hp_15min[ix_15min] = 0;
+        // buf_p1_hc_15min[ix_15min] = Watts::power1;
+        // buf_p2_hc_15min[ix_15min] = Watts::power2;
+        // buf_p1_hp_15min[ix_15min] = 0;
+        // buf_p2_hp_15min[ix_15min] = 0;
 
         charts.at(Key::D_15MIN)[Category::P1_HP]
           .push_back(0);
@@ -54,10 +54,10 @@ namespace Data
       }
       else
       {
-        buf_p1_hc_15min[ix_15min] = 0;
-        buf_p2_hc_15min[ix_15min] = 0;
-        buf_p1_hp_15min[ix_15min] = Watts::power1;
-        buf_p2_hp_15min[ix_15min] = Watts::power2;
+        // buf_p1_hc_15min[ix_15min] = 0;
+        // buf_p2_hc_15min[ix_15min] = 0;
+        // buf_p1_hp_15min[ix_15min] = Watts::power1;
+        // buf_p2_hp_15min[ix_15min] = Watts::power2;
 
         charts.at(Key::D_15MIN)[Category::P1_HP]
           .push_back(Watts::power1);
@@ -83,10 +83,10 @@ namespace Data
     {
       if (Dimmer::isHC())
       {
-        buf_p1_hc_1h[ix_1h] = Watts::power1;
-        buf_p2_hc_1h[ix_1h] = Watts::power2;
-        buf_p1_hp_1h[ix_1h] = 0;
-        buf_p2_hp_1h[ix_1h] = 0;
+        // buf_p1_hc_1h[ix_1h] = Watts::power1;
+        // buf_p2_hc_1h[ix_1h] = Watts::power2;
+        // buf_p1_hp_1h[ix_1h] = 0;
+        // buf_p2_hp_1h[ix_1h] = 0;
 
         charts.at(Key::D_1H)[Category::P1_HP]
           .push_back(0);
@@ -99,10 +99,10 @@ namespace Data
       }
       else
       {
-        buf_p1_hc_1h[ix_1h] = 0;
-        buf_p2_hc_1h[ix_1h] = 0;
-        buf_p1_hp_1h[ix_1h] = Watts::power1;
-        buf_p2_hp_1h[ix_1h] = Watts::power2;
+        // buf_p1_hc_1h[ix_1h] = 0;
+        // buf_p2_hc_1h[ix_1h] = 0;
+        // buf_p1_hp_1h[ix_1h] = Watts::power1;
+        // buf_p2_hp_1h[ix_1h] = Watts::power2;
 
         charts.at(Key::D_1H)[Category::P1_HP]
           .push_back(Watts::power1);
@@ -129,10 +129,10 @@ namespace Data
     {
       if (Dimmer::isHC())
       {
-        buf_p1_hc_24h[ix_24h] = Watts::power1;
-        buf_p2_hc_24h[ix_24h] = Watts::power2;
-        buf_p1_hp_24h[ix_24h] = 0;
-        buf_p2_hp_24h[ix_24h] = 0;
+        // buf_p1_hc_24h[ix_24h] = Watts::power1;
+        // buf_p2_hc_24h[ix_24h] = Watts::power2;
+        // buf_p1_hp_24h[ix_24h] = 0;
+        // buf_p2_hp_24h[ix_24h] = 0;
 
         charts.at(Key::D_24H)[Category::P1_HP]
           .push_back(0);
@@ -145,10 +145,10 @@ namespace Data
       }
       else
       {
-        buf_p1_hc_24h[ix_24h] = 0;
-        buf_p2_hc_24h[ix_24h] = 0;
-        buf_p1_hp_24h[ix_24h] = Watts::power1;
-        buf_p2_hp_24h[ix_24h] = Watts::power2;
+        // buf_p1_hc_24h[ix_24h] = 0;
+        // buf_p2_hc_24h[ix_24h] = 0;
+        // buf_p1_hp_24h[ix_24h] = Watts::power1;
+        // buf_p2_hp_24h[ix_24h] = Watts::power2;
 
         charts.at(Key::D_24H)[Category::P1_HP]
           .push_back(Watts::power1);
