@@ -3,11 +3,6 @@
 
 #include <Arduino.h>
 
-// #ifdef  TEMPLATE_PLACEHOLDER
-   // #undef  TEMPLATE_PLACEHOLDER
-// #endif
-// #define TEMPLATE_PLACEHOLDER '$'
-
 #define VERSION "v2.0.6"
 
 namespace html

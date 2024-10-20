@@ -20,6 +20,7 @@ namespace html
       let ota_refresh = false;
 
       document.addEventListener("DOMContentLoaded", () =>{
+        //TODO tie that to C++ code
         const labels = ["24h", "1h", "15min"];
         Magnac.prix_hp = 2874;
         Magnac.prix_hc = 2088;
@@ -239,12 +240,13 @@ namespace html
         }
 
         const time_updateData = {};
+        // TODO detetermine this from C++ code
         time_updateData["24h"]   = 180000;
         time_updateData["1h"]    =   8000;
         time_updateData["15min"] =   2000;
 
         function updateData(label) {
-          fetch("/data_" + label).then(r => {
+          fetch("/chart?" + label).then(r => {
             if (!r.ok)
               throw new Error(`${label} HTTP${r.status}`);
             return r.json();

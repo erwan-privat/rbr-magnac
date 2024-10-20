@@ -6,9 +6,10 @@
 #include "html/favicon.h"
 #include "Data.h"
 #include "Dimmer.h"
-#include "Radiateur.h"
+#include "ChartData.h"
 #include "Ecran.h"
 #include "Heure.h"
+#include "Radiateur.h"
 #include "Ota.h"
 #include "Watts.h"
 #include "WiFiSerial.h"
@@ -20,6 +21,9 @@
 #include <ArduinoJson.h>
 #endif
 
+// Stringify for JSON
+#define S(cc) "\"" cc "\""
+
 namespace ServeurWeb
 {
   using std::size_t;
@@ -27,6 +31,9 @@ namespace ServeurWeb
   using Req = AsyncWebServerRequest;
   using Rst = AsyncResponseStream;
   using Prm = AsyncWebParameter;
+  using Data::Key;
+  using Data::Category;
+  using Data::Chart;
 
 
   AsyncWebServer server(80);
@@ -41,13 +48,23 @@ namespace ServeurWeb
     return b ? "true" : "false";
   }
 
-  void printArrJson(Rst* stream,
-    const float* arr, size_t size)
+  void printArrJson(Rst* stream, const float* arr, size_t size)
   {
     stream->print('[');
     stream->print(arr[0]);
 
     for (size_t i = 1; i < size; ++i)
+      stream->printf(", %.0f", arr[i]);
+
+    stream->print(']');
+  }
+
+  void printArrJson(Rst* stream, const std::vector<float>& arr)
+  {
+    stream->print('[');
+    stream->print(arr[0]);
+
+    for (size_t i = 1; i < arr.size(); ++i)
       stream->printf(", %.0f", arr[i]);
 
     stream->print(']');
@@ -77,6 +94,27 @@ namespace ServeurWeb
       req->send(res);
   }
 
+  void serveChart(Req* req, const Chart& chart)
+  {
+    Rst* res = req->beginResponseStream("application/json");
+    res->print('{');
+    res->printf(S("id") ":\"%s\",", chart.id);
+    res->printf(S("res") ":%d,", chart.res); 
+    res->printf(S("ix") ":%d,", chart[Category::P1_HP].index); 
+    res->print(S("p1_hp") ":");
+    printArrJson(res, chart[Category::P1_HP].buffer);
+    res->print(',');
+    res->print(S("p2_hp") ":");
+    printArrJson(res, chart[Category::P2_HP].buffer);
+    res->print(',');
+    res->print(S("p1_hc") ":");
+    printArrJson(res, chart[Category::P1_HC].buffer);
+    res->print(',');
+    res->print(S("p2_hc") ":");
+    printArrJson(res, chart[Category::P2_HC].buffer);
+    res->print('}');
+    req->send(res);
+  }
 
   void begin()
   {
@@ -180,6 +218,25 @@ namespace ServeurWeb
     //   res->print(screen64);
     //   req->send(res);
     // });
+    
+    server.on("/chart", HTTP_GET, [](Req* req)
+    {
+      weblog("GET /chart");
+      
+      if (Ota::updating)
+        return;
+
+      //TODO for each charts id
+
+      if(req->hasParam("15min"))
+        serveChart(req, Data::charts.at(Key::D_15MIN));
+        
+      if(req->hasParam("1h"))
+        serveChart(req, Data::charts.at(Key::D_1H));
+
+      if(req->hasParam("24h"))
+        serveChart(req, Data::charts.at(Key::D_24H));
+    });
 
     server.on("/data_15min", HTTP_GET, [](Req* req)
     {
