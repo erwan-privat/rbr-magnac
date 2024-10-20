@@ -54,6 +54,7 @@ comprend :
 * |ss| Suppression de ArduinoJSON. |se|
 * Bouger l'endroit du « dernier reboot », j'aime pas là.
   |se|
+* Refactor du code pour les graphiques, trop de duplication.
 * [PEUT-ÊTRE] Reproduction de l'écran.
 * [PEUT-ÊTRE] Gestion du ventilateur du thyristor (peut-être
   ; j'ai mesuré au maximum une température de 28 °C sur le
@@ -78,7 +79,8 @@ de Mathieu Carbou
 <https://registry.platformio.org/libraries/mathieucarbou/ESPAsyncWebServer>`_
 pour les bibliothèques AsyncTCP et ESPAsyncWebServer.
 L'API ne change (quasiment) pas, le serveur est beaucoup
-plus stable et le chien de garde est content.
+plus stable et le chien de garde est content. Enfin, presque.
+Faut que je mette en place les *chunked responses*.
 
 
 Licence
@@ -138,6 +140,7 @@ Todo
 
 * |ss| Remove ArduinoJSON. |se|
 * Move "last reboot" and kwH price, don't like it here.
+* Refactoring the code for the charts, too much duplication.
 * [MAYBE] Screen reproduction.
 * [MAYBE] Fan control. Not needed right now, the maximum
   temperature I measured on the thyristor (equipped with a
@@ -160,7 +163,7 @@ Even better, for now on I use `Mathieu Carbou's fork
 <https://registry.platformio.org/libraries/mathieucarbou/ESPAsyncWebServer>`_
 of AsyncTCP and ESPAsyncWebServer. The API is (almost
 exactly) the same and the server is way more stable for a
-happy watchdog.
+happy watchdog. Well, almost, need to work on chunked responses.
 
 License
 -------

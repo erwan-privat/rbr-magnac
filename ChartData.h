@@ -35,11 +35,9 @@ namespace Data
     RingBuffer& operator[](Category category);
   };
 
-  static inline std::unordered_map<Key, Chart> charts {
-    { Key::D_24H,   { "24h", 180, 480 } },
-    { Key::D_1H,    { "1h",    8, 450 } },
-    { Key::D_15MIN, { "15min", 2, 450 } },
-  };
+  using Map = std::unordered_map<Key, Chart>;
+
+  extern Map charts;
 }
 
 #endif /* CHARTDATA_H */

@@ -6,9 +6,10 @@
 #include "html/favicon.h"
 #include "Data.h"
 #include "Dimmer.h"
-#include "Radiateur.h"
+#include "ChartData.h"
 #include "Ecran.h"
 #include "Heure.h"
+#include "Radiateur.h"
 #include "Ota.h"
 #include "Watts.h"
 #include "WiFiSerial.h"
@@ -20,6 +21,9 @@
 #include <ArduinoJson.h>
 #endif
 
+// Stringify for JSON
+#define S(cc) "\"" cc "\""
+
 namespace ServeurWeb
 {
   using std::size_t;
@@ -27,6 +31,9 @@ namespace ServeurWeb
   using Req = AsyncWebServerRequest;
   using Rst = AsyncResponseStream;
   using Prm = AsyncWebParameter;
+  using Data::Key;
+  using Data::Category;
+  using Data::Chart;
 
 
   AsyncWebServer server(80);
@@ -41,8 +48,7 @@ namespace ServeurWeb
     return b ? "true" : "false";
   }
 
-  void printArrJson(Rst* stream,
-    const float* arr, size_t size)
+  void printArrJson(Rst* stream, const float* arr, size_t size)
   {
     stream->print('[');
     stream->print(arr[0]);
@@ -53,30 +59,62 @@ namespace ServeurWeb
     stream->print(']');
   }
 
-  void serveData(Req* req, size_t size, int r, unsigned ix,
-    const float* p1_hp, const float* p2_hp,
-    const float* p1_hc, const float* p2_hc)
+  void printArrJson(Rst* stream, const std::vector<float>& arr)
   {
-      Rst* res = req->beginResponseStream("application/json");
+    stream->print('[');
+    stream->print(arr[0]);
 
-      res->printf("{\"res\": %d, \"ix\": %d, ", r, ix);
+    for (size_t i = 1; i < arr.size(); ++i)
+      stream->printf(", %.0f", arr[i]);
 
-      res->print("\"p1_hp\": ");
-      printArrJson(res, p1_hp, size);
-      res->print(',');
-      res->print("\"p1_hc\": ");
-      printArrJson(res, p1_hc, size);
-      res->print(',');
-      res->print("\"p2_hp\": ");
-      printArrJson(res, p2_hp, size);
-      res->print(',');
-      res->print("\"p2_hc\": ");
-      printArrJson(res, p2_hc, size);
-      res->print('}');
-
-      req->send(res);
+    stream->print(']');
   }
 
+  // void serveData(Req* req, size_t size, int r, unsigned ix,
+  //   const float* p1_hp, const float* p2_hp,
+  //   const float* p1_hc, const float* p2_hc)
+  // {
+  //     Rst* res = req->beginResponseStream("application/json");
+
+  //     res->printf("{\"res\": %d, \"ix\": %d, ", r, ix);
+
+  //     res->print("\"p1_hp\": ");
+  //     printArrJson(res, p1_hp, size);
+  //     res->print(',');
+  //     res->print("\"p1_hc\": ");
+  //     printArrJson(res, p1_hc, size);
+  //     res->print(',');
+  //     res->print("\"p2_hp\": ");
+  //     printArrJson(res, p2_hp, size);
+  //     res->print(',');
+  //     res->print("\"p2_hc\": ");
+  //     printArrJson(res, p2_hc, size);
+  //     res->print('}');
+
+  //     req->send(res);
+  // }
+
+  void serveChart(Req* req, const Chart& chart)
+  {
+    Rst* res = req->beginResponseStream("application/json");
+    res->print('{');
+    res->printf(S("id") ":\"%s\",", chart.id);
+    res->printf(S("res") ":%d,", chart.res); 
+    res->printf(S("ix") ":%d,", chart[Category::P1_HP].index); 
+    res->print(S("p1_hp") ":");
+    printArrJson(res, chart[Category::P1_HP].buffer);
+    res->print(',');
+    res->print(S("p2_hp") ":");
+    printArrJson(res, chart[Category::P2_HP].buffer);
+    res->print(',');
+    res->print(S("p1_hc") ":");
+    printArrJson(res, chart[Category::P1_HC].buffer);
+    res->print(',');
+    res->print(S("p2_hc") ":");
+    printArrJson(res, chart[Category::P2_HC].buffer);
+    res->print('}');
+    req->send(res);
+  }
 
   void begin()
   {
@@ -180,118 +218,177 @@ namespace ServeurWeb
     //   res->print(screen64);
     //   req->send(res);
     // });
-
-    server.on("/data_15min", HTTP_GET, [](Req* req)
+    
+    server.on("/chart", HTTP_GET, [](Req* req)
     {
-      weblog("GET /data_15min");
-
+      weblog("GET /chart");
+      
       if (Ota::updating)
         return;
 
-      int m = esp_timer_get_time();
-      int prev_m = m;
+      //TODO for each charts id
 
-      serveData(req,
-        Data::size_15min,
-        Data::res_15min,
-        Data::ix_15min,
-        Data::buf_p1_hp_15min,
-        Data::buf_p2_hp_15min,
-        Data::buf_p1_hc_15min,
-        Data::buf_p2_hc_15min);   
+      if(req->hasParam("15min"))
+        serveChart(req, Data::charts.at(Key::D_15MIN));
+        
+      if(req->hasParam("1h"))
+        serveChart(req, Data::charts.at(Key::D_1H));
 
-      m = esp_timer_get_time();
-      weblogf("data_15min %d µs\n", m - prev_m);
+      if(req->hasParam("24h"))
+        serveChart(req, Data::charts.at(Key::D_24H));
     });
 
-    server.on("/data_1h", HTTP_GET, [](Req* req)
+    // server.on("/data_15min", HTTP_GET, [](Req* req)
+    // {
+    //   weblog("GET /data_15min");
+
+    //   if (Ota::updating)
+    //     return;
+
+    //   int m = esp_timer_get_time();
+    //   int prev_m = m;
+
+    //   serveData(req,
+    //     Data::size_15min,
+    //     Data::res_15min,
+    //     Data::ix_15min,
+    //     Data::buf_p1_hp_15min,
+    //     Data::buf_p2_hp_15min,
+    //     Data::buf_p1_hc_15min,
+    //     Data::buf_p2_hc_15min);   
+
+    //   m = esp_timer_get_time();
+    //   weblogf("data_15min %d µs\n", m - prev_m);
+    // });
+
+    // server.on("/data_1h", HTTP_GET, [](Req* req)
+    // {
+    //   weblog("GET /data_1h");
+
+    //   if (Ota::updating)
+    //     return;
+
+    //   int m = esp_timer_get_time();
+    //   int prev_m = m;
+
+    //   serveData(req,
+    //     Data::size_1h,
+    //     Data::res_1h,
+    //     Data::ix_1h,
+    //     Data::buf_p1_hp_1h,
+    //     Data::buf_p2_hp_1h,
+    //     Data::buf_p1_hc_1h,
+    //     Data::buf_p2_hc_1h);   
+
+    //   m = esp_timer_get_time();
+    //   weblogf("data_1h %d µs\n", m - prev_m);
+    // });
+
+    // server.on("/data_24h", HTTP_GET, [](Req* req)
+    // {
+    //   weblog("GET /data_24h");
+
+    //   if (Ota::updating)
+    //     return;
+
+    //   int m = esp_timer_get_time();
+    //   int prev_m = m;
+
+    //   serveData(req,
+    //     Data::size_24h,
+    //     Data::res_24h,
+    //     Data::ix_24h,
+    //     Data::buf_p1_hp_24h,
+    //     Data::buf_p2_hp_24h,
+    //     Data::buf_p1_hc_24h,
+    //     Data::buf_p2_hc_24h);   
+
+    //   m = esp_timer_get_time();
+    //   weblogf("data_24h %d µs\n", m - prev_m);
+    // });
+
+    // // server.on("/control", HTTP_POST, [](Req* req)
+    // server.on("/control", HTTP_GET, [](Req* req)
+    // {
+    //   // weblog("POST /control");
+    //   weblog("GET /control");
+
+    //   if (req->hasParam("force_off"))
+    //   {
+    //     const Prm* p_off = req->getParam("force_off");
+    //     Dimmer::force_off = p_off->value() == "true";
+    //     weblogf("force_off: %s\n", p_off->value());
+    //   }
+
+    //   if (req->hasParam("force_on"))
+    //   {
+    //     const Prm* p_on = req->getParam("force_on");
+    //     Dimmer::force_on = p_on->value() == "true";
+    //     weblogf("force_on: %s\n", p_on->value());
+    //   }
+
+    //   if (req->hasParam("hc_on"))
+    //   {
+    //     const Prm* p = req->getParam("hc_on");
+    //     Dimmer::hc_on = p->value() == "true";
+    //     weblogf("hc_on: %s\n", p->value());
+    //   }
+
+    //   if (req->hasParam("force_off_radi"))
+    //   {
+    //     const Prm* p_off = req->getParam("force_off_radi");
+    //     Radiateur::force_off = p_off->value() == "true";
+    //     weblogf("force_off_radi: %s\n", p_off->value());
+    //   }
+
+    //   if (req->hasParam("force_on_radi"))
+    //   {
+    //     const Prm* p_on = req->getParam("force_on_radi");
+    //     Radiateur::force_on = p_on->value() == "true";
+    //     weblogf("force_on_radi: %s\n", p_on->value());
+    //   }
+
+    //   req->send(200);
+    // });
+
+    server.on("/test_chunked", HTTP_GET, [](Req* req)
     {
-      weblog("GET /data_1h");
+      static int counter = 0;
+      Res* res = req->beginChunkedResponse("text/plain",
+          [](uint8_t* buffer, size_t max_len, size_t index)
+          -> size_t
+        {
+          size_t amount = 0;
 
-      if (Ota::updating)
-        return;
+          if (counter == 1000)
+          {
+            counter = 0;
+            return amount;
+          }
 
-      int m = esp_timer_get_time();
-      int prev_m = m;
+          if (counter % 3 == 0)
+          {
+            for (; amount < 26; ++amount)
+              buffer[amount] = 'A' + amount;
+          }
+          else if (counter % 3 == 1)
+          {
+            for (; amount < 26; ++amount)
+              buffer[amount] = 'a' + amount;
+          }
+          else if (counter % 3 == 2)
+          {
+            for (; amount < 10; ++amount)
+              buffer[amount] = '0' + amount;
+          }
 
-      serveData(req,
-        Data::size_1h,
-        Data::res_1h,
-        Data::ix_1h,
-        Data::buf_p1_hp_1h,
-        Data::buf_p2_hp_1h,
-        Data::buf_p1_hc_1h,
-        Data::buf_p2_hc_1h);   
+          ++counter;
+          weblogf("max_len = %d, index = %d, counter =%d\n",
+              max_len, index, counter);
 
-      m = esp_timer_get_time();
-      weblogf("data_1h %d µs\n", m - prev_m);
-    });
-
-    server.on("/data_24h", HTTP_GET, [](Req* req)
-    {
-      weblog("GET /data_24h");
-
-      if (Ota::updating)
-        return;
-
-      int m = esp_timer_get_time();
-      int prev_m = m;
-
-      serveData(req,
-        Data::size_24h,
-        Data::res_24h,
-        Data::ix_24h,
-        Data::buf_p1_hp_24h,
-        Data::buf_p2_hp_24h,
-        Data::buf_p1_hc_24h,
-        Data::buf_p2_hc_24h);   
-
-      m = esp_timer_get_time();
-      weblogf("data_24h %d µs\n", m - prev_m);
-    });
-
-    // server.on("/control", HTTP_POST, [](Req* req)
-    server.on("/control", HTTP_GET, [](Req* req)
-    {
-      // weblog("POST /control");
-      weblog("GET /control");
-
-      if (req->hasParam("force_off"))
-      {
-        const Prm* p_off = req->getParam("force_off");
-        Dimmer::force_off = p_off->value() == "true";
-        weblogf("force_off: %s\n", p_off->value());
-      }
-
-      if (req->hasParam("force_on"))
-      {
-        const Prm* p_on = req->getParam("force_on");
-        Dimmer::force_on = p_on->value() == "true";
-        weblogf("force_on: %s\n", p_on->value());
-      }
-
-      if (req->hasParam("hc_on"))
-      {
-        const Prm* p = req->getParam("hc_on");
-        Dimmer::hc_on = p->value() == "true";
-        weblogf("hc_on: %s\n", p->value());
-      }
-
-      if (req->hasParam("force_off_radi"))
-      {
-        const Prm* p_off = req->getParam("force_off_radi");
-        Radiateur::force_off = p_off->value() == "true";
-        weblogf("force_off_radi: %s\n", p_off->value());
-      }
-
-      if (req->hasParam("force_on_radi"))
-      {
-        const Prm* p_on = req->getParam("force_on_radi");
-        Radiateur::force_on = p_on->value() == "true";
-        weblogf("force_on_radi: %s\n", p_on->value());
-      }
-
-      req->send(200);
+          return amount;
+        });
+      req->send(res);
     });
 
 #ifdef INCLUDE_TEST_JSON

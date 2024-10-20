@@ -11,11 +11,11 @@
 
 namespace Dimmer
 {
-  extern bool force_off = true;
-  extern bool force_on  = false;
-  extern bool hc_on     = true;
+  bool force_off = true;
+  bool force_on  = false;
+  bool hc_on     = true;
 
-  extern DimmableLight dimmer(dimmer_com);
+  DimmableLight dimmer(dimmer_com);
   byte value = 0;
 
   void taskDimmer(void*)
