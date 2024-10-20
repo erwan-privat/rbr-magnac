@@ -31,9 +31,7 @@ namespace ServeurWeb
   using Req = AsyncWebServerRequest;
   using Rst = AsyncResponseStream;
   using Prm = AsyncWebParameter;
-  using Data::Key;
   using Data::Category;
-  using Data::Chart;
 
 
   AsyncWebServer server(80);
@@ -48,16 +46,16 @@ namespace ServeurWeb
     return b ? "true" : "false";
   }
 
-  void printArrJson(Rst* stream, const float* arr, size_t size)
-  {
-    stream->print('[');
-    stream->print(arr[0]);
+  // void printArrJson(Rst* stream, const float* arr, size_t size)
+  // {
+  //   stream->print('[');
+  //   stream->print(arr[0]);
 
-    for (size_t i = 1; i < size; ++i)
-      stream->printf(", %.0f", arr[i]);
+  //   for (size_t i = 1; i < size; ++i)
+  //     stream->printf(", %.0f", arr[i]);
 
-    stream->print(']');
-  }
+  //   stream->print(']');
+  // }
 
   void printArrJson(Rst* stream, const std::vector<float>& arr)
   {
@@ -70,31 +68,7 @@ namespace ServeurWeb
     stream->print(']');
   }
 
-  // void serveData(Req* req, size_t size, int r, unsigned ix,
-  //   const float* p1_hp, const float* p2_hp,
-  //   const float* p1_hc, const float* p2_hc)
-  // {
-  //     Rst* res = req->beginResponseStream("application/json");
-
-  //     res->printf("{\"res\": %d, \"ix\": %d, ", r, ix);
-
-  //     res->print("\"p1_hp\": ");
-  //     printArrJson(res, p1_hp, size);
-  //     res->print(',');
-  //     res->print("\"p1_hc\": ");
-  //     printArrJson(res, p1_hc, size);
-  //     res->print(',');
-  //     res->print("\"p2_hp\": ");
-  //     printArrJson(res, p2_hp, size);
-  //     res->print(',');
-  //     res->print("\"p2_hc\": ");
-  //     printArrJson(res, p2_hc, size);
-  //     res->print('}');
-
-  //     req->send(res);
-  // }
-
-  void serveChart(Req* req, const Chart& chart)
+  void serveChart(Req* req, const Data::Chart& chart)
   {
     Rst* res = req->beginResponseStream("application/json");
     res->print('{');
@@ -114,6 +88,12 @@ namespace ServeurWeb
     printArrJson(res, chart[Category::P2_HC].buffer);
     res->print('}');
     req->send(res);
+  }
+
+  String processor(const String& var)
+  {
+    // TODO
+    return var;
   }
 
   void begin()
@@ -140,7 +120,7 @@ namespace ServeurWeb
 
     server.on("/robots.txt", HTTP_GET, [](Req* req)
     {
-      weblog("Request /robots.txt");
+      weblog("GET /robots.txt");
       req->send(200, "text/plain",
           "User-agent: *\n"
           "Disallow: /\n");
@@ -226,90 +206,16 @@ namespace ServeurWeb
       if (Ota::updating)
         return;
 
-      //TODO for each charts id
-
-      if(req->hasParam("15min"))
-        serveChart(req, Data::charts.at(Key::D_15MIN));
-        
-      if(req->hasParam("1h"))
-        serveChart(req, Data::charts.at(Key::D_1H));
-
-      if(req->hasParam("24h"))
-        serveChart(req, Data::charts.at(Key::D_24H));
+      for (const auto& [k, c]: Data::charts)
+      {
+        if (req->hasParam(c.id))
+          serveChart(req, c);
+      }
     });
 
-    // server.on("/data_15min", HTTP_GET, [](Req* req)
-    // {
-    //   weblog("GET /data_15min");
-
-    //   if (Ota::updating)
-    //     return;
-
-    //   int m = esp_timer_get_time();
-    //   int prev_m = m;
-
-    //   serveData(req,
-    //     Data::size_15min,
-    //     Data::res_15min,
-    //     Data::ix_15min,
-    //     Data::buf_p1_hp_15min,
-    //     Data::buf_p2_hp_15min,
-    //     Data::buf_p1_hc_15min,
-    //     Data::buf_p2_hc_15min);   
-
-    //   m = esp_timer_get_time();
-    //   weblogf("data_15min %d µs\n", m - prev_m);
-    // });
-
-    // server.on("/data_1h", HTTP_GET, [](Req* req)
-    // {
-    //   weblog("GET /data_1h");
-
-    //   if (Ota::updating)
-    //     return;
-
-    //   int m = esp_timer_get_time();
-    //   int prev_m = m;
-
-    //   serveData(req,
-    //     Data::size_1h,
-    //     Data::res_1h,
-    //     Data::ix_1h,
-    //     Data::buf_p1_hp_1h,
-    //     Data::buf_p2_hp_1h,
-    //     Data::buf_p1_hc_1h,
-    //     Data::buf_p2_hc_1h);   
-
-    //   m = esp_timer_get_time();
-    //   weblogf("data_1h %d µs\n", m - prev_m);
-    // });
-
-    // server.on("/data_24h", HTTP_GET, [](Req* req)
-    // {
-    //   weblog("GET /data_24h");
-
-    //   if (Ota::updating)
-    //     return;
-
-    //   int m = esp_timer_get_time();
-    //   int prev_m = m;
-
-    //   serveData(req,
-    //     Data::size_24h,
-    //     Data::res_24h,
-    //     Data::ix_24h,
-    //     Data::buf_p1_hp_24h,
-    //     Data::buf_p2_hp_24h,
-    //     Data::buf_p1_hc_24h,
-    //     Data::buf_p2_hc_24h);   
-
-    //   m = esp_timer_get_time();
-    //   weblogf("data_24h %d µs\n", m - prev_m);
-    // });
 
     server.on("/control", HTTP_GET, [](Req* req)
     {
-      // weblog("POST /control");
       weblog("GET /control");
 
       if (req->hasParam("force_off"))
@@ -359,7 +265,7 @@ namespace ServeurWeb
         {
           size_t amount = 0;
 
-          if (counter == 10000)
+          if (counter == 1000)
           {
             counter = 0;
             return amount;

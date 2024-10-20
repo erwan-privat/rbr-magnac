@@ -95,6 +95,8 @@ namespace html
         €/kWh</b>
       </div>
 
+      <h1>%TEST_TEMPLATE%</h1>
+
       <div class="box">
       <h3>Consommation sur 24 heures</h3>
       <div class="flex-container">
