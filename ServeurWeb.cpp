@@ -360,7 +360,7 @@ namespace ServeurWeb
         {
           size_t amount = 0;
 
-          if (counter == 1000)
+          if (counter == 10000)
           {
             counter = 0;
             return amount;
@@ -383,7 +383,9 @@ namespace ServeurWeb
           }
 
           ++counter;
-          weblogf("max_len = %d, index = %d, counter =%d\n",
+
+          if (counter % 100 == 0)
+            weblogf("max_len = %d, index = %d, counter =%d\n",
               max_len, index, counter);
 
           return amount;
