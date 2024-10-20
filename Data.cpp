@@ -113,27 +113,6 @@ namespace Data
     }
   }
 
-<<<<<<< HEAD
-  void taskTest(void*)
-  {
-    for (;;)
-    {
-      // Chart& c24h = Data::charts.at(Key::D_24H);
-      // Chart& c1h = Data::charts.at(Key::D_1H);
-      // Chart& c15min = Data::charts.at(Key::D_15MIN);
-      // weblogf("24h:   %d\n", c24h[Category::P1_HP].size);
-      // weblogf("1h:    %d\n", c1h[Category::P1_HP].size);
-      // weblogf("15min: %d\n", c15min[Category::P1_HP].size);
-
-      weblog("TEST");
-      
-      delay(10000);
-    }
-  }
-
-
-=======
->>>>>>> minute
   void begin()
   {
     while (!Heure::time_client.isTimeSet())
