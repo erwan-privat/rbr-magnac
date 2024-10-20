@@ -307,49 +307,48 @@ namespace ServeurWeb
     //   weblogf("data_24h %d µs\n", m - prev_m);
     // });
 
-    // // server.on("/control", HTTP_POST, [](Req* req)
-    // server.on("/control", HTTP_GET, [](Req* req)
-    // {
-    //   // weblog("POST /control");
-    //   weblog("GET /control");
+    server.on("/control", HTTP_GET, [](Req* req)
+    {
+      // weblog("POST /control");
+      weblog("GET /control");
 
-    //   if (req->hasParam("force_off"))
-    //   {
-    //     const Prm* p_off = req->getParam("force_off");
-    //     Dimmer::force_off = p_off->value() == "true";
-    //     weblogf("force_off: %s\n", p_off->value());
-    //   }
+      if (req->hasParam("force_off"))
+      {
+        const Prm* p_off = req->getParam("force_off");
+        Dimmer::force_off = p_off->value() == "true";
+        weblogf("force_off: %s\n", p_off->value());
+      }
 
-    //   if (req->hasParam("force_on"))
-    //   {
-    //     const Prm* p_on = req->getParam("force_on");
-    //     Dimmer::force_on = p_on->value() == "true";
-    //     weblogf("force_on: %s\n", p_on->value());
-    //   }
+      if (req->hasParam("force_on"))
+      {
+        const Prm* p_on = req->getParam("force_on");
+        Dimmer::force_on = p_on->value() == "true";
+        weblogf("force_on: %s\n", p_on->value());
+      }
 
-    //   if (req->hasParam("hc_on"))
-    //   {
-    //     const Prm* p = req->getParam("hc_on");
-    //     Dimmer::hc_on = p->value() == "true";
-    //     weblogf("hc_on: %s\n", p->value());
-    //   }
+      if (req->hasParam("hc_on"))
+      {
+        const Prm* p = req->getParam("hc_on");
+        Dimmer::hc_on = p->value() == "true";
+        weblogf("hc_on: %s\n", p->value());
+      }
 
-    //   if (req->hasParam("force_off_radi"))
-    //   {
-    //     const Prm* p_off = req->getParam("force_off_radi");
-    //     Radiateur::force_off = p_off->value() == "true";
-    //     weblogf("force_off_radi: %s\n", p_off->value());
-    //   }
+      if (req->hasParam("force_off_radi"))
+      {
+        const Prm* p_off = req->getParam("force_off_radi");
+        Radiateur::force_off = p_off->value() == "true";
+        weblogf("force_off_radi: %s\n", p_off->value());
+      }
 
-    //   if (req->hasParam("force_on_radi"))
-    //   {
-    //     const Prm* p_on = req->getParam("force_on_radi");
-    //     Radiateur::force_on = p_on->value() == "true";
-    //     weblogf("force_on_radi: %s\n", p_on->value());
-    //   }
+      if (req->hasParam("force_on_radi"))
+      {
+        const Prm* p_on = req->getParam("force_on_radi");
+        Radiateur::force_on = p_on->value() == "true";
+        weblogf("force_on_radi: %s\n", p_on->value());
+      }
 
-    //   req->send(200);
-    // });
+      req->send(200);
+    });
 
     server.on("/test_chunked", HTTP_GET, [](Req* req)
     {

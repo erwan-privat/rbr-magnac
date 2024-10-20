@@ -11,6 +11,7 @@ namespace Data
     D_24H,
     D_1H,
     D_15MIN,
+    Count,
   };
 
   enum class Category : unsigned char
