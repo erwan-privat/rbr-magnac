@@ -13,36 +13,12 @@ namespace Data
 {
   unsigned long last_boot = 0;
 
-  float buf_p1_hp_15min[size_15min];
-  float buf_p2_hp_15min[size_15min];
-  float buf_p1_hc_15min[size_15min];
-  float buf_p2_hc_15min[size_15min];
-  
-  float buf_p1_hp_1h[size_1h];
-  float buf_p2_hp_1h[size_1h];
-  float buf_p1_hc_1h[size_1h];
-  float buf_p2_hc_1h[size_1h];
-
-  float buf_p1_hp_24h[size_24h];
-  float buf_p2_hp_24h[size_24h];
-  float buf_p1_hc_24h[size_24h];
-  float buf_p2_hc_24h[size_24h];
-
-  unsigned ix_15min = 0;
-  unsigned ix_1h    = 0;
-  unsigned ix_24h   = 0;
-
   void taskData_15min(void*)
   {
     for (;;)
     {
       if (Dimmer::isHC())
       {
-        // buf_p1_hc_15min[ix_15min] = Watts::power1;
-        // buf_p2_hc_15min[ix_15min] = Watts::power2;
-        // buf_p1_hp_15min[ix_15min] = 0;
-        // buf_p2_hp_15min[ix_15min] = 0;
-
         charts.at(Key::D_15MIN)[Category::P1_HP]
           .push_back(0);
         charts.at(Key::D_15MIN)[Category::P2_HP]
@@ -54,11 +30,6 @@ namespace Data
       }
       else
       {
-        // buf_p1_hc_15min[ix_15min] = 0;
-        // buf_p2_hc_15min[ix_15min] = 0;
-        // buf_p1_hp_15min[ix_15min] = Watts::power1;
-        // buf_p2_hp_15min[ix_15min] = Watts::power2;
-
         charts.at(Key::D_15MIN)[Category::P1_HP]
           .push_back(Watts::power1);
         charts.at(Key::D_15MIN)[Category::P2_HP]
@@ -69,11 +40,9 @@ namespace Data
           .push_back(0);
       }
 
-      ix_15min = (ix_15min + 1) % size_15min;
-
       // weblogf("task data2 %u unused from 3000\n",
         // uxTaskGetStackHighWaterMark(nullptr));
-      delay(res_15min * 1000);
+      delay(charts.at(Key::D_15MIN).res * 1000);
     }
   }
 
@@ -83,11 +52,6 @@ namespace Data
     {
       if (Dimmer::isHC())
       {
-        // buf_p1_hc_1h[ix_1h] = Watts::power1;
-        // buf_p2_hc_1h[ix_1h] = Watts::power2;
-        // buf_p1_hp_1h[ix_1h] = 0;
-        // buf_p2_hp_1h[ix_1h] = 0;
-
         charts.at(Key::D_1H)[Category::P1_HP]
           .push_back(0);
         charts.at(Key::D_1H)[Category::P2_HP]
@@ -99,11 +63,6 @@ namespace Data
       }
       else
       {
-        // buf_p1_hc_1h[ix_1h] = 0;
-        // buf_p2_hc_1h[ix_1h] = 0;
-        // buf_p1_hp_1h[ix_1h] = Watts::power1;
-        // buf_p2_hp_1h[ix_1h] = Watts::power2;
-
         charts.at(Key::D_1H)[Category::P1_HP]
           .push_back(Watts::power1);
         charts.at(Key::D_1H)[Category::P2_HP]
@@ -114,11 +73,9 @@ namespace Data
           .push_back(0);
       }
 
-      ix_1h = (ix_1h + 1) % size_1h;
-
       // weblogf("task data2 %u unused from 3000\n",
         // uxTaskGetStackHighWaterMark(nullptr));
-      delay(res_1h * 1000);
+      delay(charts.at(Key::D_1H).res * 1000);
     }
   }
 
@@ -129,11 +86,6 @@ namespace Data
     {
       if (Dimmer::isHC())
       {
-        // buf_p1_hc_24h[ix_24h] = Watts::power1;
-        // buf_p2_hc_24h[ix_24h] = Watts::power2;
-        // buf_p1_hp_24h[ix_24h] = 0;
-        // buf_p2_hp_24h[ix_24h] = 0;
-
         charts.at(Key::D_24H)[Category::P1_HP]
           .push_back(0);
         charts.at(Key::D_24H)[Category::P2_HP]
@@ -145,11 +97,6 @@ namespace Data
       }
       else
       {
-        // buf_p1_hc_24h[ix_24h] = 0;
-        // buf_p2_hc_24h[ix_24h] = 0;
-        // buf_p1_hp_24h[ix_24h] = Watts::power1;
-        // buf_p2_hp_24h[ix_24h] = Watts::power2;
-
         charts.at(Key::D_24H)[Category::P1_HP]
           .push_back(Watts::power1);
         charts.at(Key::D_24H)[Category::P2_HP]
@@ -160,40 +107,11 @@ namespace Data
           .push_back(0);
       }
 
-      ix_24h = (ix_24h + 1) % size_24h;
-
       // weblogf("task data180 %u unused from 3000\n",
         // uxTaskGetStackHighWaterMark(nullptr));
-      delay(res_24h * 1000);
+      delay(charts.at(Key::D_24H).res * 1000);
     }
   }
-
-  // void taskTest(void*)
-  // {
-  //   Chart& c = Data::charts.at(Key::D_15MIN);
-
-  //   for (;;)
-  //   {
-  //     // Chart& c24h = Data::charts.at(Key::D_24H);
-  //     // Chart& c1h = Data::charts.at(Key::D_1H);
-  //     // Chart& c15min = Data::charts.at(Key::D_15MIN);
-  //     // weblogf("24h:   %d\n", c24h[Category::P1_HP].index);
-  //     // weblogf("1h:    %d\n", c1h[Category::P1_HP].index);
-  //     // weblogf("15min: %d\n", c15min[Category::P1_HP].back());
-
-  //     RingBuffer& rb = c[Category::P2_HP];
-  //     for (size_t i = 0; i < rb.size; ++i)
-  //     {
-  //       if (i == rb.index)
-  //         weblogf("[%f], ", rb.buffer[i]);
-  //       else
-  //         weblogf("%f, ", rb.buffer[i]);
-  //     }
-  //     weblog("");
-  //     delay(1000);
-  //   }
-  // }
-
 
   void begin()
   {
@@ -208,8 +126,5 @@ namespace Data
       3000, nullptr, 3, nullptr);
     xTaskCreate(taskData_24h, "task data_24h",
       3000, nullptr, 3, nullptr);
-
-    // xTaskCreate(taskTest, "TASK TEST",
-    //   3000, nullptr, 3, nullptr);
   }
 }
