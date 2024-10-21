@@ -24,7 +24,7 @@ namespace Radiateur
       else 
         digitalWrite(relay_pin, is_on ? HIGH : LOW);
 
-      delay(1000);
+      delay(500);
     }
   }
 
@@ -41,7 +41,7 @@ namespace Radiateur
 
       // à adapter en fonction du temps de démarrage du
       // radiateur
-      delay(10000);
+      delay(2000);
     }
   }
 

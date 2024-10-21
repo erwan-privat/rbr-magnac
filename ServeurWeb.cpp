@@ -13,8 +13,9 @@
 #include "Ota.h"
 #include "Watts.h"
 #include "WiFiSerial.h"
-#include <ESPAsyncWebServer.h>
 // #include <Base64.h>
+#include <ESPAsyncWebServer.h>
+#include <cstdarg>
 
 // Stringify for JSON
 #define S(cc) "\"" cc "\""
@@ -28,7 +29,9 @@ namespace ServeurWeb
   using Prm = AsyncWebParameter;
   using Data::Category;
 
-  constexpr char* MIME_JSON = "application/json";
+  const char* mime_json = "application/json";
+  const char* mime_html = "text/html";
+  const char* mime_text = "text/plain";
 
   AsyncWebServer server(80);
 
@@ -42,18 +45,8 @@ namespace ServeurWeb
     return b ? "true" : "false";
   }
 
-  // void printArrJson(Rst* stream, const float* arr, size_t size)
-  // {
-  //   stream->print('[');
-  //   stream->print(arr[0]);
-
-  //   for (size_t i = 1; i < size; ++i)
-  //     stream->printf(", %.0f", arr[i]);
-
-  //   stream->print(']');
-  // }
-
-  void printArrJson(Rst* stream, const std::vector<float>& arr)
+  template<typename T>
+  void printArrJson(T* stream, const std::vector<float>& arr)
   {
     stream->print('[');
     stream->print(arr[0]);
@@ -64,38 +57,117 @@ namespace ServeurWeb
     stream->print(']');
   }
 
+  int trySprintf(char* buf, size_t available, const char* fmt, ...)
+  {
+    int wrote_sz = -1;
+    std::va_list al_vsn, al_vs;
+
+    va_start(al_vsn, fmt);
+    va_copy(al_vs, al_vsn);
+
+    int s = std::vsnprintf(nullptr, 0, fmt, args);
+
+    if (s < available)
+      wrote_sz = std::vsnprintf(buf, s, fmt, args);
+    else
+      s = -1;
+
+    va_end(al_vsn);
+    va_end(al_vs);
+    return wrote_sz;
+  }
+
+  // int main()
+  // {
+  //   constexpr size_t available = 100;
+  //   char buffer[available];
+  //   size_t written = 0;
+
+  //   for (int i = 0; i < 100; ++i)
+  //   {
+  //     int s = trySprintf(buffer + written, available - written,
+  //         "%d\n", i);
+  //     if (s < 0)
+  //       break;
+
+  //     written += s;
+  //     std::cout << written << " / " << available << "\n";
+  //   }
+
+  //   std::cout << buffer << "\n";
+  // }
+  
+
+#define CHECKED_INC(w, written)                   \
+  do                                              \
+  {                                               \
+    if (w > 0)                                    \
+    {                                             \
+      written += w;                               \
+    }                                             \
+    else                                          \
+    {                                             \
+      weblog("*** Full buffer, trying next one"); \
+      return 0;                                   \
+    }                                             \
+  } while(false)
+
   void serveChartTest(Req* req, const Data::Chart& chart)
   {
-    static int counter = 0;
-    Res* res = req->beginChunkedResponse(MIME_JSON,
-      [&chart](uint8_t* buffer, size_t max_len, size_t index)
+    int chunk_number = 0;
+    Res* res = req->beginChunkedResponse(mime_text, // FIXME test
+      [&](uint8_t* buffer, size_t max_len, size_t index)
       -> size_t
       {
-        if (counter++ == 1)
+        auto cbuf = (char*)buffer;
+        size_t written = 0;
+        int w;
+
+        switch (chunk_number)
         {
-          counter = 0;
-          return 0;
+          case 0:
+          cbuf[written++] = '{';
+          w = trySprintf(cbuf + written, max_len - written,
+            "\"id\":\"%s\","
+            "\"res\": %d,"
+            "\"ix\": %d,",
+            chart.id,
+            chart.res,
+            chart.[Category::P1_HP].ix);
+
+          CHECKED_INC(w, written);
+          break;
+          case 1:
+          w = trySprintf(cbuf + written, max_len - written,
+            "\"p1_hp\":");
+          break;
         }
+        //TODO for each array, fill buffer and store last index, and
+        //so on
+    // res->print(S("p1_hp") ":");
+    // printArrJson(res, chart[Category::P1_HP].buffer);
+    // res->print(',');
+    // res->print(S("p2_hp") ":");
+    // printArrJson(res, chart[Category::P2_HP].buffer);
+    // res->print(',');
+    // res->print(S("p1_hc") ":");
+    // printArrJson(res, chart[Category::P1_HC].buffer);
+    // res->print(',');
+    // res->print(S("p2_hc") ":");
+    // printArrJson(res, chart[Category::P2_HC].buffer);
+    // res->print('}');
 
-        size_t amount = 0;
-        
-        // int sz = std::snprintf(nullptr, 0,
-        //     S("id") ":" S("%s") ",", chart.id);
+        weblogf("written = %d / %d\n", written, max_len);
 
-        amount += std::sprintf((char*)buffer + amount,
-            S("id") ":" S("%s") ",", chart.id);
-
-        weblogf("amount  = %d\n", amount);
-        weblogf("max_len = %d\n", max_len);
-
-        return amount;
+        ++chunk_number;
+        return written;
       });
     req->send(res);
   }
 
   void serveChart(Req* req, const Data::Chart& chart)
   {
-    Rst* res = req->beginResponseStream(MIME_JSON);
+    Rst* res = req->beginResponseStream(mime_json);
     res->print('{');
     res->printf(S("id") ":\"%s\",", chart.id);
     res->printf(S("res") ":%d,", chart.res); 
@@ -128,7 +200,7 @@ namespace ServeurWeb
     server.on("/", HTTP_GET, [](Req* req)
     {
       weblog("GET /");
-      Rst* res = req->beginResponseStream("text/html");
+      Rst* res = req->beginResponseStream(mime_html);
       res->print(html::index_start);
       res->print(html::style);
       res->print(html::script);
@@ -157,7 +229,7 @@ namespace ServeurWeb
     {
       weblog("GET /ota");
 
-      Rst* res = req->beginResponseStream(MIME_JSON);
+      Rst* res = req->beginResponseStream(mime_json);
       res->printf("{\"last_boot\": %lu, \"updating\": %s,"
           "\"progress\": %u}",
         Data::last_boot, btoc(Ota::updating),
@@ -170,7 +242,7 @@ namespace ServeurWeb
     {
       weblog("GET /watts");
 
-      Rst* res = req->beginResponseStream(MIME_JSON);
+      Rst* res = req->beginResponseStream(mime_json);
       res->printf("{\"power1\": %f, \"power2\": %f}",
           Watts::power1, Watts::power2);
       req->send(res);
@@ -180,7 +252,7 @@ namespace ServeurWeb
     {
       weblog("GET /dimmer");
 
-      Rst* res = req->beginResponseStream(MIME_JSON);
+      Rst* res = req->beginResponseStream(mime_json);
 
       res->printf("{"
           "\"force_on\": %s,"
@@ -283,7 +355,7 @@ namespace ServeurWeb
     server.on("/test_chunked", HTTP_GET, [](Req* req)
     {
       static int counter = 0;
-      Res* res = req->beginChunkedResponse("text/plain",
+      Res* res = req->beginChunkedResponse(mime_text,
           [](uint8_t* buffer, size_t max_len, size_t index)
           -> size_t
         {

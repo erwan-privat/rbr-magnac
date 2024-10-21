@@ -31,7 +31,7 @@ namespace Dimmer
       else
         dimmer.setBrightness(value);
 
-      delay(100);
+      delay(500);
     }
   }
 
