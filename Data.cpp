@@ -35,7 +35,7 @@ namespace Data
         c[Category::P2_HC].push_back(0);
       }
 
-      weblogf("%s, %d, %f\n", c.id, c.res, Watts::power2);
+      // weblogf("%s, %d, %f\n", c.id, c.res, Watts::power2);
       delay(c.res * 1000);
     }   
   }

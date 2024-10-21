@@ -16,11 +16,6 @@
 #include <ESPAsyncWebServer.h>
 // #include <Base64.h>
 
-// #define INCLUDE_TEST_JSON
-#ifdef INCLUDE_TEST_JSON
-#include <ArduinoJson.h>
-#endif
-
 // Stringify for JSON
 #define S(cc) "\"" cc "\""
 
@@ -33,6 +28,7 @@ namespace ServeurWeb
   using Prm = AsyncWebParameter;
   using Data::Category;
 
+  constexpr char* MIME_JSON = "application/json";
 
   AsyncWebServer server(80);
 
@@ -68,9 +64,38 @@ namespace ServeurWeb
     stream->print(']');
   }
 
+  void serveChartTest(Req* req, const Data::Chart& chart)
+  {
+    static int counter = 0;
+    Res* res = req->beginChunkedResponse(MIME_JSON,
+      [&chart](uint8_t* buffer, size_t max_len, size_t index)
+      -> size_t
+      {
+        if (counter++ == 1)
+        {
+          counter = 0;
+          return 0;
+        }
+
+        size_t amount = 0;
+        
+        // int sz = std::snprintf(nullptr, 0,
+        //     S("id") ":" S("%s") ",", chart.id);
+
+        amount += std::sprintf((char*)buffer + amount,
+            S("id") ":" S("%s") ",", chart.id);
+
+        weblogf("amount  = %d\n", amount);
+        weblogf("max_len = %d\n", max_len);
+
+        return amount;
+      });
+    req->send(res);
+  }
+
   void serveChart(Req* req, const Data::Chart& chart)
   {
-    Rst* res = req->beginResponseStream("application/json");
+    Rst* res = req->beginResponseStream(MIME_JSON);
     res->print('{');
     res->printf(S("id") ":\"%s\",", chart.id);
     res->printf(S("res") ":%d,", chart.res); 
@@ -92,7 +117,9 @@ namespace ServeurWeb
 
   String processor(const String& var)
   {
-    // TODO
+    if (var == "VAR")
+      return "   >>> processed <<<   ";
+
     return var;
   }
 
@@ -130,8 +157,7 @@ namespace ServeurWeb
     {
       weblog("GET /ota");
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
+      Rst* res = req->beginResponseStream(MIME_JSON);
       res->printf("{\"last_boot\": %lu, \"updating\": %s,"
           "\"progress\": %u}",
         Data::last_boot, btoc(Ota::updating),
@@ -144,8 +170,7 @@ namespace ServeurWeb
     {
       weblog("GET /watts");
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
+      Rst* res = req->beginResponseStream(MIME_JSON);
       res->printf("{\"power1\": %f, \"power2\": %f}",
           Watts::power1, Watts::power2);
       req->send(res);
@@ -155,8 +180,7 @@ namespace ServeurWeb
     {
       weblog("GET /dimmer");
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
+      Rst* res = req->beginResponseStream(MIME_JSON);
 
       res->printf("{"
           "\"force_on\": %s,"
@@ -265,134 +289,50 @@ namespace ServeurWeb
         {
           size_t amount = 0;
 
-          if (counter == 1000)
+          if (counter == 100)
           {
+            weblogf("counter reached 100 with amount %d\n", amount);
             counter = 0;
             return amount;
           }
 
-          if (counter % 3 == 0)
+          if (counter % 4 == 0)
           {
             for (; amount < 26; ++amount)
               buffer[amount] = 'A' + amount;
           }
-          else if (counter % 3 == 1)
+          else if (counter % 4 == 1)
           {
             for (; amount < 26; ++amount)
               buffer[amount] = 'a' + amount;
           }
-          else if (counter % 3 == 2)
+          else if (counter % 4 == 2)
           {
             for (; amount < 10; ++amount)
               buffer[amount] = '0' + amount;
+          }
+          else if (counter % 4 == 3)
+          {
+            buffer[amount++] = '%';
+            buffer[amount++] = 'V';
+            buffer[amount++] = 'A';
+            buffer[amount++] = 'R';
+            buffer[amount++] = '%';
           }
 
           ++counter;
 
           if (counter % 100 == 0)
-            weblogf("max_len = %d, index = %d, counter =%d\n",
+          {
+            weblogf("max_len = %d, index = %d, counter = %d\n",
               max_len, index, counter);
+          }
 
           return amount;
-        });
+        // });
+        }, processor);
       req->send(res);
     });
-
-#ifdef INCLUDE_TEST_JSON
-    server.on("/test-lib", HTTP_GET, [](Req* req)
-    {
-      weblog("GET /test-lib");
-
-      unsigned long tot = 0;
-      unsigned long m;
-      unsigned long prev_m = esp_timer_get_time();
-      auto chrono = [&](const char* tag)
-      {
-        m = esp_timer_get_time();
-        tot += m - prev_m;
-        weblogf("test-lib: %d µs (%s)\n", m - prev_m, tag);
-        prev_m = m;
-      };
-
-      chrono("start");
-      DynamicJsonBuffer jsonBuffer;
-      chrono("jsonBuffer");
-      JsonObject& root = jsonBuffer.createObject();
-      root["power1"] = Watts::power1;
-      root["power2"] = Watts::power2;
-      root["current1"] = Watts::current1;
-      root["voltage1"] = Watts::voltage1;
-      root["current2"] = Watts::current2;
-      root["voltage2"] = Watts::voltage2;
-      root["freq"]     = Watts::frequency;
-      chrono("createObject");
-
-      auto& arr1 = root.createNestedArray("arr1");
-      for (int i = 0; i < 1000; ++i)
-        arr1.add(i);
-      chrono("createArray1");
-      auto& arr2 = root.createNestedArray("arr2");
-      for (int i = 0; i < 1000; ++i)
-        arr2.add(i + 1000);
-      chrono("createArray2");
-
-      Rst* res = req->beginResponseStream(
-        "application/json");
-      chrono("beginResponseStream");
-      root.printTo(*res);
-      chrono("printTo");
-      req->send(res);
-      chrono("send");
-      weblogf("test-lib tot: %d µs\n", tot);
-      // jsonBuffer.clear();
-    });
-
-    server.on("/test-nolib", HTTP_GET, [](Req* req)
-    {
-      weblog("GET /test-nolib");
-
-      unsigned long tot = 0;
-      unsigned long m;
-      unsigned long prev_m = esp_timer_get_time();
-      auto chrono = [&](const char* tag)
-      {
-        m = esp_timer_get_time();
-        tot += m - prev_m;
-        weblogf("test-nolib: %d µs (%s)\n", m - prev_m, tag);
-        prev_m = m;
-      };
-
-      chrono("start");
-      Rst* res = req->beginResponseStream(
-        "application/json");
-      chrono("beginResponseStream");
-
-      res->print('{');
-
-      res->printf("\"power1\": %f,",   Watts::power1);
-      res->printf("\"power2\": %f,",   Watts::power2);
-      res->printf("\"current1\": %f,", Watts::current1);
-      res->printf("\"voltage1\": %f,", Watts::voltage1);
-      res->printf("\"current2\": %f,", Watts::current2);
-      res->printf("\"voltage2\": %f,", Watts::voltage2);
-      res->printf("\"freq\": %lu,",    Watts::frequency);
-      chrono("printed object");
-
-      res->print("\"arr1\": [0");
-      for (int i = 1; i < 1000; ++i)
-        res->printf(", %d", i);
-      res->print("], \"arr2\": [0");
-      for (int i = 1; i < 1000; ++i)
-        res->printf(", %d", i + 1000);
-      res->print("]}");
-
-      chrono("printed array");
-
-      req->send(res);
-      chrono("send");
-      weblogf("test-nolib tot: %d µs\n", tot);
-    });
-#endif
 
     server.begin();
   }
