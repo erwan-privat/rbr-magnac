@@ -15,8 +15,9 @@ namespace Data
 
   void taskChart(void* p_key)
   {
-    Key k = *reinterpret_cast<Key*>(p_key);
-    Chart& c = charts.at(k);
+    // Key k = *reinterpret_cast<Key*>(p_key);
+    // Chart& c = charts.at(k);
+    Chart& c = *reinterpret_cast<Chart*>(p_key);
 
     for (;;)
     {
@@ -48,10 +49,10 @@ namespace Data
     last_boot = Heure::time_client.getEpochTime()
       - Heure::time_offset;
 
-    for (const auto& k: charts)
+    for (const auto& c: charts)
     {
       xTaskCreate(taskChart, "task chart",
-        3000, (void*)&k, 3, nullptr);
+        3000, (void*)&c, 3, nullptr);
     }
   }
 }

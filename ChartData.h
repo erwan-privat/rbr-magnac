@@ -6,14 +6,6 @@
 
 namespace Data
 {
-  enum class Key : unsigned char
-  {
-    D_24H,
-    D_1H,
-    D_15MIN,
-    Count,
-  };
-
   enum class Category : unsigned char
   {
     P1_HP,
@@ -22,6 +14,14 @@ namespace Data
     P2_HC,
     Count,
   };
+
+  // const std::unordered_map<Category, const char*> CatNames
+  // {
+  //   { P1_HP, "p1_hp" },
+  //   { P1_HC, "p1_hc" },
+  //   { P2_HP, "p2_hp" },
+  //   { P2_HC, "p2_hc" },
+  // };
 
   struct Chart
   {
@@ -36,9 +36,7 @@ namespace Data
     RingBuffer& operator[](Category category);
   };
 
-  using Map = std::unordered_map<Key, Chart>;
-
-  extern Map charts;
+  extern const std::vector<Chart> charts;
 }
 
 #endif /* CHARTDATA_H */

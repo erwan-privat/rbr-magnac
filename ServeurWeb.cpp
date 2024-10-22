@@ -361,7 +361,8 @@ namespace ServeurWeb
       if (Ota::updating)
         return;
 
-      for (const auto& [k, c]: Data::charts)
+      // for (const auto& [k, c]: Data::charts)
+      for (const auto& c: Data::charts)
       {
         if (req->hasParam(c.id))
           serveChartTest(req, c);
