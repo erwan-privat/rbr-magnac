@@ -3,7 +3,7 @@
 
 namespace html
 {
-  constexpr char script[] PROGMEM = R"%(
+  constexpr char script1[] PROGMEM = R"%(
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
     (function () {
@@ -138,8 +138,9 @@ namespace html
 
           const toS = n => String(n).padStart(2, "0");
           return `${toS(h)} h ${toS(m)}`;
-        }
+        })%";
 
+  constexpr char script2[] PROGMEM = R"%(
         function updateDimmer() {
           fetch("/dimmer").then(r => {
             if (!r.ok)
@@ -237,7 +238,10 @@ namespace html
           Magnac.data[label].p1 = p1;
           Magnac.data[label].p2 = p2;
           return j;
-        }
+        })%";
+
+  constexpr char script3[] PROGMEM = R"%(
+
 
         const time_updateData = {};
         // TODO detetermine this from C++ code

@@ -83,24 +83,19 @@ namespace ServeurWeb
     int written = 0;
     int w;
 
-    // FIXME does not check max_len
-    cbuf[written++] = '[';
-    w = trySprintf(cbuf + written, max_len - written,
-        "%.0f", arr[0]);
-    if (w < 0) return w;
+    if (max_len < 1)
+      return -1;
 
-    written += w;
-    
-    for (size_t i = 1; i < arr.size(); ++i)
+    cbuf[written++] = '[';
+
+    for (auto f: arr)
     {
       w = trySprintf(cbuf + written, max_len - written,
-          ",%.0f", arr[i]);
+          "%.0f,", f);
       if (w < 0) return w;
       written += w;
     }
-
-    // FIXME does not check max_len
-    cbuf[written++] = ']';
+    cbuf[written - 1] = ']'; // emplace comma, check not needed
 
     return written;
   }
@@ -230,11 +225,45 @@ namespace ServeurWeb
     server.on("/", HTTP_GET, [](Req* req)
     {
       weblog("GET /");
-      Rst* res = req->beginResponseStream(mime_html);
-      res->print(html::index_start);
-      res->print(html::style);
-      res->print(html::script);
-      res->print(html::index_end);
+      // Rst* res = req->beginResponseStream(mime_html);
+      // res->print(html::index_start);
+      // res->print(html::style);
+      // res->print(html::script);
+      // res->print(html::index_end);
+      // req->send(res);
+      int chunk_number = 0;
+      Res* res = req->beginChunkedResponse(mime_html,
+        [=](uint8_t* buffer, size_t max_len, size_t index)
+          mutable -> size_t
+        {
+          weblogf("CHUNK %d, max_len = %d, index = %d\n",
+              chunk_number, max_len, index);
+
+          const char* const chunks[] = {
+            html::index_start,
+            html::style,
+            html::script1,
+            html::script2,
+            html::script3,
+            html::index_top,
+            html::index_conso,
+          };
+
+          auto cbuf = reinterpret_cast<char*>(buffer);
+          size_t written = 0;
+
+          if (chunk_number < sizeof chunks / sizeof (char*))
+          {
+            int w = trySprintf(cbuf + written, max_len - written,
+                "%s", chunks[chunk_number]);
+            CHECKED_INC(w, written, cbuf);
+            ++chunk_number;
+            return written;
+          }
+
+          chunk_number = 0;
+          return 0;
+        });
       req->send(res);
     });
 
