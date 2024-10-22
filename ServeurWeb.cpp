@@ -13,13 +13,9 @@
 #include "Ota.h"
 #include "Watts.h"
 #include "WiFiSerial.h"
-#include <ESPAsyncWebServer.h>
 // #include <Base64.h>
-
-// #define INCLUDE_TEST_JSON
-#ifdef INCLUDE_TEST_JSON
-#include <ArduinoJson.h>
-#endif
+#include <ESPAsyncWebServer.h>
+#include <cstdarg>
 
 // Stringify for JSON
 #define S(cc) "\"" cc "\""
@@ -31,10 +27,11 @@ namespace ServeurWeb
   using Req = AsyncWebServerRequest;
   using Rst = AsyncResponseStream;
   using Prm = AsyncWebParameter;
-  using Data::Key;
   using Data::Category;
-  using Data::Chart;
 
+  const char* mime_json = "application/json";
+  const char* mime_html = "text/html";
+  const char* mime_text = "text/plain";
 
   AsyncWebServer server(80);
 
@@ -43,76 +40,128 @@ namespace ServeurWeb
     return server;
   }
 
-  const char* btoc(bool b)
+  constexpr const char* btoc(bool b)
   {
     return b ? "true" : "false";
   }
 
-  void printArrJson(Rst* stream, const float* arr, size_t size)
-  {
-    stream->print('[');
-    stream->print(arr[0]);
-
-    for (size_t i = 1; i < size; ++i)
-      stream->printf(", %.0f", arr[i]);
-
-    stream->print(']');
-  }
-
-  void printArrJson(Rst* stream, const std::vector<float>& arr)
-  {
-    stream->print('[');
-    stream->print(arr[0]);
-
-    for (size_t i = 1; i < arr.size(); ++i)
-      stream->printf(", %.0f", arr[i]);
-
-    stream->print(']');
-  }
-
-  // void serveData(Req* req, size_t size, int r, unsigned ix,
-  //   const float* p1_hp, const float* p2_hp,
-  //   const float* p1_hc, const float* p2_hc)
+  // template<typename T>
+  // void printArrJson(T* stream, const std::vector<float>& arr)
   // {
-  //     Rst* res = req->beginResponseStream("application/json");
+  //   stream->print('[');
+  //   stream->print(arr[0]);
 
-  //     res->printf("{\"res\": %d, \"ix\": %d, ", r, ix);
+  //   for (size_t i = 1; i < arr.size(); ++i)
+  //     stream->printf(", %.0f", arr[i]);
 
-  //     res->print("\"p1_hp\": ");
-  //     printArrJson(res, p1_hp, size);
-  //     res->print(',');
-  //     res->print("\"p1_hc\": ");
-  //     printArrJson(res, p1_hc, size);
-  //     res->print(',');
-  //     res->print("\"p2_hp\": ");
-  //     printArrJson(res, p2_hp, size);
-  //     res->print(',');
-  //     res->print("\"p2_hc\": ");
-  //     printArrJson(res, p2_hc, size);
-  //     res->print('}');
-
-  //     req->send(res);
+  //   stream->print(']');
   // }
-
-  void serveChart(Req* req, const Chart& chart)
+  
+  int trySprintf(char* buf, size_t max_len, const char* fmt, ...)
   {
-    Rst* res = req->beginResponseStream("application/json");
-    res->print('{');
-    res->printf(S("id") ":\"%s\",", chart.id);
-    res->printf(S("res") ":%d,", chart.res); 
-    res->printf(S("ix") ":%d,", chart[Category::P1_HP].index); 
-    res->print(S("p1_hp") ":");
-    printArrJson(res, chart[Category::P1_HP].buffer);
-    res->print(',');
-    res->print(S("p2_hp") ":");
-    printArrJson(res, chart[Category::P2_HP].buffer);
-    res->print(',');
-    res->print(S("p1_hc") ":");
-    printArrJson(res, chart[Category::P1_HC].buffer);
-    res->print(',');
-    res->print(S("p2_hc") ":");
-    printArrJson(res, chart[Category::P2_HC].buffer);
-    res->print('}');
+    int wrote_sz = -1;
+    std::va_list al_vsn, al_vs;
+
+    va_start(al_vsn, fmt);
+    va_copy(al_vs, al_vsn);
+
+    int s = std::vsnprintf(nullptr, 0, fmt, al_vsn);
+
+    if (s < max_len)
+      wrote_sz = std::vsprintf(buf, fmt, al_vs);
+    else
+      wrote_sz = -1;
+
+    va_end(al_vsn);
+    va_end(al_vs);
+    return wrote_sz;
+  }
+
+  int printJsonArray(char* cbuf, size_t max_len,
+      const std::vector<float>& arr)
+  {
+    int written = 0;
+    int w;
+
+    if (max_len < 1)
+      return -1;
+
+    cbuf[written++] = '[';
+
+    for (auto f: arr)
+    {
+      w = trySprintf(cbuf + written, max_len - written,
+          "%.0f,", f);
+      if (w < 0) return w;
+      written += w;
+    }
+    cbuf[written - 1] = ']'; // emplace comma, check not needed
+
+    return written;
+  }
+
+#define CHECKED_INC(w, written, cbuf)             \
+  do                                              \
+  {                                               \
+    if (w > 0)                                    \
+    {                                             \
+      written += w;                               \
+    }                                             \
+    else                                          \
+    {                                             \
+      weblog("*** Full buffer, trying next one"); \
+      cbuf[written++] = ' ';                      \
+      return written;                             \
+    }                                             \
+  } while(false)
+
+  void serveChart(Req* req, const Data::Chart& chart)
+  {
+    int chunk_number = 0;
+    Res* res = req->beginChunkedResponse(mime_json,
+      [=](uint8_t* buffer, size_t max_len, size_t index)
+        mutable -> size_t
+      {
+        weblogf("CHUNK %d, max_len = %d, index = %d\n",
+            chunk_number, max_len, index);
+
+        if (chunk_number < Data::labels.size())
+        {
+          auto cbuf = reinterpret_cast<char*>(buffer);
+          size_t written = 0;
+          int w;
+
+          if (chunk_number == 0)
+          {
+            cbuf[written++] = '{';
+
+            w = trySprintf(cbuf + written, max_len - written,
+              "\"id\":\"%s\","
+              "\"res\": %d,"
+              "\"ix\": %d",
+              chart.id,
+              chart.res,
+              chart.ring_for(Category::P1_HP).index);
+            CHECKED_INC(w, written, cbuf);
+          }
+
+          w = trySprintf(cbuf + written, max_len - written,
+            ",\"%s\":", Data::labels[chunk_number]);
+          CHECKED_INC(w, written, cbuf);
+          w = printJsonArray(cbuf + written, max_len - written,
+              chart.buffers[chunk_number].buffer);
+          CHECKED_INC(w, written, cbuf);
+
+          if (chunk_number == Data::labels.size() - 1)
+            cbuf[written++] = '}';
+
+          ++chunk_number;
+          return written;
+        }
+
+        chunk_number = 0;
+        return 0;
+      });
     req->send(res);
   }
 
@@ -121,11 +170,38 @@ namespace ServeurWeb
     server.on("/", HTTP_GET, [](Req* req)
     {
       weblog("GET /");
-      Rst* res = req->beginResponseStream("text/html");
-      res->print(html::index_start);
-      res->print(html::style);
-      res->print(html::script);
-      res->print(html::index_end);
+      int chunk_number = 0;
+      Res* res = req->beginChunkedResponse(mime_html,
+        [=](uint8_t* buffer, size_t max_len, size_t index)
+          mutable -> size_t
+        {
+          weblogf("CHUNK %d, max_len = %d, index = %d\n",
+              chunk_number, max_len, index);
+
+          const char* const chunks[] = {
+            html::index_start,
+            html::style,
+            html::script1,
+            html::script2,
+            html::script3,
+            html::index_top,
+            html::index_conso,
+          };
+
+          if (chunk_number < sizeof chunks / sizeof (char*))
+          {
+            auto cbuf = reinterpret_cast<char*>(buffer);
+            size_t written = 0;
+            int w = trySprintf(cbuf + written, max_len - written,
+                "%s", chunks[chunk_number]);
+            CHECKED_INC(w, written, cbuf);
+            ++chunk_number;
+            return written;
+          }
+
+          chunk_number = 0;
+          return 0;
+        });
       req->send(res);
     });
 
@@ -140,7 +216,7 @@ namespace ServeurWeb
 
     server.on("/robots.txt", HTTP_GET, [](Req* req)
     {
-      weblog("Request /robots.txt");
+      weblog("GET /robots.txt");
       req->send(200, "text/plain",
           "User-agent: *\n"
           "Disallow: /\n");
@@ -150,8 +226,7 @@ namespace ServeurWeb
     {
       weblog("GET /ota");
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
+      Rst* res = req->beginResponseStream(mime_json);
       res->printf("{\"last_boot\": %lu, \"updating\": %s,"
           "\"progress\": %u}",
         Data::last_boot, btoc(Ota::updating),
@@ -164,8 +239,7 @@ namespace ServeurWeb
     {
       weblog("GET /watts");
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
+      Rst* res = req->beginResponseStream(mime_json);
       res->printf("{\"power1\": %f, \"power2\": %f}",
           Watts::power1, Watts::power2);
       req->send(res);
@@ -175,8 +249,7 @@ namespace ServeurWeb
     {
       weblog("GET /dimmer");
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
+      Rst* res = req->beginResponseStream(mime_json);
 
       res->printf("{"
           "\"force_on\": %s,"
@@ -226,90 +299,16 @@ namespace ServeurWeb
       if (Ota::updating)
         return;
 
-      //TODO for each charts id
-
-      if(req->hasParam("15min"))
-        serveChart(req, Data::charts.at(Key::D_15MIN));
-        
-      if(req->hasParam("1h"))
-        serveChart(req, Data::charts.at(Key::D_1H));
-
-      if(req->hasParam("24h"))
-        serveChart(req, Data::charts.at(Key::D_24H));
+      for (const auto& c: Data::charts)
+      {
+        if (req->hasParam(c.id))
+          serveChart(req, c);
+      }
     });
 
-    // server.on("/data_15min", HTTP_GET, [](Req* req)
-    // {
-    //   weblog("GET /data_15min");
-
-    //   if (Ota::updating)
-    //     return;
-
-    //   int m = esp_timer_get_time();
-    //   int prev_m = m;
-
-    //   serveData(req,
-    //     Data::size_15min,
-    //     Data::res_15min,
-    //     Data::ix_15min,
-    //     Data::buf_p1_hp_15min,
-    //     Data::buf_p2_hp_15min,
-    //     Data::buf_p1_hc_15min,
-    //     Data::buf_p2_hc_15min);   
-
-    //   m = esp_timer_get_time();
-    //   weblogf("data_15min %d µs\n", m - prev_m);
-    // });
-
-    // server.on("/data_1h", HTTP_GET, [](Req* req)
-    // {
-    //   weblog("GET /data_1h");
-
-    //   if (Ota::updating)
-    //     return;
-
-    //   int m = esp_timer_get_time();
-    //   int prev_m = m;
-
-    //   serveData(req,
-    //     Data::size_1h,
-    //     Data::res_1h,
-    //     Data::ix_1h,
-    //     Data::buf_p1_hp_1h,
-    //     Data::buf_p2_hp_1h,
-    //     Data::buf_p1_hc_1h,
-    //     Data::buf_p2_hc_1h);   
-
-    //   m = esp_timer_get_time();
-    //   weblogf("data_1h %d µs\n", m - prev_m);
-    // });
-
-    // server.on("/data_24h", HTTP_GET, [](Req* req)
-    // {
-    //   weblog("GET /data_24h");
-
-    //   if (Ota::updating)
-    //     return;
-
-    //   int m = esp_timer_get_time();
-    //   int prev_m = m;
-
-    //   serveData(req,
-    //     Data::size_24h,
-    //     Data::res_24h,
-    //     Data::ix_24h,
-    //     Data::buf_p1_hp_24h,
-    //     Data::buf_p2_hp_24h,
-    //     Data::buf_p1_hc_24h,
-    //     Data::buf_p2_hc_24h);   
-
-    //   m = esp_timer_get_time();
-    //   weblogf("data_24h %d µs\n", m - prev_m);
-    // });
 
     server.on("/control", HTTP_GET, [](Req* req)
     {
-      // weblog("POST /control");
       weblog("GET /control");
 
       if (req->hasParam("force_off"))
@@ -349,144 +348,6 @@ namespace ServeurWeb
 
       req->send(200);
     });
-
-    server.on("/test_chunked", HTTP_GET, [](Req* req)
-    {
-      static int counter = 0;
-      Res* res = req->beginChunkedResponse("text/plain",
-          [](uint8_t* buffer, size_t max_len, size_t index)
-          -> size_t
-        {
-          size_t amount = 0;
-
-          if (counter == 10000)
-          {
-            counter = 0;
-            return amount;
-          }
-
-          if (counter % 3 == 0)
-          {
-            for (; amount < 26; ++amount)
-              buffer[amount] = 'A' + amount;
-          }
-          else if (counter % 3 == 1)
-          {
-            for (; amount < 26; ++amount)
-              buffer[amount] = 'a' + amount;
-          }
-          else if (counter % 3 == 2)
-          {
-            for (; amount < 10; ++amount)
-              buffer[amount] = '0' + amount;
-          }
-
-          ++counter;
-
-          if (counter % 100 == 0)
-            weblogf("max_len = %d, index = %d, counter =%d\n",
-              max_len, index, counter);
-
-          return amount;
-        });
-      req->send(res);
-    });
-
-#ifdef INCLUDE_TEST_JSON
-    server.on("/test-lib", HTTP_GET, [](Req* req)
-    {
-      weblog("GET /test-lib");
-
-      unsigned long tot = 0;
-      unsigned long m;
-      unsigned long prev_m = esp_timer_get_time();
-      auto chrono = [&](const char* tag)
-      {
-        m = esp_timer_get_time();
-        tot += m - prev_m;
-        weblogf("test-lib: %d µs (%s)\n", m - prev_m, tag);
-        prev_m = m;
-      };
-
-      chrono("start");
-      DynamicJsonBuffer jsonBuffer;
-      chrono("jsonBuffer");
-      JsonObject& root = jsonBuffer.createObject();
-      root["power1"] = Watts::power1;
-      root["power2"] = Watts::power2;
-      root["current1"] = Watts::current1;
-      root["voltage1"] = Watts::voltage1;
-      root["current2"] = Watts::current2;
-      root["voltage2"] = Watts::voltage2;
-      root["freq"]     = Watts::frequency;
-      chrono("createObject");
-
-      auto& arr1 = root.createNestedArray("arr1");
-      for (int i = 0; i < 1000; ++i)
-        arr1.add(i);
-      chrono("createArray1");
-      auto& arr2 = root.createNestedArray("arr2");
-      for (int i = 0; i < 1000; ++i)
-        arr2.add(i + 1000);
-      chrono("createArray2");
-
-      Rst* res = req->beginResponseStream(
-        "application/json");
-      chrono("beginResponseStream");
-      root.printTo(*res);
-      chrono("printTo");
-      req->send(res);
-      chrono("send");
-      weblogf("test-lib tot: %d µs\n", tot);
-      // jsonBuffer.clear();
-    });
-
-    server.on("/test-nolib", HTTP_GET, [](Req* req)
-    {
-      weblog("GET /test-nolib");
-
-      unsigned long tot = 0;
-      unsigned long m;
-      unsigned long prev_m = esp_timer_get_time();
-      auto chrono = [&](const char* tag)
-      {
-        m = esp_timer_get_time();
-        tot += m - prev_m;
-        weblogf("test-nolib: %d µs (%s)\n", m - prev_m, tag);
-        prev_m = m;
-      };
-
-      chrono("start");
-      Rst* res = req->beginResponseStream(
-        "application/json");
-      chrono("beginResponseStream");
-
-      res->print('{');
-
-      res->printf("\"power1\": %f,",   Watts::power1);
-      res->printf("\"power2\": %f,",   Watts::power2);
-      res->printf("\"current1\": %f,", Watts::current1);
-      res->printf("\"voltage1\": %f,", Watts::voltage1);
-      res->printf("\"current2\": %f,", Watts::current2);
-      res->printf("\"voltage2\": %f,", Watts::voltage2);
-      res->printf("\"freq\": %lu,",    Watts::frequency);
-      chrono("printed object");
-
-      res->print("\"arr1\": [0");
-      for (int i = 1; i < 1000; ++i)
-        res->printf(", %d", i);
-      res->print("], \"arr2\": [0");
-      for (int i = 1; i < 1000; ++i)
-        res->printf(", %d", i + 1000);
-      res->print("]}");
-
-      chrono("printed array");
-
-      req->send(res);
-      chrono("send");
-      weblogf("test-nolib tot: %d µs\n", tot);
-    });
-#endif
 
     server.begin();
   }

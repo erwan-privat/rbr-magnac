@@ -24,7 +24,7 @@ namespace Radiateur
       else 
         digitalWrite(relay_pin, is_on ? HIGH : LOW);
 
-      delay(1000);
+      delay(500);
     }
   }
 
@@ -33,11 +33,15 @@ namespace Radiateur
     for (;;)
     {
       float p2 = -Watts::power2;
+
+      if (is_on)
+        p2 += 750;
+
       is_on = p2 > Radiateur::max_power;
 
       // à adapter en fonction du temps de démarrage du
       // radiateur
-      delay(10000);
+      delay(2000);
     }
   }
 

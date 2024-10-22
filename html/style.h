@@ -111,7 +111,7 @@ namespace html
       #is_on_radi.off::after {
         content: " ❌";
       }
-      #is_on_rad.on {
+      #is_on_radi.on {
         color: var(--good);
       }
       #is_on_radi.on::after {
@@ -135,7 +135,7 @@ namespace html
         background: var(--sky);
         border-radius: 5px 5px 0 0;
         color: #fff;
-        /* text-shadow: 0 0 1px #000, 0 0 1px #000; */
+        text-shadow: white 0 0 5px, black 0 0 2px;
         font-size: 1.3em;
       }
 

@@ -64,7 +64,7 @@ comprend :
 Notes
 -----
 
-Il est important d'augmenter la taille de la queue
+|ss| Il est important d'augmenter la taille de la queue
 asynchrone dans dans la bibliothèque `AsyncTCP`, sinon le
 chien de garde risque d'attendre trop longtemps la tâche et
 va rebooter la machine.
@@ -80,7 +80,12 @@ de Mathieu Carbou
 pour les bibliothèques AsyncTCP et ESPAsyncWebServer.
 L'API ne change (quasiment) pas, le serveur est beaucoup
 plus stable et le chien de garde est content. Enfin, presque.
-Faut que je mette en place les *chunked responses*.
+Faut que je mette en place les *chunked responses*. |se|
+
+J'utilise maintenant des réponses en *chunk*, morceaux. Plus de
+risque d'avoir de problème, mais le code est plus compliqué. C'est
+toujours un peu moche, surtout quand on voit comment j'ai géré le
+javascript en le coupant manuellement en trois.
 
 
 Licence
@@ -149,7 +154,7 @@ Todo
 Notes
 -----
 
-Depending on your setup it might be important to increase
+|ss| Depending on your setup it might be important to increase
 the async tcp queue. I had problems with the esp32 rebooting
 because of the watchdog being impatient on `AsyncTCP`.
 
@@ -163,7 +168,12 @@ Even better, for now on I use `Mathieu Carbou's fork
 <https://registry.platformio.org/libraries/mathieucarbou/ESPAsyncWebServer>`_
 of AsyncTCP and ESPAsyncWebServer. The API is (almost
 exactly) the same and the server is way more stable for a
-happy watchdog. Well, almost, need to work on chunked responses.
+happy watchdog. Well, almost, need to work on chunked responses. |se|
+
+I now use chunked responses. No more problem with the time of a
+request, but the code is more complex. It is still a but ugly right
+now, especially in the way I manually cut the javascript file in
+three instread of handling proper buffered response.
 
 License
 -------

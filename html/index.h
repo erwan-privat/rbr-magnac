@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define VERSION "v2.0.8"
+#define VERSION "v2.1.0"
 
 namespace html
 {
@@ -12,7 +12,7 @@ namespace html
     <head>
       <meta charset="utf-8" />)%";
 
-  constexpr char index_end[] PROGMEM = R"%(
+  constexpr char index_top[] PROGMEM = R"%(
       <title>RBR Magnac | )%" VERSION R"%(</title>
     </head>
     <body>
@@ -93,8 +93,9 @@ namespace html
         <label for="ekWh_hc">Heure creuse</label>
         <b>0.<input type="number" id="ekWh_hc" value="2088">
         €/kWh</b>
-      </div>
+      </div>)%";
 
+  constexpr char index_conso[] PROGMEM = R"%(
       <div class="box">
       <h3>Consommation sur 24 heures</h3>
       <div class="flex-container">
