@@ -45,19 +45,19 @@ namespace ServeurWeb
     return b ? "true" : "false";
   }
 
-  template<typename T>
-  void printArrJson(T* stream, const std::vector<float>& arr)
-  {
-    stream->print('[');
-    stream->print(arr[0]);
+  // template<typename T>
+  // void printArrJson(T* stream, const std::vector<float>& arr)
+  // {
+  //   stream->print('[');
+  //   stream->print(arr[0]);
 
-    for (size_t i = 1; i < arr.size(); ++i)
-      stream->printf(", %.0f", arr[i]);
+  //   for (size_t i = 1; i < arr.size(); ++i)
+  //     stream->printf(", %.0f", arr[i]);
 
-    stream->print(']');
-  }
-
-  int trySprintf(char* buf, size_t available, const char* fmt, ...)
+  //   stream->print(']');
+  // }
+  
+  int trySprintf(char* buf, size_t max_len, const char* fmt, ...)
   {
     int wrote_sz = -1;
     std::va_list al_vsn, al_vs;
@@ -65,40 +65,47 @@ namespace ServeurWeb
     va_start(al_vsn, fmt);
     va_copy(al_vs, al_vsn);
 
-    int s = std::vsnprintf(nullptr, 0, fmt, args);
+    int s = std::vsnprintf(nullptr, 0, fmt, al_vsn);
 
-    if (s < available)
-      wrote_sz = std::vsnprintf(buf, s, fmt, args);
+    if (s < max_len)
+      wrote_sz = std::vsprintf(buf, fmt, al_vs);
     else
-      s = -1;
+      wrote_sz = -1;
 
     va_end(al_vsn);
     va_end(al_vs);
     return wrote_sz;
   }
 
-  // int main()
-  // {
-  //   constexpr size_t available = 100;
-  //   char buffer[available];
-  //   size_t written = 0;
+  int printJsonArray(char* cbuf, size_t max_len,
+      const std::vector<float>& arr)
+  {
+    int written = 0;
+    int w;
 
-  //   for (int i = 0; i < 100; ++i)
-  //   {
-  //     int s = trySprintf(buffer + written, available - written,
-  //         "%d\n", i);
-  //     if (s < 0)
-  //       break;
+    // FIXME does not check max_len
+    cbuf[written++] = '[';
+    w = trySprintf(cbuf + written, max_len - written,
+        "%.0f", arr[0]);
+    if (w < 0) return w;
 
-  //     written += s;
-  //     std::cout << written << " / " << available << "\n";
-  //   }
+    written += w;
+    
+    for (size_t i = 1; i < arr.size(); ++i)
+    {
+      w = trySprintf(cbuf + written, max_len - written,
+          ",%.0f", arr[i]);
+      if (w < 0) return w;
+      written += w;
+    }
 
-  //   std::cout << buffer << "\n";
-  // }
-  
+    // FIXME does not check max_len
+    cbuf[written++] = ']';
 
-#define CHECKED_INC(w, written)                   \
+    return written;
+  }
+
+#define CHECKED_INC(w, written, cbuf)             \
   do                                              \
   {                                               \
     if (w > 0)                                    \
@@ -108,18 +115,22 @@ namespace ServeurWeb
     else                                          \
     {                                             \
       weblog("*** Full buffer, trying next one"); \
-      return 0;                                   \
+      cbuf[written++] = ' ';                      \
+      return written;                             \
     }                                             \
   } while(false)
 
   void serveChartTest(Req* req, const Data::Chart& chart)
   {
     int chunk_number = 0;
-    Res* res = req->beginChunkedResponse(mime_text, // FIXME test
-      [&](uint8_t* buffer, size_t max_len, size_t index)
-      -> size_t
+    Res* res = req->beginChunkedResponse(mime_json,
+      [=](uint8_t* buffer, size_t max_len, size_t index)
+        mutable -> size_t
       {
-        auto cbuf = (char*)buffer;
+        weblogf("CHUNK %d, max_len = %d, index = %d\n",
+            chunk_number, max_len, index);
+
+        auto cbuf = reinterpret_cast<char*>(buffer);
         size_t written = 0;
         int w;
 
@@ -130,34 +141,53 @@ namespace ServeurWeb
           w = trySprintf(cbuf + written, max_len - written,
             "\"id\":\"%s\","
             "\"res\": %d,"
-            "\"ix\": %d,",
+            "\"ix\": %d",
             chart.id,
             chart.res,
-            chart.[Category::P1_HP].ix);
+            chart[Category::P1_HP].index);
 
-          CHECKED_INC(w, written);
+          CHECKED_INC(w, written, cbuf);
           break;
           case 1:
           w = trySprintf(cbuf + written, max_len - written,
-            "\"p1_hp\":");
+            ",\"p1_hp\":");
+          CHECKED_INC(w, written, cbuf);
+          w = printJsonArray(cbuf + written, max_len - written,
+              chart[Category::P1_HP].buffer);
+          CHECKED_INC(w, written, cbuf);
           break;
-        }
-        //TODO for each array, fill buffer and store last index, and
-        //so on
-    // res->print(S("p1_hp") ":");
-    // printArrJson(res, chart[Category::P1_HP].buffer);
-    // res->print(',');
-    // res->print(S("p2_hp") ":");
-    // printArrJson(res, chart[Category::P2_HP].buffer);
-    // res->print(',');
-    // res->print(S("p1_hc") ":");
-    // printArrJson(res, chart[Category::P1_HC].buffer);
-    // res->print(',');
-    // res->print(S("p2_hc") ":");
-    // printArrJson(res, chart[Category::P2_HC].buffer);
-    // res->print('}');
+          case 2:
+          w = trySprintf(cbuf + written, max_len - written,
+            ",\"p2_hp\":");
+          CHECKED_INC(w, written, cbuf);
+          w = printJsonArray(cbuf + written, max_len - written,
+              chart[Category::P2_HP].buffer);
+          CHECKED_INC(w, written, cbuf);
+          break;
+          case 3:
+          w = trySprintf(cbuf + written, max_len - written,
+            ",\"p1_hc\":");
+          CHECKED_INC(w, written, cbuf);
+          w = printJsonArray(cbuf + written, max_len - written,
+              chart[Category::P1_HC].buffer);
+          CHECKED_INC(w, written, cbuf);
+          break;
+          case 4:
+          w = trySprintf(cbuf + written, max_len - written,
+            ",\"p2_hc\":");
+          CHECKED_INC(w, written, cbuf);
+          w = printJsonArray(cbuf + written, max_len - written,
+              chart[Category::P2_HC].buffer);
+          CHECKED_INC(w, written, cbuf);
 
-        weblogf("written = %d / %d\n", written, max_len);
+          cbuf[written++] = '}';
+          break;
+          default:
+          chunk_number = 0;
+          return 0;
+        }
+
+        weblogf("written = %d / %d in chunk %d\n", written, max_len, chunk_number);
 
         ++chunk_number;
         return written;
@@ -165,35 +195,35 @@ namespace ServeurWeb
     req->send(res);
   }
 
-  void serveChart(Req* req, const Data::Chart& chart)
-  {
-    Rst* res = req->beginResponseStream(mime_json);
-    res->print('{');
-    res->printf(S("id") ":\"%s\",", chart.id);
-    res->printf(S("res") ":%d,", chart.res); 
-    res->printf(S("ix") ":%d,", chart[Category::P1_HP].index); 
-    res->print(S("p1_hp") ":");
-    printArrJson(res, chart[Category::P1_HP].buffer);
-    res->print(',');
-    res->print(S("p2_hp") ":");
-    printArrJson(res, chart[Category::P2_HP].buffer);
-    res->print(',');
-    res->print(S("p1_hc") ":");
-    printArrJson(res, chart[Category::P1_HC].buffer);
-    res->print(',');
-    res->print(S("p2_hc") ":");
-    printArrJson(res, chart[Category::P2_HC].buffer);
-    res->print('}');
-    req->send(res);
-  }
+  // void serveChart(Req* req, const Data::Chart& chart)
+  // {
+  //   Rst* res = req->beginResponseStream(mime_json);
+  //   res->print('{');
+  //   res->printf(S("id") ":\"%s\",", chart.id);
+  //   res->printf(S("res") ":%d,", chart.res); 
+  //   res->printf(S("ix") ":%d,", chart[Category::P1_HP].index); 
+  //   res->print(S("p1_hp") ":");
+  //   printArrJson(res, chart[Category::P1_HP].buffer);
+  //   res->print(',');
+  //   res->print(S("p2_hp") ":");
+  //   printArrJson(res, chart[Category::P2_HP].buffer);
+  //   res->print(',');
+  //   res->print(S("p1_hc") ":");
+  //   printArrJson(res, chart[Category::P1_HC].buffer);
+  //   res->print(',');
+  //   res->print(S("p2_hc") ":");
+  //   printArrJson(res, chart[Category::P2_HC].buffer);
+  //   res->print('}');
+  //   req->send(res);
+  // }
 
-  String processor(const String& var)
-  {
-    if (var == "VAR")
-      return "   >>> processed <<<   ";
+  // String processor(const String& var)
+  // {
+  //   if (var == "VAR")
+  //     return "   >>> processed <<<   ";
 
-    return var;
-  }
+  //   return var;
+  // }
 
   void begin()
   {
@@ -305,7 +335,8 @@ namespace ServeurWeb
       for (const auto& [k, c]: Data::charts)
       {
         if (req->hasParam(c.id))
-          serveChart(req, c);
+          serveChartTest(req, c);
+          // serveChart(req, c);
       }
     });
 
@@ -401,8 +432,8 @@ namespace ServeurWeb
           }
 
           return amount;
-        // });
-        }, processor);
+        });
+        // }, processor);
       req->send(res);
     });
 
