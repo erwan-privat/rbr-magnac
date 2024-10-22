@@ -40,7 +40,7 @@ namespace ServeurWeb
     return server;
   }
 
-  const char* btoc(bool b)
+  constexpr const char* btoc(bool b)
   {
     return b ? "true" : "false";
   }
@@ -115,7 +115,7 @@ namespace ServeurWeb
     }                                             \
   } while(false)
 
-  void serveChartTest(Req* req, const Data::Chart& chart)
+  void serveChart(Req* req, const Data::Chart& chart)
   {
     int chunk_number = 0;
     Res* res = req->beginChunkedResponse(mime_json,
@@ -125,112 +125,51 @@ namespace ServeurWeb
         weblogf("CHUNK %d, max_len = %d, index = %d\n",
             chunk_number, max_len, index);
 
-        auto cbuf = reinterpret_cast<char*>(buffer);
-        size_t written = 0;
-        int w;
-
-        switch (chunk_number)
+        if (chunk_number < Data::labels.size())
         {
-          case 0:
-          cbuf[written++] = '{';
-          w = trySprintf(cbuf + written, max_len - written,
-            "\"id\":\"%s\","
-            "\"res\": %d,"
-            "\"ix\": %d",
-            chart.id,
-            chart.res,
-            chart[Category::P1_HP].index);
+          auto cbuf = reinterpret_cast<char*>(buffer);
+          size_t written = 0;
+          int w;
 
-          CHECKED_INC(w, written, cbuf);
-          break;
-          case 1:
+          if (chunk_number == 0)
+          {
+            cbuf[written++] = '{';
+
+            w = trySprintf(cbuf + written, max_len - written,
+              "\"id\":\"%s\","
+              "\"res\": %d,"
+              "\"ix\": %d",
+              chart.id,
+              chart.res,
+              chart.ring_for(Category::P1_HP).index);
+            CHECKED_INC(w, written, cbuf);
+          }
+
           w = trySprintf(cbuf + written, max_len - written,
-            ",\"p1_hp\":");
+            ",\"%s\":", Data::labels[chunk_number]);
           CHECKED_INC(w, written, cbuf);
           w = printJsonArray(cbuf + written, max_len - written,
-              chart[Category::P1_HP].buffer);
-          CHECKED_INC(w, written, cbuf);
-          break;
-          case 2:
-          w = trySprintf(cbuf + written, max_len - written,
-            ",\"p2_hp\":");
-          CHECKED_INC(w, written, cbuf);
-          w = printJsonArray(cbuf + written, max_len - written,
-              chart[Category::P2_HP].buffer);
-          CHECKED_INC(w, written, cbuf);
-          break;
-          case 3:
-          w = trySprintf(cbuf + written, max_len - written,
-            ",\"p1_hc\":");
-          CHECKED_INC(w, written, cbuf);
-          w = printJsonArray(cbuf + written, max_len - written,
-              chart[Category::P1_HC].buffer);
-          CHECKED_INC(w, written, cbuf);
-          break;
-          case 4:
-          w = trySprintf(cbuf + written, max_len - written,
-            ",\"p2_hc\":");
-          CHECKED_INC(w, written, cbuf);
-          w = printJsonArray(cbuf + written, max_len - written,
-              chart[Category::P2_HC].buffer);
+              chart.buffers[chunk_number].buffer);
           CHECKED_INC(w, written, cbuf);
 
-          cbuf[written++] = '}';
-          break;
-          default:
-          chunk_number = 0;
-          return 0;
+          if (chunk_number == Data::labels.size() - 1)
+            cbuf[written++] = '}';
+
+          ++chunk_number;
+          return written;
         }
 
-        weblogf("written = %d / %d in chunk %d\n", written, max_len, chunk_number);
-
-        ++chunk_number;
-        return written;
+        chunk_number = 0;
+        return 0;
       });
     req->send(res);
   }
-
-  // void serveChart(Req* req, const Data::Chart& chart)
-  // {
-  //   Rst* res = req->beginResponseStream(mime_json);
-  //   res->print('{');
-  //   res->printf(S("id") ":\"%s\",", chart.id);
-  //   res->printf(S("res") ":%d,", chart.res); 
-  //   res->printf(S("ix") ":%d,", chart[Category::P1_HP].index); 
-  //   res->print(S("p1_hp") ":");
-  //   printArrJson(res, chart[Category::P1_HP].buffer);
-  //   res->print(',');
-  //   res->print(S("p2_hp") ":");
-  //   printArrJson(res, chart[Category::P2_HP].buffer);
-  //   res->print(',');
-  //   res->print(S("p1_hc") ":");
-  //   printArrJson(res, chart[Category::P1_HC].buffer);
-  //   res->print(',');
-  //   res->print(S("p2_hc") ":");
-  //   printArrJson(res, chart[Category::P2_HC].buffer);
-  //   res->print('}');
-  //   req->send(res);
-  // }
-
-  // String processor(const String& var)
-  // {
-  //   if (var == "VAR")
-  //     return "   >>> processed <<<   ";
-
-  //   return var;
-  // }
 
   void begin()
   {
     server.on("/", HTTP_GET, [](Req* req)
     {
       weblog("GET /");
-      // Rst* res = req->beginResponseStream(mime_html);
-      // res->print(html::index_start);
-      // res->print(html::style);
-      // res->print(html::script);
-      // res->print(html::index_end);
-      // req->send(res);
       int chunk_number = 0;
       Res* res = req->beginChunkedResponse(mime_html,
         [=](uint8_t* buffer, size_t max_len, size_t index)
@@ -249,11 +188,10 @@ namespace ServeurWeb
             html::index_conso,
           };
 
-          auto cbuf = reinterpret_cast<char*>(buffer);
-          size_t written = 0;
-
           if (chunk_number < sizeof chunks / sizeof (char*))
           {
+            auto cbuf = reinterpret_cast<char*>(buffer);
+            size_t written = 0;
             int w = trySprintf(cbuf + written, max_len - written,
                 "%s", chunks[chunk_number]);
             CHECKED_INC(w, written, cbuf);
@@ -361,12 +299,10 @@ namespace ServeurWeb
       if (Ota::updating)
         return;
 
-      // for (const auto& [k, c]: Data::charts)
       for (const auto& c: Data::charts)
       {
         if (req->hasParam(c.id))
-          serveChartTest(req, c);
-          // serveChart(req, c);
+          serveChart(req, c);
       }
     });
 
@@ -411,60 +347,6 @@ namespace ServeurWeb
       }
 
       req->send(200);
-    });
-
-    server.on("/test_chunked", HTTP_GET, [](Req* req)
-    {
-      static int counter = 0;
-      Res* res = req->beginChunkedResponse(mime_text,
-          [](uint8_t* buffer, size_t max_len, size_t index)
-          -> size_t
-        {
-          size_t amount = 0;
-
-          if (counter == 100)
-          {
-            weblogf("counter reached 100 with amount %d\n", amount);
-            counter = 0;
-            return amount;
-          }
-
-          if (counter % 4 == 0)
-          {
-            for (; amount < 26; ++amount)
-              buffer[amount] = 'A' + amount;
-          }
-          else if (counter % 4 == 1)
-          {
-            for (; amount < 26; ++amount)
-              buffer[amount] = 'a' + amount;
-          }
-          else if (counter % 4 == 2)
-          {
-            for (; amount < 10; ++amount)
-              buffer[amount] = '0' + amount;
-          }
-          else if (counter % 4 == 3)
-          {
-            buffer[amount++] = '%';
-            buffer[amount++] = 'V';
-            buffer[amount++] = 'A';
-            buffer[amount++] = 'R';
-            buffer[amount++] = '%';
-          }
-
-          ++counter;
-
-          if (counter % 100 == 0)
-          {
-            weblogf("max_len = %d, index = %d, counter = %d\n",
-              max_len, index, counter);
-          }
-
-          return amount;
-        });
-        // }, processor);
-      req->send(res);
     });
 
     server.begin();

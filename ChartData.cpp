@@ -12,6 +12,14 @@ namespace Data
     { "15min", 2, 450 },
   };
 
+  const std::vector<const char*> labels
+  {
+    "p1_hp",
+    "p1_hc",
+    "p2_hp",
+    "p2_hc",
+  };
+
   Chart::Chart(const char* id, unsigned res, size_t size):
     id(id),
     res(res),
@@ -19,13 +27,18 @@ namespace Data
     buffers((size_t)Category::Count, RingBuffer(size))
   {}
 
-  const RingBuffer& Chart::operator[](Category category) const
+  const RingBuffer& Chart::ring_for(Category category) const
   {
     return buffers[(size_t)category];
   }
 
-  RingBuffer& Chart::operator[](Category category)
+  RingBuffer& Chart::ring_for(Category category)
   {
     return buffers[(size_t)category];
+  }
+
+  const char* Chart::label_for(Category category) const
+  {
+    return labels[(size_t)category];
   }
 }

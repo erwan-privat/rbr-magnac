@@ -13,27 +13,25 @@ namespace Data
 {
   unsigned long last_boot = 0;
 
-  void taskChart(void* p_key)
+  void taskChart(void* p_chart)
   {
-    // Key k = *reinterpret_cast<Key*>(p_key);
-    // Chart& c = charts.at(k);
-    Chart& c = *reinterpret_cast<Chart*>(p_key);
+    Chart& c = *reinterpret_cast<Chart*>(p_chart);
 
     for (;;)
     {
       if (Dimmer::isHC())
       {
-        c[Category::P1_HP].push_back(0);
-        c[Category::P2_HP].push_back(0);
-        c[Category::P1_HC].push_back(Watts::power1);
-        c[Category::P2_HC].push_back(Watts::power2);
+        c.ring_for(Category::P1_HP).push_back(0);
+        c.ring_for(Category::P2_HP).push_back(0);
+        c.ring_for(Category::P1_HC).push_back(Watts::power1);
+        c.ring_for(Category::P2_HC).push_back(Watts::power2);
       }
       else
       {
-        c[Category::P1_HP].push_back(Watts::power1);
-        c[Category::P2_HP].push_back(Watts::power2);
-        c[Category::P1_HC].push_back(0);
-        c[Category::P2_HC].push_back(0);
+        c.ring_for(Category::P1_HP).push_back(Watts::power1);
+        c.ring_for(Category::P2_HP).push_back(Watts::power2);
+        c.ring_for(Category::P1_HC).push_back(0);
+        c.ring_for(Category::P2_HC).push_back(0);
       }
 
       // weblogf("%s, %d, %f\n", c.id, c.res, Watts::power2);

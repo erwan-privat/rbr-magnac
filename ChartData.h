@@ -15,14 +15,6 @@ namespace Data
     Count,
   };
 
-  // const std::unordered_map<Category, const char*> CatNames
-  // {
-  //   { P1_HP, "p1_hp" },
-  //   { P1_HC, "p1_hc" },
-  //   { P2_HP, "p2_hp" },
-  //   { P2_HC, "p2_hc" },
-  // };
-
   struct Chart
   {
     const char* id;     // javascript/html id
@@ -32,10 +24,12 @@ namespace Data
 
     Chart(const char* id, unsigned res, std::size_t size);
 
-    const RingBuffer& operator[](Category category) const;
-    RingBuffer& operator[](Category category);
+    const char* label_for(Category category) const;
+    const RingBuffer& ring_for(Category category) const;
+    RingBuffer& ring_for(Category category);
   };
 
+  extern const std::vector<const char*> labels;
   extern const std::vector<Chart> charts;
 }
 
