@@ -41,7 +41,7 @@ namespace Radiateur
 
       // à adapter en fonction du temps de démarrage du
       // radiateur
-      delay(2000);
+      delay(10000);
     }
   }
 

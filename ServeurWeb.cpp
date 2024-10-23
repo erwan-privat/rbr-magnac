@@ -185,7 +185,7 @@ namespace ServeurWeb
             html::script2,
             html::script3,
             html::index_top,
-            // html::index_conso,
+            html::index_conso,
             html::index_end,
           };
 

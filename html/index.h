@@ -235,17 +235,16 @@ namespace html
       </div>
       
       <div><canvas id="pltconso_15min"></canvas></div>
-      </div>)%";
+    </div>)%";
 
   constexpr char index_end[] PROGMEM = R"%(
-      <div id="ota" class="disabled">
-        <h2>Mise à jour OTA</h2>
-        <b id="ota_text">0 %</b>
-        <progress id="ota_progress" max="100" value="0">
-          Pas de mise à jour en cours.
-        </progress>
-      </div>
-    <!-- </div> FIXME -->
+    <div id="ota" class="disabled">
+      <h2>Mise à jour OTA</h2>
+      <b id="ota_text">0 %</b>
+      <progress id="ota_progress" max="100" value="0">
+        Pas de mise à jour en cours.
+      </progress>
+    </div>
   </body>
 </html>
 )%";
