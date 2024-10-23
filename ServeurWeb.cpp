@@ -100,12 +100,12 @@ namespace ServeurWeb
     return written;
   }
 
-#define CHECKED_INC(w, written, cbuf)             \
+#define CHECKED_INC(result, written, cbuf)        \
   do                                              \
   {                                               \
-    if (w > 0)                                    \
+    if (result > 0)                               \
     {                                             \
-      written += w;                               \
+      written += result;                          \
     }                                             \
     else                                          \
     {                                             \
@@ -185,7 +185,8 @@ namespace ServeurWeb
             html::script2,
             html::script3,
             html::index_top,
-            html::index_conso,
+            // html::index_conso,
+            html::index_end,
           };
 
           if (chunk_number < sizeof chunks / sizeof (char*))
