@@ -3,7 +3,7 @@
 
 namespace html
 {
-  constexpr char style[] PROGMEM = R"%(
+  constexpr char style1[] PROGMEM = R"%(
   <link rel="preconnect"
         href="https://fonts.googleapis.com">
   <link rel="preconnect"
@@ -92,7 +92,9 @@ namespace html
       #heures_hphc.hc::after {
         content: " ✓";
       }
+  )%";
 
+  constexpr char style2[] PROGMEM = R"%(
       .eco_hp, #heures_hphc.hc {
         color: var(--good);
       }

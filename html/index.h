@@ -95,6 +95,56 @@ namespace html
         €/kWh</b>
       </div>)%";
 
+  constexpr char index_chart_template[] PROGMEM = R"%(
+    <div class="box">
+      <h3>%CHART_TITLE%</h3>
+      <div class="flex-container">
+        <div>
+          <div><label>Cumulé jour</label>
+            <b id="cumul_hp_%CHART_ID%">x.xxx kWh
+                × 0.2874 €/kWh =
+                <span class="cumul">
+                  0.00 €
+                </span></b></div>
+          <div><label>Cumulé nuit</label>
+            <b id="cumul_hc_%CHART_ID%">x.xxx kWh
+                × 0.2088 €/kWh =
+                <span class="cumul">
+                  0.00 €
+                </span></b></div>
+          <div><label>Cumulé total</label>
+            <b id="cumul_tot_%CHART_ID%">x.xxx kWh,
+              <span class="cumul">
+                0.00 €
+              </span></b></div>
+        </div>
+        <div>
+          <div><label>Chauffe-eau surplus</label>
+            <b id="eco_hp_%CHART_ID%">x.xxx kWh
+                × 0.2874 €/kWh =
+                <span class="eco_hp">
+                  0.00 €
+                </span></b></div>
+          <div><label>Chauffe-eau nuit</label>
+            <b id="eco_hc_%CHART_ID%">x.xxx kWh
+                × 0.2088 €/kWh =
+                <span class="eco_hc">
+                  0.00 €
+                </span></b></div>
+          <div><label>Auto-consommation</label>
+            <b id="autoconso_%CHART_ID%">(x.xx + x.xx) / x.xx =
+                <span class="eco_hc">
+                  x %
+                </span></b>
+          </div>
+        </div>
+      </div>
+
+      <div><canvas id="pltconso_%CHART_ID%"></canvas></div>
+    </div>
+    
+  )%";
+
   constexpr char index_conso[] PROGMEM = R"%(
       <div class="box">
       <h3>Consommation sur 24 heures</h3>

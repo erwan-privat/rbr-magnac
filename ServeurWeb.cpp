@@ -100,6 +100,11 @@ namespace ServeurWeb
     return written;
   }
 
+  // std::string fillChartTemplate(const char* tpl, const Chart& c)
+  // {
+  //   std
+  // }
+
 #define CHECKED_INC(result, written, cbuf)        \
   do                                              \
   {                                               \
@@ -180,12 +185,15 @@ namespace ServeurWeb
 
           const char* const chunks[] = {
             html::index_start,
-            html::style,
+            html::style1,
+            html::style2,
             html::script1,
             html::script2,
             html::script3,
+            html::script4,
             html::index_top,
             html::index_conso,
+            // html::index_chart_template,
             html::index_end,
           };
 

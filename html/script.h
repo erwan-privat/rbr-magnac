@@ -241,8 +241,6 @@ namespace html
         })%";
 
   constexpr char script3[] PROGMEM = R"%(
-
-
         const time_updateData = {};
         // TODO detetermine this from C++ code
         time_updateData["24h"]   = 180000;
@@ -302,7 +300,10 @@ namespace html
                 / ${consotot.toFixed(3)}
                 = <span class="eco_hp">
                 ${(ratio * 100).toFixed(2)} %
-                </span>`;
+                </span>`;)%";
+
+  constexpr char script4[] PROGMEM = R"%(
+
 
             const t_labels = hoursLabels(j.p2.length,
               j.res);
