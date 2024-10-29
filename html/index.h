@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define VERSION "v2.0.8"
+#define VERSION "v3.0.0"
 
 namespace html
 {

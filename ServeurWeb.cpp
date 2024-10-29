@@ -34,12 +34,26 @@ namespace ServeurWeb
   using Data::Category;
   using Data::Chart;
 
-  const char mime_html[] { "text/html" };
-  const char mime_text[] { "text/plain" };
-  const char mime_json[] { "application/json" };
-  const char mime_icon[] { "image/x-icon" };
+  constexpr char mime_html[] = "text/html";
+  constexpr char mime_text[] = "text/plain";
+  constexpr char mime_json[] = "application/json";
+  constexpr char mime_icon[] = "image/x-icon";
+
+  struct ControlQuery
+  {
+    const char* name;
+    bool& value;
+  };
 
   AsyncWebServer server(80);
+
+  std::vector<ControlQuery> queries {
+    { "force_off",      Dimmer::force_off    },
+    { "force_on",       Dimmer::force_on     },
+    { "hc_on",          Dimmer::hc_on        },
+    { "force_off_radi", Radiateur::force_off },
+    { "force_on_radi",  Radiateur::force_on  },
+  };
 
   AsyncWebServer& getServer()
   {
@@ -100,6 +114,7 @@ namespace ServeurWeb
     server.on("/", HTTP_GET, [](Req* req)
     {
       weblog("GET /");
+      // TODO Chunked response
       Rst* res = req->beginResponseStream(mime_html);
       res->print(html::index_start);
       res->print(html::style);
@@ -181,6 +196,7 @@ namespace ServeurWeb
     server.on("/chart", HTTP_GET, [](Req* req)
     {
       weblog("GET /chart");
+      // TODO Chunked response
       
       if (Ota::updating)
         return;
@@ -194,42 +210,16 @@ namespace ServeurWeb
 
     server.on("/control", HTTP_GET, [](Req* req)
     {
-      // weblog("POST /control");
       weblog("GET /control");
 
-      if (req->hasParam("force_off"))
+      for (auto& cq : queries)
       {
-        const Prm* p_off = req->getParam("force_off");
-        Dimmer::force_off = p_off->value() == "true";
-        weblogf("force_off: %s\n", p_off->value());
-      }
-
-      if (req->hasParam("force_on"))
-      {
-        const Prm* p_on = req->getParam("force_on");
-        Dimmer::force_on = p_on->value() == "true";
-        weblogf("force_on: %s\n", p_on->value());
-      }
-
-      if (req->hasParam("hc_on"))
-      {
-        const Prm* p = req->getParam("hc_on");
-        Dimmer::hc_on = p->value() == "true";
-        weblogf("hc_on: %s\n", p->value());
-      }
-
-      if (req->hasParam("force_off_radi"))
-      {
-        const Prm* p_off = req->getParam("force_off_radi");
-        Radiateur::force_off = p_off->value() == "true";
-        weblogf("force_off_radi: %s\n", p_off->value());
-      }
-
-      if (req->hasParam("force_on_radi"))
-      {
-        const Prm* p_on = req->getParam("force_on_radi");
-        Radiateur::force_on = p_on->value() == "true";
-        weblogf("force_on_radi: %s\n", p_on->value());
+        if (req->hasParam(cq.name))
+        {
+          const Prm* param = req->getParam(cq.name);
+          cq.value = param->value() == "true";
+          weblogf("%s: %s\n", cq.name, param->value());
+        }
       }
 
       req->send(200);
@@ -237,7 +227,7 @@ namespace ServeurWeb
 
     server.onNotFound([](Req* req)
     {
-      req->send(404, mime_text, "Page inexistante.");
+      req->send(404, mime_text, "Adresse introuvable.");
     });
 
     server.begin();
