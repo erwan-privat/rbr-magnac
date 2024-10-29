@@ -1,3 +1,7 @@
+// TODO NTP heure d'hiver / Timezone
+// TODO Courbe d'ajustement affinée
+
+
 // RBR — Routeur solaire pour Magnac.
 // https://github.com/Archaoss/rbr-magnac/
 

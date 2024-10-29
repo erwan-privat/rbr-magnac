@@ -33,6 +33,10 @@ namespace Radiateur
     for (;;)
     {
       float p2 = -Watts::power2;
+
+      if (is_on)
+        p2 += 750;
+
       is_on = p2 > Radiateur::max_power;
 
       // à adapter en fonction du temps de démarrage du
