@@ -34,6 +34,11 @@ namespace ServeurWeb
   using Data::Category;
   using Data::Chart;
 
+  const char mime_html[] { "text/html" };
+  const char mime_text[] { "text/plain" };
+  const char mime_json[] { "application/json" };
+  const char mime_icon[] { "image/x-icon" };
+
   AsyncWebServer server(80);
 
   AsyncWebServer& getServer()
@@ -52,7 +57,7 @@ namespace ServeurWeb
     stream->print(arr[0]);
 
     for (size_t i = 1; i < size; ++i)
-      stream->printf(", %.0f", arr[i]);
+      stream->printf(",%.0f", arr[i]);
 
     stream->print(']');
   }
@@ -63,14 +68,14 @@ namespace ServeurWeb
     stream->print(arr[0]);
 
     for (size_t i = 1; i < arr.size(); ++i)
-      stream->printf(", %.0f", arr[i]);
+      stream->printf(",%.0f", arr[i]);
 
     stream->print(']');
   }
 
   void serveChart(Req* req, const Chart& chart)
   {
-    Rst* res = req->beginResponseStream("application/json");
+    Rst* res = req->beginResponseStream(mime_json);
     res->print('{');
     res->printf(S("id") ":\"%s\",", chart.id);
     res->printf(S("res") ":%d,", chart.res); 
@@ -95,7 +100,7 @@ namespace ServeurWeb
     server.on("/", HTTP_GET, [](Req* req)
     {
       weblog("GET /");
-      Rst* res = req->beginResponseStream("text/html");
+      Rst* res = req->beginResponseStream(mime_html);
       res->print(html::index_start);
       res->print(html::style);
       res->print(html::script);
@@ -106,8 +111,7 @@ namespace ServeurWeb
     server.on("/favicon.ico", HTTP_GET, [](Req* req)
     {
       weblog("GET /favicon.ico");
-      Res* response = req->beginResponse(200,
-        "image/x-icon",
+      Res* response = req->beginResponse(200, mime_icon,
         html::favicon_ico, html::favicon_ico_len);
       req->send(response);
     });
@@ -115,7 +119,7 @@ namespace ServeurWeb
     server.on("/robots.txt", HTTP_GET, [](Req* req)
     {
       weblog("Request /robots.txt");
-      req->send(200, "text/plain",
+      req->send(200, mime_text,
           "User-agent: *\n"
           "Disallow: /\n");
     });
@@ -124,8 +128,7 @@ namespace ServeurWeb
     {
       weblog("GET /ota");
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
+      Rst* res = req->beginResponseStream(mime_json);
       res->printf("{\"last_boot\": %lu, \"updating\": %s,"
           "\"progress\": %u}",
         Data::last_boot, btoc(Ota::updating),
@@ -138,8 +141,7 @@ namespace ServeurWeb
     {
       weblog("GET /watts");
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
+      Rst* res = req->beginResponseStream(mime_json);
       res->printf("{\"power1\": %f, \"power2\": %f}",
           Watts::power1, Watts::power2);
       req->send(res);
@@ -149,8 +151,7 @@ namespace ServeurWeb
     {
       weblog("GET /dimmer");
 
-      Rst* res = req->beginResponseStream(
-        "application/json");
+      Rst* res = req->beginResponseStream(mime_json);
 
       res->printf("{"
           "\"force_on\": %s,"
@@ -232,6 +233,11 @@ namespace ServeurWeb
       }
 
       req->send(200);
+    });
+
+    server.onNotFound([](Req* req)
+    {
+      req->send(404, mime_text, "Page inexistante.");
     });
 
     server.begin();
