@@ -109,6 +109,14 @@ namespace ServeurWeb
     req->send(res);
   }
 
+  template<typename... L> 
+  inline constexpr size_t sizeof_several(const L&... list)
+  {
+    // Minus one for the null terminating char and to avoid
+    // the use for strlen.
+    return (0 + ... + (sizeof list - 1));
+  }
+
   void begin()
   {
     server.on("/", HTTP_GET, [](Req* req)
@@ -120,6 +128,30 @@ namespace ServeurWeb
       res->print(html::style);
       res->print(html::script);
       res->print(html::index_end);
+
+      // constexpr size_t tot_size = sizeof_several(
+      //   html::index_start,
+      //   html::style,
+      //   html::script,
+      //   html::index_end,
+      // );
+      
+      // Res* res = req->beginChunkedResponse(mime_html,
+      // [](uint8_t* buffer, size_t max_len, size_t already_sent)
+      //     -> size_t
+      // {
+      //   size_t left = imageSize - alreadySent;
+
+      //   if (left >= max_len)
+      //   {
+      //     memcpy(buffer, tot_buffer + already_sent, max_len);
+      //     return maxLen;
+      //   }
+
+      //   memcpy(buffer, jpg + already_sent, left);
+      //   return left;
+      // });
+
       req->send(res);
     });
 
