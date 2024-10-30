@@ -8,11 +8,12 @@ class NTPClient;
 namespace Heure
 {
   inline constexpr long time_offset = 0;
-  inline constexpr unsigned long update_interval = 3600'000l;
-  extern NTPClient time_client;
+  // extern NTPClient time_client;
   
-  int getTimeHMS();
-  void formatTime(char time_buffer[9]);
+  unsigned getTimeHMS();
+  bool isTimeSet();
+  unsigned long getEpochTime();
+  void formatTime(char time_buffer[9]); // hh:mm:ss\0
   void taskUpdate(void*);
   void taskForceUpdate(void*);
   void begin();

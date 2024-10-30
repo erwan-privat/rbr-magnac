@@ -41,10 +41,10 @@ namespace Data
 
   void begin()
   {
-    while (!Heure::time_client.isTimeSet())
+    while (!Heure::isTimeSet())
       delay(100);
     
-    last_boot = Heure::time_client.getEpochTime()
+    last_boot = Heure::getEpochTime()
       - Heure::time_offset;
 
     for (const auto& c: charts)

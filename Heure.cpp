@@ -7,8 +7,8 @@
 namespace Heure
 {
   WiFiUDP udp;
-  TimeChangeRule cest = {"CEST", Last, Sun, Mar, 2, 120};
-  TimeChangeRule cet = {"CET ", Last, Sun, Oct, 3, 60};
+  TimeChangeRule cest {"CEST", Last, Sun, Mar, 2, 120};
+  TimeChangeRule cet  {"CET" , Last, Sun, Oct, 3, 60};
   Timezone ce_tz(cest, cet);
 
   NTPClient time_client(udp,
@@ -16,15 +16,8 @@ namespace Heure
     time_offset, // décalage horaire UTC en secondes
     static_cast<unsigned long>(-1)); // pas d'update auto
 
-  int getTimeHMS()
+  unsigned getTimeHMS()
   {
-    // int hms = time_client.getHours();
-    // hms *= 100;
-    // hms += time_client.getMinutes();
-    // hms *= 100;
-    // hms += time_client.getSeconds();
-    // return hms;
-    
     time_t t = now();
     int hms = hour(t);
     hms *= 100;
@@ -32,6 +25,16 @@ namespace Heure
     hms *= 100;
     hms += second(t);
     return hms;
+  }
+
+  bool isTimeSet()
+  {
+    return time_client.isTimeSet();
+  }
+
+  unsigned long getEpochTime()
+  {
+    return time_client.getEpochTime();
   }
 
   void formatTime(char tb[9])
@@ -63,8 +66,7 @@ namespace Heure
       time_client.forceUpdate();
       // eplogf("task NTP force update %u from 3000\r\n",
           // uxTaskGetStackHighWaterMark(nullptr));
-      // vTaskDelay(update_interval / portTICK_PERIOD_MS);
-      delay(10'000);
+      delay(60'000);
     }
   }
 

@@ -117,8 +117,6 @@ namespace Ecran
 
   void drawTime()
   {
-    // strcpy(heure, Heure::time_client.getFormattedTime()
-      // .c_str());
     Heure::formatTime(heure);
     screen.setFont(small_font);
     u8g2_uint_t w = screen.getUTF8Width(heure);
@@ -166,7 +164,7 @@ namespace Ecran
 
   void taskScreen(void* argv)
   {
-    while (!Heure::time_client.isTimeSet())
+    while (!Heure::isTimeSet())
     {
       screen.clearBuffer();
       screen.setFont(normal_font);
