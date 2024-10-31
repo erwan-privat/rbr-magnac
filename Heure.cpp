@@ -12,14 +12,20 @@ namespace Heure
   Timezone ce_tz(cest, cet);
 
   NTPClient time_client(udp,
+    // problème avec les serveurs NTP libres, google for now
     "time.google.com",
-    time_offset, // décalage horaire UTC en secondes
+    0, // utilisant Timezone lib, pas besoin
     static_cast<unsigned long>(-1)); // pas d'update auto
+
+  std::time_t getLocalNow()
+  {
+    return ce_tz.toLocal(now());
+  }
 
   unsigned getTimeHMS()
   {
-    time_t t = now();
-    int hms = hour(t);
+    std::time_t t = getLocalNow();
+    std::size_t hms = hour(t);
     hms *= 100;
     hms += minute(t);
     hms *= 100;
@@ -32,14 +38,14 @@ namespace Heure
     return time_client.isTimeSet();
   }
 
-  unsigned long getEpochTime()
+  std::time_t getEpochTime()
   {
     return time_client.getEpochTime();
   }
 
   void formatTime(char tb[9])
   {
-    time_t t = ce_tz.toLocal(now());
+    std::time_t t = getLocalNow();
     snprintf(tb, 9, "%02d:%02d:%02d",
         hour(t), minute(t), second(t));
   }
@@ -49,7 +55,7 @@ namespace Heure
     for (;;)
     {
       time_client.update();
-      unsigned long epoch = time_client.getEpochTime();
+      std::time_t epoch = time_client.getEpochTime();
       setTime(epoch);
       tmElements_t n;
       breakTime(ce_tz.toLocal(now()), n);
