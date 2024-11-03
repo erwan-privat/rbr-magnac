@@ -52,9 +52,8 @@ comprend :
 -------
 
 * |ss| Suppression de ArduinoJSON. |se|
-* Bouger l'endroit du « dernier reboot », j'aime pas là.
+* |ss| Refactor du code pour les graphiques, trop de duplication.
   |se|
-* Refactor du code pour les graphiques, trop de duplication.
 * [PEUT-ÊTRE] Reproduction de l'écran.
 * [PEUT-ÊTRE] Gestion du ventilateur du thyristor (peut-être
   ; j'ai mesuré au maximum une température de 28 °C sur le
@@ -139,8 +138,8 @@ Todo
 ----
 
 * |ss| Remove ArduinoJSON. |se|
-* Move "last reboot" and kwH price, don't like it here.
-* Refactoring the code for the charts, too much duplication.
+* [ss| Refactoring the code for the charts, too much duplication.
+  |se|
 * [MAYBE] Screen reproduction.
 * [MAYBE] Fan control. Not needed right now, the maximum
   temperature I measured on the thyristor (equipped with a
