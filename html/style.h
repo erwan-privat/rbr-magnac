@@ -111,7 +111,7 @@ namespace html
       #is_on_radi.off::after {
         content: " ❌";
       }
-      #is_on_rad.on {
+      #is_on_radi.on {
         color: var(--good);
       }
       #is_on_radi.on::after {

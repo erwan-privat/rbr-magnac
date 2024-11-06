@@ -1,21 +1,18 @@
-// TODO NTP heure d'hiver / Timezone
-// TODO Courbe d'ajustement affinée
-
-
 // RBR — Routeur solaire pour Magnac.
-// https://github.com/Archaoss/rbr-magnac/
+// https://github.com/erwan-privat/rbr-magnac/
 
-#include "EpUtil.h"
 #include "Ecran.h"
-#include "WiFiMagnac.h"
-#include "WiFiSerial.h"
-#include "Ota.h"
-#include "Heure.h"
-#include "Watts.h"
+#include "EpUtil.h"
+#include "FileSystem.h"
+#include "Data.h"
 #include "Dimmer.h"
+#include "Heure.h"
+#include "Ota.h"
 #include "Radiateur.h"
 #include "ServeurWeb.h"
-#include "Data.h"
+#include "Watts.h"
+#include "WiFiMagnac.h"
+#include "WiFiSerial.h"
 
 void setup()
 {
@@ -24,6 +21,7 @@ void setup()
     yield();
   eplog("Serial ok");
   
+  FileSystem::begin();
   Ecran::begin();
   // WiFi doit être lancé avant tout ce qui en a besoin,
   // à savoir Heure (NTP), mise à jour OTA, WiFiSerial.
@@ -41,7 +39,7 @@ void setup()
   Radiateur::begin();
 
   eplog("Herbert !");
-  weblogf("%s\n", "Herbert !");
+  weblog("Herbert !");
 }
 
 void loop()

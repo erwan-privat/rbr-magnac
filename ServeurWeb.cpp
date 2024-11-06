@@ -4,17 +4,19 @@
 #include "html/style.h"
 #include "html/script.h"
 #include "html/favicon.h"
+#include "ChartData.h"
 #include "Data.h"
 #include "Dimmer.h"
-#include "ChartData.h"
 #include "Ecran.h"
+#include "EpUtil.h"
 #include "Heure.h"
 #include "Radiateur.h"
 #include "Ota.h"
 #include "Watts.h"
 #include "WiFiSerial.h"
 #include <ESPAsyncWebServer.h>
-// #include <Base64.h>
+
+#include "FileSystem.h"
 
 // #define INCLUDE_TEST_JSON
 #ifdef INCLUDE_TEST_JSON
@@ -121,7 +123,7 @@ namespace ServeurWeb
   {
     server.on("/", HTTP_GET, [](Req* req)
     {
-      weblog("GET /");
+      dlog("GET /");
       // TODO Chunked response
       Rst* res = req->beginResponseStream(mime_html);
       res->print(html::index_start);
@@ -157,7 +159,7 @@ namespace ServeurWeb
 
     server.on("/favicon.ico", HTTP_GET, [](Req* req)
     {
-      weblog("GET /favicon.ico");
+      dlog("GET /favicon.ico");
       Res* response = req->beginResponse(200, mime_icon,
         html::favicon_ico, html::favicon_ico_len);
       req->send(response);
@@ -165,7 +167,7 @@ namespace ServeurWeb
 
     server.on("/robots.txt", HTTP_GET, [](Req* req)
     {
-      weblog("Request /robots.txt");
+      dlog("Request /robots.txt");
       req->send(200, mime_text,
           "User-agent: *\n"
           "Disallow: /\n");
@@ -173,7 +175,7 @@ namespace ServeurWeb
     
     server.on("/ota", HTTP_GET, [](Req* req)
     {
-      weblog("GET /ota");
+      dlog("GET /ota");
 
       Rst* res = req->beginResponseStream(mime_json);
       res->printf("{\"last_boot\": %lu, \"updating\": %s,"
@@ -186,7 +188,7 @@ namespace ServeurWeb
     
     server.on("/watts", HTTP_GET, [](Req* req)
     {
-      weblog("GET /watts");
+      dlog("GET /watts");
 
       Rst* res = req->beginResponseStream(mime_json);
       res->printf("{\"power1\": %f, \"power2\": %f}",
@@ -196,7 +198,7 @@ namespace ServeurWeb
 
     server.on("/dimmer", HTTP_GET, [](Req* req)
     {
-      weblog("GET /dimmer");
+      dlog("GET /dimmer");
 
       Rst* res = req->beginResponseStream(mime_json);
 
@@ -209,7 +211,8 @@ namespace ServeurWeb
           "\"time\": %d,"
           "\"force_on_radi\": %s,"
           "\"force_off_radi\": %s,"
-          "\"is_on_radi\": %s"
+          "\"is_on_radi\": %s,"
+          "\"seuil\": %0f"
           "}",
         btoc(Dimmer::force_on),
         btoc(Dimmer::force_off),
@@ -219,7 +222,8 @@ namespace ServeurWeb
         Heure::getTimeHMS(),
         btoc(Radiateur::force_on),
         btoc(Radiateur::force_off),
-        btoc(Radiateur::is_on)
+        btoc(Radiateur::is_on),
+        Dimmer::seuil_chofo
       );
 
       req->send(res);
@@ -227,7 +231,7 @@ namespace ServeurWeb
 
     server.on("/chart", HTTP_GET, [](Req* req)
     {
-      weblog("GET /chart");
+      dlog("GET /chart");
       // TODO Chunked response
       
       if (Ota::updating)
@@ -242,7 +246,7 @@ namespace ServeurWeb
 
     server.on("/control", HTTP_GET, [](Req* req)
     {
-      weblog("GET /control");
+      dlog("GET /control");
 
       for (auto& cq : queries)
       {
@@ -250,11 +254,58 @@ namespace ServeurWeb
         {
           const Prm* param = req->getParam(cq.name);
           cq.value = param->value() == "true";
-          weblogf("%s: %s\n", cq.name, param->value());
+          dlogf("%s: %s\n", cq.name, param->value());
         }
       }
 
+      constexpr char seuil_prm[] = "seuil";
+      if (req->hasParam(seuil_prm))
+      {
+        const Prm* param = req->getParam(seuil_prm);
+        float seuil = param->value().toFloat();
+        dlogf("Seuil : %f\n", seuil);
+        Dimmer::seuil_chofo = seuil;
+      }
+
       req->send(200);
+    });
+
+    server.on("/test_spiffs", HTTP_GET, [](Req* req)
+    {
+      dlog("GET /test_spiffs");
+
+      int value = 333;
+
+      if (req->hasParam("format"))
+      {
+        if (!EP_FS.format())
+          dlog("Unable to format");
+
+        dlog("FS formatted");
+      }
+
+      if (req->hasParam("set"))
+      {
+        const Prm* param = req->getParam("set");
+        value = param->value().toInt();
+        dlogf("writing value: %d\n", value);
+        FileSystem::writeData(value);
+        req->send(200, mime_text, "write ok");
+      }
+      else if (req->hasParam("get"))
+      {
+        req->send(EP_FS, FileSystem::filename, mime_text);
+        dlog("Sent txt");
+        return;
+      }
+      else if (req->hasParam("info"))
+      {
+        dlogf("LittleFS: %lu of %lu bytes used.\n",
+           EP_FS.usedBytes(), EP_FS.totalBytes());
+        req->send(200);
+      }
+
+      req->send(500);
     });
 
     server.onNotFound([](Req* req)
