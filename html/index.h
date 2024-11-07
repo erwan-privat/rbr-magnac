@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define VERSION "v3.0.0"
+#define VERSION "v3.1.0"
 
 namespace html
 {
@@ -79,6 +79,12 @@ namespace html
           </div>
           <div>
             <span id="heures_hphc">20 h 56 –­04 h 56</span>
+          </div>
+          <div>
+            <label for="seuil">Seuil</label>
+            <input id="seuil" name="seuil"
+                type="number"
+                min="-500" max="500">&nbsp;W
           </div>
         </div>
       </div>

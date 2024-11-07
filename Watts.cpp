@@ -1,11 +1,11 @@
 #include "Watts.h"
 #include "pins.h"
 #include "EpUtil.h"
-// #include "WiFiSerial.h"
+#include "WiFiSerial.h"
 #include <Arduino.h>
 
 #define SONDE_SERIAL Serial2
-#define WATTS_DEBUG
+// #define WATTS_DEBUG
 
 namespace Watts
 {
@@ -31,23 +31,14 @@ namespace Watts
 
   void printValues()
   {
-    eplog("----------------------------");
-    eplogf("%f V, %f A, %f W\r\n", voltage1, current1, power1);
-    eplogf("%f V, %f A, %f W\r\n", voltage2, current2, power2);
-    // eplogf("%d Hz\r\n", frequency);
-
-    eplog("----------------------------");
-    eplogf("task watts %u from 3000\r\n",
-      uxTaskGetStackHighWaterMark(nullptr));
-
-    // weblogf("%s\n", "----------------------------");
-    // weblogf("%f V, %f A, %f W\n", voltage1, current1, power1);
-    // weblogf("%f V, %f A, %f W\n", voltage2, current2, power2);
-    // // weblogf("%d Hz\n", frequency);
-// 
-    // weblogf("%s\n", "----------------------------");
-    // weblogf("task watts %u from 3000\n",
-      // uxTaskGetStackHighWaterMark(nullptr));
+     dlogf("%s\n", "----------------------------");
+     dlogf("%f V, %f A, %f W\n", voltage1, current1, power1);
+     dlogf("%f V, %f A, %f W\n", voltage2, current2, power2);
+     // dlogf("%d Hz\n", frequency);
+ 
+     dlogf("%s\n", "----------------------------");
+     dlogf("task watts %u from 3000\n",
+       uxTaskGetStackHighWaterMark(nullptr));
   }
 
   uint32_t readInt(int pos)
@@ -124,7 +115,7 @@ namespace Watts
       printValues();
       #endif
       
-      delay(2000);
+      delay(1000);
     }
   }
 

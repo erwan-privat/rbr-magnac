@@ -34,7 +34,7 @@ namespace Data
         c.at(Category::P2_HC).push_back(0);
       }
 
-      weblogf("%s, %d, %f\n", c.id, c.res, Watts::power2);
+      // weblogf("%s, %d, %f\n", c.id, c.res, Watts::power2);
       delay(c.res * 1000);
     }   
   }
@@ -44,8 +44,7 @@ namespace Data
     while (!Heure::isTimeSet())
       delay(100);
     
-    last_boot = Heure::getEpochTime()
-      - Heure::time_offset;
+    last_boot = Heure::getEpochTime();
 
     for (const auto& c: charts)
     {

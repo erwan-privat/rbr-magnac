@@ -1,6 +1,7 @@
 #include "Dimmer.h"
 
 #include "pins.h"
+#include "EpUtil.h"
 #include "Heure.h"
 #include "Ota.h"
 #include "Radiateur.h"
@@ -11,6 +12,9 @@
 
 namespace Dimmer
 {
+  float seuil_chofo = 0; // W
+  float prev_p2 = 0;
+
   bool force_off = true;
   bool force_on  = false;
   bool hc_on     = false;
@@ -67,11 +71,19 @@ namespace Dimmer
       if (Radiateur::is_on)
         pavail_chofo += Radiateur::max_power;
 
+      // On divise par deux pour faire converger
+      // les oscillations.
+      pavail_chofo += prev_p2 / 2;
+
       float amount = pavail_chofo * max_value / max_chofo;
       value = redress(amount);
 
-      // weblogf("p1 = %f, p2 = %f, pa = %f, paf = %f\n",
+      // dlogf("%f W -> %f W\n", prev_p2, pavail_chofo);
+
+      // dlogf("p1 = %f, p2 = %f, pa = %f, paf = %f\n",
       //     Watts::power1, p2, pavailable, pavail_chofo);
+
+      prev_p2 = p2;
 
       delay(2000);
     }

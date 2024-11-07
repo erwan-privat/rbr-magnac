@@ -10,12 +10,6 @@ namespace html
       "use strict";
       window.Magnac = {};
       window.byId = document.getElementById.bind(document);
-      function bitswap (b) {
-        b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
-        b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
-        b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
-        return b;
-      }
 
       let ota_refresh = false;
 
@@ -140,6 +134,14 @@ namespace html
           return `${toS(h)} h ${toS(m)}`;
         }
 
+        const checkboxes = [
+          "force_off", 
+          "force_on",
+          "hc_on",
+          "force_off_radi",
+          "force_on_radi",
+        ];
+
         function updateDimmer() {
           fetch("/dimmer").then(r => {
             if (!r.ok)
@@ -147,11 +149,11 @@ namespace html
             return r.json();
           }).then(function (j) {
             Magnac.dimmer = j;
-            byId("force_off"     ).checked = j.force_off;
-            byId("force_on"      ).checked = j.force_on;
-            byId("hc_on"         ).checked = j.hc_on;
-            byId("force_off_radi").checked = j.force_off_radi;
-            byId("force_on_radi" ).checked = j.force_on_radi;
+            checkboxes.forEach(i => byId(i).checked = j[i]);
+
+            const seuilbox = byId("seuil");
+            if (seuilbox !== document.activeElement)
+              byId("seuil").value = j.seuil;
 
             var is_on = byId("is_on_radi");
             is_on.innerHTML = "normalement "
@@ -173,23 +175,15 @@ namespace html
           }).finally(function (j) {
             setTimeout(updateDimmer, 1000);
 
-            byId("force_off"     ).disabled = false;
-            byId("force_on"      ).disabled = false;
-            byId("hc_on"         ).disabled = false;
-            byId("force_off_radi").disabled = false;
-            byId("force_on_radi" ).disabled = false;
+            checkboxes.forEach(i => byId(i).disabled = false);
           });
         }
 
         function updateControl(event) {
           const checked = event.currentTarget.checked;
-          const name    = event.currentTarget.name;
+          const name = event.currentTarget.name;
           const param = `${name}=${checked}`;
-          byId("force_off"     ).disabled = true;
-          byId("force_on"      ).disabled = true;
-          byId("hc_on"         ).disabled = true;
-          byId("force_off_radi").disabled = true;
-          byId("force_on_radi" ).disabled = true;
+          checkboxes.forEach(i => byId(i).disabled = true);
           console.log(param)
           fetch("/control?" + param).then(r => {
             if (!r.ok)
@@ -197,16 +191,19 @@ namespace html
           });
         }
 
-        byId("force_on"      ).addEventListener("change",
-          updateControl);
-        byId("force_off"     ).addEventListener("change",
-          updateControl);
-        byId("hc_on"         ).addEventListener("change",
-          updateControl);
-        byId("force_on_radi" ).addEventListener("change",
-          updateControl);
-        byId("force_off_radi").addEventListener("change",
-          updateControl);
+        checkboxes.forEach(i => 
+          byId(i).addEventListener("change", updateControl));
+
+        byId("seuil").addEventListener("change", function (event) {
+          const name  = event.currentTarget.name;
+          const value = event.currentTarget.value;
+          const param = `${name}=${value}`;
+
+          fetch("/control?" + param).then(r => {
+            if (!r.ok)
+              throw new Error(`seuil HTTP${r.status}`);
+          });
+        });
 
         function integrate(yy, dx) {
           return yy.reduce((a, y) => a + y * dx);
@@ -266,7 +263,6 @@ namespace html
                 <span class="cumul">
                   ${euro.toFixed(2)} €
                 </span>`;
-
 
               const eco = onlyPos(j["p1_" + h]);
               const total = integrate(eco, j.res) / 3600e3;

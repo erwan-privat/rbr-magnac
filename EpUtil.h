@@ -24,5 +24,10 @@ void println(T t)
 
 #define eplog(s) println(F(s))
 #define eplogf(f, ...) EP_SERIAL.printf(F(f), __VA_ARGS__)
+
+// Must include "WiFiSerial.h" for these to work
+#define dlog(s) eplog(s); weblog(s)
+#define dlogf(f, ...) EP_SERIAL.printf(F(f), __VA_ARGS__); \
+  weblogf(f, __VA_ARGS__)
   
 #endif
