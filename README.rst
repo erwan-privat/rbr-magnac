@@ -23,10 +23,12 @@ comprend :
 * la mise à jour du programme par WiFi (over-the-air, OTA) ;
 * WebSerial, un port série par web pour accéder à la
   journalisation sur http://x.x.x.x/webserial ;
-* une correction du transfert de puissance suivant un profil
+* correction du transfert de puissance suivant un profil
   arcsin pour compenser les thyristors mal calibrés ou un
   évenuel décalage de phase (typiquement : un thyristor
   ouvert à 10 % de 2400 W qui ne délivre que 30 W) ;
+* réglage manuel du seuil de déclenchement du chauffe-eau pour
+  une meilleure maitrise de la courbe de réponse du triac ;
 * gestion des heures creuses sans nécessiter de relai de
   marche forcée ;
 * information sur écran avec écran de chargement (mon chat),
@@ -114,6 +116,9 @@ overproduction to say a water-heater, including:
   between tension and current, e.g. a 10% closed thyristor
   wich would only provide 30 W instead of 240 W for a 2400 W
   device;
+* manual setting for the activating threshold of the water
+  heater to have a better control on the thyristor response
+  curve.
 * off-peak hours handling (« *heures creuses* ») to override
   solar (non-)production at night or whenever without the
   need of a relay;

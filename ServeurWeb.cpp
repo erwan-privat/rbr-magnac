@@ -259,10 +259,13 @@ namespace ServeurWeb
       }
 
       constexpr char seuil_prm[] = "seuil";
+      constexpr int min_seuil = -500;
+      constexpr int max_seuil =  500;
       if (req->hasParam(seuil_prm))
       {
         const Prm* param = req->getParam(seuil_prm);
-        float seuil = param->value().toFloat();
+        float seuil = constrain(param->value().toFloat(),
+            min_seuil, max_seuil);
         dlogf("Seuil : %f\n", seuil);
         Dimmer::seuil_chofo = seuil;
       }

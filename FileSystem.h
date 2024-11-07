@@ -1,9 +1,10 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
-#include <LittleFS.h>
+#include <SPIFFS.h>
 
-#define EP_FS LittleFS
+// #define EP_FS LittleFS
+#define EP_FS SPIFFS
 
 namespace FileSystem
 {

@@ -1,5 +1,5 @@
 Library Name                        Version    Author                    Architecture    Type
 ----------------------------------- ---------- ------------------------- --------------- -------
 ArduinoOTA                          3.0.5      Ivan Grokhotkov and Hrist esp32           system
-LittleFS                            3.0.5                                esp32           system
+SPIFFS                              3.0.5      Hristo Gochkov, Ivan Grok esp32           system
 WiFi                                3.0.5      Hristo Gochkov            esp32           system

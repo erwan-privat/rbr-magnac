@@ -12,7 +12,7 @@
 
 namespace Dimmer
 {
-  float seuil_chofo = -150; // W
+  float seuil_chofo = 0; // W
   float prev_p2 = 0;
 
   bool force_off = true;
@@ -78,7 +78,7 @@ namespace Dimmer
       float amount = pavail_chofo * max_value / max_chofo;
       value = redress(amount);
 
-      dlogf("%f W -> %f W\n", prev_p2, pavail_chofo);
+      // dlogf("%f W -> %f W\n", prev_p2, pavail_chofo);
 
       // dlogf("p1 = %f, p2 = %f, pa = %f, paf = %f\n",
       //     Watts::power1, p2, pavailable, pavail_chofo);

@@ -5,7 +5,6 @@ class AsyncWebServer;
 
 namespace ServeurWeb
 {
-
   AsyncWebServer& getServer();
   void begin();
 }
