@@ -1,6 +1,8 @@
 #ifndef FAVICON_H
 #define FAVICON_H
 
+#include <Arduino.h>
+
 namespace html
 {
   constexpr unsigned char favicon_ico[] PROGMEM =
