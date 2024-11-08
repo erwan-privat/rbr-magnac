@@ -1,8 +1,9 @@
 #include "ServeurWeb.h"
 
-#include "html/index.h"
-#include "html/style.h"
-#include "html/script.h"
+// #include "html/index.h"
+// #include "html/style.h"
+// #include "html/script.h"
+#include "html/index.min.h"
 #include "html/favicon.h"
 #include "ChartData.h"
 #include "Data.h"
@@ -126,10 +127,11 @@ namespace ServeurWeb
       dlog("GET /");
       // TODO Chunked response
       Rst* res = req->beginResponseStream(mime_html);
-      res->print(html::index_start);
-      res->print(html::style);
-      res->print(html::script);
-      res->print(html::index_end);
+      // res->print(html::index_start);
+      // res->print(html::style);
+      // res->print(html::script);
+      // res->print(html::index_end);
+      res->print(html::index_min);
 
       // constexpr size_t tot_size = sizeof_several(
       //   html::index_start,

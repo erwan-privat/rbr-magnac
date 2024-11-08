@@ -71,9 +71,8 @@ namespace Dimmer
       if (Radiateur::is_on)
         pavail_chofo += Radiateur::max_power;
 
-      // On divise par deux pour faire converger
-      // les oscillations.
-      pavail_chofo += prev_p2 / 2;
+      // On divise pour faire converger les oscillations.
+      pavail_chofo += prev_p2 / 4;
 
       float amount = pavail_chofo * max_value / max_chofo;
       value = redress(amount);
