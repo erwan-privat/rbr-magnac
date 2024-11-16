@@ -4,5 +4,6 @@ Base64
 Dimmable Light for Arduino
 mathieucarbou/ESPAsyncWebServer
 NTPClient
+Timezone
 U8g2
 WebSerialLite
