@@ -7,8 +7,8 @@
 
 namespace Data
 {
-  inline constexpr auto ekWK_hc = 0.2088; // €/kWH
-  inline constexpr auto ekWK_hp = 0.2874; // €/kWH
+  inline constexpr auto ekWK_hc = 0.2098; // €/kWH
+  inline constexpr auto ekWK_hp = 0.2888; // €/kWH
 
   extern unsigned long last_boot;
 

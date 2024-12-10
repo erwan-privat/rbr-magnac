@@ -17,7 +17,7 @@ namespace Dimmer
 
   bool force_off = true;
   bool force_on  = false;
-  bool hc_on     = false;
+  bool hc_on     = true;
 
   DimmableLight dimmer(dimmer_com);
   byte value = 0;
