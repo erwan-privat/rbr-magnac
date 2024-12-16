@@ -29,6 +29,8 @@ comprend :
   ouvert à 10 % de 2400 W qui ne délivre que 30 W) ;
 * réglage manuel du seuil de déclenchement du chauffe-eau pour
   une meilleure maitrise de la courbe de réponse du triac ;
+* ajustement automatique du seuil en plus, en fonction de la moyenne
+  du suprlus enregistrée précédemment ;
 * gestion des heures creuses sans nécessiter de relai de
   marche forcée ;
 * information sur écran avec écran de chargement (mon chat),
@@ -118,7 +120,9 @@ overproduction to say a water-heater, including:
   device;
 * manual setting for the activating threshold of the water
   heater to have a better control on the thyristor response
-  curve.
+  curve;
+* automatic adjustment of the threshold taking into account the mean
+  of the immediate overproduction;
 * off-peak hours handling (« *heures creuses* ») to override
   solar (non-)production at night or whenever without the
   need of a relay;
