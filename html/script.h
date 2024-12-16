@@ -21,25 +21,28 @@ namespace html
         Magnac.chtconso = {};
         Magnac.data = {};
 
-        Chart.defaults.font.size = 14;
-        labels.forEach(function (label) {
-          Magnac.chtconso[label] = new Chart(
-            byId("pltconso_" + label), {
-              type: "line",
-              data: [],
-              options: {
-                scales: {
-                  y: {
-                    suggestedMin: 0,
-                    title: {
-                      display: true,
-                      text: "Puissance (W)"
-                    }
+        if (Chart)
+        {
+          Chart.defaults.font.size = 14;
+          labels.forEach(function (label) {
+            Magnac.chtconso[label] = new Chart(
+              byId("pltconso_" + label), {
+                type: "line",
+                data: [],
+                options: {
+                  scales: {
+                    y: {
+                      suggestedMin: 0,
+                      title: {
+                        display: true,
+                        text: "Puissance (W)"
+                      }
+                    },
                   },
                 },
-              },
-            });
-        });
+              });
+          });
+        }
 
         function rotateArray(arr, ix) {
           const left = arr.slice(0, ix);
