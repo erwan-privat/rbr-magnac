@@ -13,7 +13,6 @@
 namespace Dimmer
 {
   float seuil_chofo = 0; // W
-  float prev_p2 = 0;
 
   bool force_off = true;
   bool force_on  = false;
@@ -61,6 +60,9 @@ namespace Dimmer
 
   void taskChofo(void*)
   {
+    constexpr size_t n_p2 = 30;
+    float prev_p2[n_p2] { 0 };
+
     for (;;)
     {
       float p2 = -Watts::power2;
@@ -71,8 +73,16 @@ namespace Dimmer
       if (Radiateur::is_on)
         pavail_chofo += Radiateur::max_power;
 
-      // On divise pour faire converger les oscillations.
-      pavail_chofo += prev_p2 / 4;
+      float mean = 0;
+      for (size_t i = 0; i < n_p2; ++i)
+        mean += prev_p2[i];
+      mean /= n_p2;
+
+      dlogf("M: %f -> %f / 255", mean, mean * max_value / max_chofo);
+
+      dlogf(">>> %f + %f = ", pavail_chofo, mean);
+      pavail_chofo += mean;
+      dlogf("%f\n", pavail_chofo);
 
       float amount = pavail_chofo * max_value / max_chofo;
       value = redress(amount);
@@ -82,7 +92,10 @@ namespace Dimmer
       // dlogf("p1 = %f, p2 = %f, pa = %f, paf = %f\n",
       //     Watts::power1, p2, pavailable, pavail_chofo);
 
-      prev_p2 = p2;
+      for (size_t i = n_p2 - 1; i > 0; --i)
+        prev_p2[i] = prev_p2[i - 1];
+
+      prev_p2[0] = p2;
 
       delay(2000);
     }
