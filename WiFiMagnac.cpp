@@ -5,8 +5,9 @@
 namespace WiFiMagnac
 {
   // Must delcare/define
-  // constexpr char ssid[] = "xxxxxx";
-  // constexpr char pass[] = "yyyyyy";
+  // constexpr char ssid[] = "";
+  // constexpr char pass[] = "";
+  // constexpr char host[] = "";
   #include "WiFiCredentials.h"
 
   bool connected = false;

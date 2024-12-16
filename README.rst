@@ -83,6 +83,7 @@ L'API ne change (quasiment) pas, le serveur est beaucoup
 plus stable et le chien de garde est content. Enfin, presque.
 Faut que je mette en place les *chunked responses*.
 
+Il faut également remplacer le fichier `Arduino/libraries/Dimmable_Light_for_Arduino/src/hw_timer_esp32.cpp` par `<timer_fix/hw_timer_esp32.cpp>`_.
 
 Licence
 -------
@@ -168,6 +169,8 @@ Even better, for now on I use `Mathieu Carbou's fork
 of AsyncTCP and ESPAsyncWebServer. The API is (almost
 exactly) the same and the server is way more stable for a
 happy watchdog. Well, almost, need to work on chunked responses.
+
+You also have to replace `Arduino/libraries/Dimmable_Light_for_Arduino/src/hw_timer_esp32.cpp` with the contents of `<timer_fix/hw_timer_esp32.cpp>`_.
 
 License
 -------
