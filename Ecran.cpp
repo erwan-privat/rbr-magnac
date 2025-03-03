@@ -186,6 +186,7 @@ namespace Ecran
       // eplogf("task screen %u unused from 3000\r\n",
       //   uxTaskGetStackHighWaterMark(nullptr));
       screen.clearBuffer();
+      screen.setDrawColor(1);
 
       if (Ota::updating)
       {

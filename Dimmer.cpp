@@ -74,6 +74,7 @@ namespace Dimmer
         pavail_chofo += Radiateur::max_power;
 
       float mean = 0;
+      //TODO: set mean to 0 if p2 is zero
       for (size_t i = 0; i < n_p2; ++i)
         mean += prev_p2[i];
       mean /= n_p2;
