@@ -22,7 +22,7 @@ namespace Ecran
   constexpr auto ico_wifi    = 0x00f7;
   constexpr auto ico_nope    = 0x0057;
   constexpr auto ico_warn    = 0x0118;
-  constexpr auto max_switch  = 7;
+  // constexpr auto max_switch  = 7;
 
   constexpr auto ota_warn_delay = 500'000u; // µs
 
@@ -30,7 +30,7 @@ namespace Ecran
   OledScreen screen(U8G2_R0, oled_cs, oled_dc, oled_res);
 
   char heure[] = "hh:mm:ss";
-  int switch_watts = 0;
+  // int switch_watts = 0;
   unsigned last_bang_micros = esp_timer_get_time();
   bool warn_toggle = false;
   
@@ -135,13 +135,15 @@ namespace Ecran
     w += 46;
     screen.setCursor((screen_w - w) / 2, pos_y);
 
-    switch (switch_watts)
-    {
-      default:
-      case 0:
-        screen.printf(F("%4d W"), p1 > 0 ? p1 : p2);
-        break;
-    }
+    // switch (switch_watts)
+    // {
+    //   default:
+    //   case 0:
+    //     screen.printf(F("%4d W"), p1 > 0 ? p1 : p2);
+    //     break;
+    // }
+
+    screen.printf(F("%4d W"), p1 > 0 ? p1 : p2);
 
     auto img = p1 > 0 ? bmp_chauffe_eau
       : bmp_chauffe_eau_nope;
@@ -205,13 +207,13 @@ namespace Ecran
     }
   }
 
-  void taskTimerSwitch(void*)
-  {
-    for (;;) {
-      switch_watts = (switch_watts + 1) % max_switch;
-      delay(2000);
-    }
-  }
+  // void taskTimerSwitch(void*)
+  // {
+  //   for (;;) {
+  //     switch_watts = (switch_watts + 1) % max_switch;
+  //     delay(2000);
+  //   }
+  // }
 
   void begin()
   {
@@ -221,8 +223,8 @@ namespace Ecran
     xTaskCreate(taskScreen, "task screen", 
       3000, nullptr, 3, nullptr);
 
-    xTaskCreate(taskTimerSwitch, "task screen timer",
-        3000, nullptr, 2, nullptr);
+    // xTaskCreate(taskTimerSwitch, "task screen timer",
+    //     3000, nullptr, 2, nullptr);
     
     screen.clearBuffer();
     screen.drawXBMP(0, 0, screen_w, screen_h, bmp_winie);
