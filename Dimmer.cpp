@@ -109,10 +109,10 @@ namespace Dimmer
     DimmableLight::begin();
 
     xTaskCreate(taskDimmer, "task dimmer", 
-      3000, nullptr, 7, nullptr);
+      3000 * 2, nullptr, 7, nullptr);
 
     xTaskCreate(taskChofo, "task chauffe-eau", 
-      3000, nullptr, 7, nullptr);
+      3000 * 2, nullptr, 7, nullptr);
 
     force_off = false;
   }

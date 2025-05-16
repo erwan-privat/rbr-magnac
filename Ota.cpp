@@ -73,6 +73,6 @@ namespace Ota
     ArduinoOTA.handle();
 
     xTaskCreate(taskUpdate, "task OTA",
-      3000, nullptr, 4, nullptr);
+      3000 * 2, nullptr, 4, nullptr);
   }
 }

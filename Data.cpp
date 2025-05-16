@@ -49,7 +49,7 @@ namespace Data
     for (const auto& c: charts)
     {
       xTaskCreate(taskChart, "task chart",
-        3000, (void*)&c, 3, nullptr);
+        3000 * 2, (void*)&c, 3, nullptr);
     }
   }
 }

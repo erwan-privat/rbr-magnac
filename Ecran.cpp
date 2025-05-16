@@ -221,7 +221,7 @@ namespace Ecran
     screen.setDrawColor(1);
 
     xTaskCreate(taskScreen, "task screen", 
-      3000, nullptr, 3, nullptr);
+      3000 * 2, nullptr, 3, nullptr);
 
     // xTaskCreate(taskTimerSwitch, "task screen timer",
     //     3000, nullptr, 2, nullptr);
