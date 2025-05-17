@@ -66,6 +66,7 @@ namespace WiFiMagnac
     eplog("Connecting to WiFi...");
 
     WiFi.mode(WIFI_STA);
+    WiFi.setHostname(host);
     WiFi.begin(ssid, pass);
     WiFi.onEvent(onEvent);
   }

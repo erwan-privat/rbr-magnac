@@ -21,7 +21,7 @@ namespace Ota
 
   void begin()
   {
-    ArduinoOTA.setHostname("esp32-magnac");
+    ArduinoOTA.setHostname("esp32-magnac-rbr");
     ArduinoOTA.begin();
     ArduinoOTA
       .onStart([]()
