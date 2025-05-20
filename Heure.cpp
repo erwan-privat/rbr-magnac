@@ -81,8 +81,8 @@ namespace Heure
     time_client.begin();
 
     xTaskCreate(taskUpdate, "NTP update",
-      3000, nullptr, 3, nullptr);
+      3000 * 2, nullptr, 3, nullptr);
     xTaskCreate(taskForceUpdate, "NTP force update",
-      3000, nullptr, 2, nullptr);
+      3000 * 2, nullptr, 2, nullptr);
   }
 }

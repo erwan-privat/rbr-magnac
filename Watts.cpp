@@ -127,6 +127,6 @@ namespace Watts
       capteur_rx, capteur_tx);
 
     xTaskCreate(taskWatts, "task watts",
-        3000, nullptr, 7, nullptr);
+        3000 * 2, nullptr, 7, nullptr);
   }
 }

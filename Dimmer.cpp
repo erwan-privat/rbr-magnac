@@ -16,7 +16,7 @@ namespace Dimmer
 
   bool force_off = true;
   bool force_on  = false;
-  bool hc_on     = true;
+  bool hc_on     = false;
 
   DimmableLight dimmer(dimmer_com);
   byte value = 0;
@@ -74,6 +74,7 @@ namespace Dimmer
         pavail_chofo += Radiateur::max_power;
 
       float mean = 0;
+      //TODO: set mean to 0 if p2 is zero
       for (size_t i = 0; i < n_p2; ++i)
         mean += prev_p2[i];
       mean /= n_p2;
@@ -108,10 +109,10 @@ namespace Dimmer
     DimmableLight::begin();
 
     xTaskCreate(taskDimmer, "task dimmer", 
-      3000, nullptr, 7, nullptr);
+      3000 * 2, nullptr, 7, nullptr);
 
     xTaskCreate(taskChofo, "task chauffe-eau", 
-      3000, nullptr, 7, nullptr);
+      3000 * 2, nullptr, 7, nullptr);
 
     force_off = false;
   }

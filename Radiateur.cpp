@@ -50,9 +50,9 @@ namespace Radiateur
     pinMode(relay_pin, OUTPUT);
 
     xTaskCreate(taskRadiateur, "task radiateur", 
-      3000, nullptr, 7, nullptr);
+      3000 * 2, nullptr, 7, nullptr);
     xTaskCreate(taskTrigger, "task trigger", 
-      3000, nullptr, 6, nullptr);
+      3000 * 2, nullptr, 6, nullptr);
 
     force_off = false;
   }

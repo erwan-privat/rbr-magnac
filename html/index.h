@@ -92,12 +92,12 @@ namespace html
       <h2 id="donnees_conso">Données et consommation</h2>
       <div>
         <label for="ekWh_hp">Heure pleine</label>
-        <b>0.<input type="number" id="ekWh_hp" value="2874">
+        <b>0.<input type="number" id="ekWh_hp" value="3041">
         €/kWh</b>
       </div>
       <div>
         <label for="ekWh_hc">Heure creuse</label>
-        <b>0.<input type="number" id="ekWh_hc" value="2088">
+        <b>0.<input type="number" id="ekWh_hc" value="2250">
         €/kWh</b>
       </div>
 

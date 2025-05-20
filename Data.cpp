@@ -36,20 +36,20 @@ namespace Data
 
       // weblogf("%s, %d, %f\n", c.id, c.res, Watts::power2);
       delay(c.res * 1000);
-    }   
+    }
   }
 
   void begin()
   {
     while (!Heure::isTimeSet())
       delay(100);
-    
+
     last_boot = Heure::getEpochTime();
 
     for (const auto& c: charts)
     {
       xTaskCreate(taskChart, "task chart",
-        3000, (void*)&c, 3, nullptr);
+        3000 * 2, (void*)&c, 3, nullptr);
     }
   }
 }

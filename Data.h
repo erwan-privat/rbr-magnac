@@ -3,12 +3,10 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include <unordered_map>
-
 namespace Data
 {
-  inline constexpr auto ekWK_hc = 0.2098; // €/kWH
-  inline constexpr auto ekWK_hp = 0.2888; // €/kWH
+  inline constexpr auto ekWK_hp = 0.3041; // €/kWH
+  inline constexpr auto ekWK_hc = 0.2250; // €/kWH
 
   extern unsigned long last_boot;
 
