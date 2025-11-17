@@ -16,7 +16,8 @@ namespace Dimmer
 
   bool force_off = true;
   bool force_on  = false;
-  bool hc_on     = false;
+  bool hc_on     = true;
+  bool offline_mode = true;
 
   DimmableLight dimmer(dimmer_com);
   byte value = 0;
@@ -29,7 +30,7 @@ namespace Dimmer
 
       if (force_off)
         dimmer.setBrightness(0);
-      else if (force_on || (hc_on && isHC()))
+      else if (force_on || offline_mode || (hc_on && isHC()))
         dimmer.setBrightness(max_value);
       else
         dimmer.setBrightness(value);
@@ -79,11 +80,11 @@ namespace Dimmer
         mean += prev_p2[i];
       mean /= n_p2;
 
-      dlogf("M: %f -> %f / 255", mean, mean * max_value / max_chofo);
+      // dlogf("M: %f -> %f / 255\r", mean, mean * max_value / max_chofo);
 
-      dlogf(">>> %f + %f = ", pavail_chofo, mean);
+      dlogf(">>> %f + %f = \r", pavail_chofo, mean);
       pavail_chofo += mean;
-      dlogf("%f\n", pavail_chofo);
+      dlogf("%f\r\n", pavail_chofo);
 
       float amount = pavail_chofo * max_value / max_chofo;
       value = redress(amount);

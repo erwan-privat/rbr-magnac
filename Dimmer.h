@@ -19,6 +19,7 @@ namespace Dimmer
   extern bool force_off;
   extern bool force_on;
   extern bool hc_on;
+  extern bool offline_mode;
 
   extern DimmableLight dimmer;
 

@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include "WiFiMagnac.h"
 #include "EpUtil.h"
+#include "Dimmer.h"
 
 namespace WiFiMagnac
 {
@@ -40,6 +41,7 @@ namespace WiFiMagnac
 
       case ARDUINO_EVENT_WIFI_STA_CONNECTED:
         connected = true;
+        Dimmer::offline_mode = false;
         break;
 
       case ARDUINO_EVENT_WIFI_STA_GOT_IP:
@@ -51,6 +53,7 @@ namespace WiFiMagnac
       case ARDUINO_EVENT_WIFI_STA_LOST_IP:
       case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
         connected = false;
+        Dimmer::offline_mode = true;
         eplog("WiFi disconnected.");
         // Ecran::wifi_connected = false;
         WiFi.reconnect();
